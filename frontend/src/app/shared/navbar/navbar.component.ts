@@ -70,6 +70,18 @@ import { AuthService } from '../../core/services/auth.service';
           Minhas Matrículas
         </a>
 
+        <!-- Professor section -->
+        <div *ngIf="auth.isProfessor() && !auth.isAdmin()" class="pt-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">Professor</p>
+          <a routerLink="/professor/cursos" routerLinkActive="bg-emerald-50 text-emerald-700 border-emerald-200"
+             (click)="sidebarOpen.set(false)"
+             class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors font-medium text-sm border border-transparent no-underline">
+            <mat-icon class="flex-shrink-0">cast_for_education</mat-icon>
+            Meus Cursos
+          </a>
+        </div>
+
+        <!-- Admin section -->
         <div *ngIf="auth.isAdmin()" class="pt-4">
           <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">Administração</p>
           <a routerLink="/admin/cursos" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
@@ -83,6 +95,24 @@ import { AuthService } from '../../core/services/auth.service';
              class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
             <mat-icon class="flex-shrink-0">group</mat-icon>
             Gerenciar Usuários
+          </a>
+          <a routerLink="/admin/regioes" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+             (click)="sidebarOpen.set(false)"
+             class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+            <mat-icon class="flex-shrink-0">location_city</mat-icon>
+            Regiões e Unidades
+          </a>
+          <a routerLink="/admin/professores" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+             (click)="sidebarOpen.set(false)"
+             class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+            <mat-icon class="flex-shrink-0">school</mat-icon>
+            Professores
+          </a>
+          <a routerLink="/professor/cursos" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+             (click)="sidebarOpen.set(false)"
+             class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+            <mat-icon class="flex-shrink-0">cast_for_education</mat-icon>
+            Meus Cursos (Prof.)
           </a>
         </div>
       </nav>

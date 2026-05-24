@@ -41,13 +41,36 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfig()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Auth — público
                 .requestMatchers("/api/auth/**").permitAll()
+                // Cursos — leitura pública, escrita ADMIN
                 .requestMatchers(HttpMethod.GET, "/api/cursos", "/api/cursos/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/cursos").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/cursos/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/cursos/**").hasRole("ADMIN")
+                // Usuários
                 .requestMatchers("/api/usuarios").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/usuarios/**").hasRole("ADMIN")
+                // Regiões e Unidades
+                .requestMatchers(HttpMethod.GET, "/api/regioes", "/api/regioes/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/regioes", "/api/regioes/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/regioes/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/regioes/**").hasRole("ADMIN")
+                // Professores
+                .requestMatchers("/api/professores/meus-cursos").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.GET, "/api/professores/**").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.POST, "/api/professores/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/professores/**").hasRole("ADMIN")
+                // Conteúdo das aulas
+                .requestMatchers(HttpMethod.GET, "/api/aulas/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/aulas/**").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.PUT, "/api/aulas/**").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/aulas/**").hasAnyRole("ADMIN", "PROFESSOR")
+                // Presença
+                .requestMatchers(HttpMethod.POST, "/api/presenca").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.GET, "/api/presenca/**").authenticated()
+                // Nota
+                .requestMatchers(HttpMethod.PATCH, "/api/matriculas/*/nota").hasAnyRole("ADMIN", "PROFESSOR")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

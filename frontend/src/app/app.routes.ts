@@ -39,6 +39,25 @@ export const routes: Routes = [
         path: 'usuarios',
         loadComponent: () => import('./features/admin/usuarios/admin-usuarios.component').then(m => m.AdminUsuariosComponent)
       },
+      {
+        path: 'regioes',
+        loadComponent: () => import('./features/admin/regioes/admin-regioes.component').then(m => m.AdminRegioesComponent)
+      },
+      {
+        path: 'professores',
+        loadComponent: () => import('./features/admin/professores/admin-professores.component').then(m => m.AdminProfessoresComponent)
+      },
+      { path: '', redirectTo: 'cursos', pathMatch: 'full' }
+    ]
+  },
+  {
+    path: 'professor',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'cursos',
+        loadComponent: () => import('./features/professor/meus-cursos/professor-cursos.component').then(m => m.ProfessorCursosComponent)
+      },
       { path: '', redirectTo: 'cursos', pathMatch: 'full' }
     ]
   },
