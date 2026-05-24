@@ -1,0 +1,5 @@
+:host { display: block; }
+
+mat-expansion-panel {
+  &.mat-expansion-panel { border-radius: 1rem !important; }
+}

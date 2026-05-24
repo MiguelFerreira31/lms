@@ -35,7 +35,7 @@ public class UsuarioController {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
         String novaRole = body.get("role");
-        if (novaRole != null && (novaRole.equals("ADMIN") || novaRole.equals("ALUNO"))) {
+        if (novaRole != null && (novaRole.equals("ADMIN") || novaRole.equals("ALUNO") || novaRole.equals("PROFESSOR"))) {
             usuario.setRole(Usuario.Role.valueOf(novaRole));
             usuarioRepository.save(usuario);
         }

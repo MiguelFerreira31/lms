@@ -1,5 +1,6 @@
 package br.com.lms.domain.usuario;
 
+import br.com.lms.domain.regiao.Unidade;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,10 @@ public class Usuario implements UserDetails {
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unidade_id")
+    private Unidade unidade;
+
     @PrePersist
     protected void onCreate() { criadoEm = LocalDateTime.now(); }
 
@@ -56,5 +61,5 @@ public class Usuario implements UserDetails {
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return true; }
 
-    public enum Role { ADMIN, ALUNO }
+    public enum Role { ADMIN, PROFESSOR, ALUNO }
 }

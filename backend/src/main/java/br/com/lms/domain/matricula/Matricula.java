@@ -5,6 +5,7 @@ import br.com.lms.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,20 @@ public class Matricula {
     @OneToMany(mappedBy = "matricula", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ProgressoAula> progressos = new ArrayList<>();
+
+    @Column(precision = 4, scale = 2)
+    private BigDecimal nota;
+
+    @Column
+    @Builder.Default
+    private Boolean aprovado = false;
+
+    @Column(name = "nota_lancada_em")
+    private LocalDateTime notaLancadaEm;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nota_lancada_por")
+    private Usuario notaLancadaPor;
 
     @PrePersist
     protected void onCreate() { matriculadoEm = LocalDateTime.now(); }

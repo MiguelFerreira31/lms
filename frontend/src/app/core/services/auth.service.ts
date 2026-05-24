@@ -57,6 +57,7 @@ export class AuthService {
   getToken(): string | null { return localStorage.getItem(this.TOKEN_KEY); }
   isLoggedIn(): boolean { return !!this.getToken(); }
   isAdmin(): boolean { return this.currentUser()?.role === 'ADMIN'; }
+  isProfessor(): boolean { return this.currentUser()?.role === 'PROFESSOR' || this.currentUser()?.role === 'ADMIN'; }
 
   private getStoredUser(): AuthResponse | null {
     const user = localStorage.getItem(this.USER_KEY);

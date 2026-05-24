@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -67,5 +68,23 @@ public class MatriculaController {
         progresso.setConcluidoEm(LocalDateTime.now());
         progressoRepository.save(progresso);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/nota")
+    public ResponseEntity<NotaResponse> lancarNota(@PathVariable Long id,
+                                                     @Valid @RequestBody NotaRequest request,
+                                                     @AuthenticationPrincipal Usuario professor) {
+        Matricula matricula = matriculaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Matrícula", id));
+        BigDecimal nota = request.nota();
+        matricula.setNota(nota);
+        matricula.setAprovado(nota.compareTo(new BigDecimal("6.0")) >= 0);
+        matricula.setNotaLancadaEm(LocalDateTime.now());
+        matricula.setNotaLancadaPor(professor);
+        matriculaRepository.save(matricula);
+        return ResponseEntity.ok(new NotaResponse(
+            matricula.getId(), matricula.getNota(),
+            matricula.getAprovado(), matricula.getNotaLancadaEm()
+        ));
     }
 }
