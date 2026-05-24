@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
-export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; }
+export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; }
 export interface Page<T> { content: T[]; totalElements: number; totalPages: number; number: number; }
 export interface Matricula { id: number; cursoId: number; cursoTitulo: string; status: string; matriculadoEm: string; }
 export interface Progresso { matriculaId: number; aulasConcluidas: number; totalAulas: number; percentual: number; }
@@ -30,11 +30,11 @@ export class CursoService {
     return this.http.get<Curso>(`${environment.apiUrl}/cursos/${id}`);
   }
 
-  criarCurso(data: { titulo: string; descricao: string; nivel: string }) {
+  criarCurso(data: { titulo: string; descricao: string; nivel: string; unidadeId: number | null }) {
     return this.http.post<Curso>(`${environment.apiUrl}/cursos`, data);
   }
 
-  atualizarCurso(id: number, data: { titulo: string; descricao: string; nivel: string }) {
+  atualizarCurso(id: number, data: { titulo: string; descricao: string; nivel: string; unidadeId: number | null }) {
     return this.http.put<Curso>(`${environment.apiUrl}/cursos/${id}`, data);
   }
 

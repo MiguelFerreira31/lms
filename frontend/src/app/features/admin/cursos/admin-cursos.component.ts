@@ -11,7 +11,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
-import { CursoService, Curso, MatriculaDetalhe } from '../../../core/services/curso.service';
+import { CursoService, Curso, MatriculaDetalhe, Unidade } from '../../../core/services/curso.service';
 
 @Component({
   selector: 'app-admin-cursos',
@@ -28,6 +28,7 @@ export class AdminCursosComponent implements OnInit {
   private snack = inject(MatSnackBar);
 
   cursos = signal<Curso[]>([]);
+  unidades = signal<Unidade[]>([]);
   loading = signal(true);
   salvando = signal(false);
   editando = signal<Curso | null>(null);
@@ -43,7 +44,8 @@ export class AdminCursosComponent implements OnInit {
   form = this.fb.group({
     titulo: ['', [Validators.required, Validators.minLength(3)]],
     descricao: [''],
-    nivel: ['BASICO', Validators.required]
+    nivel: ['BASICO', Validators.required],
+    unidadeId: [null as number | null]
   });
 
   ngOnInit() { this.carregar(); }
@@ -54,11 +56,19 @@ export class AdminCursosComponent implements OnInit {
       next: page => { this.cursos.set(page.content); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
+    this.svc.listarTodasUnidades().subscribe({
+      next: data => this.unidades.set(data)
+    });
   }
 
   abrirForm(curso?: Curso) {
     this.editando.set(curso || null);
-    this.form.reset({ titulo: curso?.titulo || '', descricao: curso?.descricao || '', nivel: curso?.nivel || 'BASICO' });
+    this.form.reset({
+      titulo: curso?.titulo || '',
+      descricao: curso?.descricao || '',
+      nivel: curso?.nivel || 'BASICO',
+      unidadeId: curso?.unidadeId ?? null
+    });
     this.mostrarForm.set(true);
     this.cursoExpandido.set(null);
   }
@@ -68,7 +78,8 @@ export class AdminCursosComponent implements OnInit {
   salvar() {
     if (this.form.invalid) return;
     this.salvando.set(true);
-    const data = this.form.value as { titulo: string; descricao: string; nivel: string };
+    const v = this.form.value;
+    const data = { titulo: v.titulo!, descricao: v.descricao || '', nivel: v.nivel!, unidadeId: v.unidadeId ?? null };
     const op = this.editando()
       ? this.svc.atualizarCurso(this.editando()!.id, data)
       : this.svc.criarCurso(data);

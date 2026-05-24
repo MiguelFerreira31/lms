@@ -1,5 +1,6 @@
 package br.com.lms.domain.curso;
 
+import br.com.lms.domain.regiao.Unidade;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +36,10 @@ public class Curso {
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "unidade_id")
+    private Unidade unidade;
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("ordem ASC")

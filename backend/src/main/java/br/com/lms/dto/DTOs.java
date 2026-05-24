@@ -26,11 +26,14 @@ public class DTOs {
 
     public record AuthResponse(String token, String tipo, String nome, String email, String role) {}
 
-    public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel) {}
+    public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId) {}
 
-    public record CursoResumoResponse(Long id, String titulo, String descricao, Curso.Nivel nivel, LocalDateTime criadoEm) {
+    public record CursoResumoResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
+                                       LocalDateTime criadoEm, Long unidadeId, String unidadeNome) {
         public static CursoResumoResponse from(Curso c) {
-            return new CursoResumoResponse(c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm());
+            return new CursoResumoResponse(c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
+                c.getUnidade() != null ? c.getUnidade().getId() : null,
+                c.getUnidade() != null ? c.getUnidade().getNome() : null);
         }
     }
 
@@ -48,10 +51,13 @@ public class DTOs {
     }
 
     public record CursoDetalheResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
-                                       LocalDateTime criadoEm, List<ModuloResponse> modulos) {
+                                       LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
+                                       List<ModuloResponse> modulos) {
         public static CursoDetalheResponse from(Curso c) {
             return new CursoDetalheResponse(c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
-                    c.getModulos().stream().map(ModuloResponse::from).toList());
+                c.getUnidade() != null ? c.getUnidade().getId() : null,
+                c.getUnidade() != null ? c.getUnidade().getNome() : null,
+                c.getModulos().stream().map(ModuloResponse::from).toList());
         }
     }
 

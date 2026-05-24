@@ -37,6 +37,13 @@
               <mat-option *ngFor="let n of niveis" [value]="n">{{ n }}</mat-option>
             </mat-select>
           </mat-form-field>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Unidade</mat-label>
+            <mat-select formControlName="unidadeId">
+              <mat-option [value]="null">Nenhuma (curso geral)</mat-option>
+              <mat-option *ngFor="let u of unidades()" [value]="u.id">{{ u.nome }} — {{ u.regiaoNome }}</mat-option>
+            </mat-select>
+          </mat-form-field>
           <div class="md:col-span-3">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Descrição</mat-label>
@@ -83,6 +90,10 @@
               <span [class]="getNivelClass(c.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ c.nivel }}</span>
             </div>
             <p class="text-sm text-gray-400 truncate mt-0.5">{{ c.descricao || 'Sem descrição' }}</p>
+            <p *ngIf="c.unidadeNome" class="text-xs text-indigo-500 mt-0.5 flex items-center gap-1">
+              <mat-icon class="text-xs" style="font-size:13px;height:13px;width:13px;">location_on</mat-icon>
+              {{ c.unidadeNome }}
+            </p>
           </div>
           <div class="flex items-center gap-2 flex-shrink-0">
             <button (click)="toggleAlunos(c.id)"
