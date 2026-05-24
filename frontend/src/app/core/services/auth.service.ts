@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
@@ -9,12 +9,14 @@ export interface AuthResponse { token: string; tipo: string; nome: string; email
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
   private readonly TOKEN_KEY = 'lms_token';
   private readonly USER_KEY = 'lms_user';
   currentUser = signal<AuthResponse | null>(this.getStoredUser());
 
-  constructor(private http: HttpClient, private router: Router) {
-    this.refreshUser();
+  constructor() {
+    setTimeout(() => this.refreshUser(), 100);
   }
 
   refreshUser() {
@@ -54,12 +56,7 @@ export class AuthService {
 
   getToken(): string | null { return localStorage.getItem(this.TOKEN_KEY); }
   isLoggedIn(): boolean { return !!this.getToken(); }
-  isAdmin(): boolean {
-    const user = this.currentUser();
-    console.log('[AuthService] currentUser:', user);
-    console.log('[AuthService] isAdmin:', user?.role === 'ADMIN');
-    return user?.role === 'ADMIN';
-  }
+  isAdmin(): boolean { return this.currentUser()?.role === 'ADMIN'; }
 
   private getStoredUser(): AuthResponse | null {
     const user = localStorage.getItem(this.USER_KEY);
