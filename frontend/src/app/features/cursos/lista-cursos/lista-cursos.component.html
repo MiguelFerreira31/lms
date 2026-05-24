@@ -1,37 +1,59 @@
-<div class="header">
-  <h2>Cursos Disponíveis</h2>
-  <mat-form-field appearance="outline">
-    <mat-label>Filtrar por nível</mat-label>
-    <mat-select (selectionChange)="onNivel($event.value)" [value]="nivelFiltro()">
-      <mat-option value="">Todos</mat-option>
-      <mat-option *ngFor="let n of niveis" [value]="n">{{ n }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Catálogo de Cursos</h1>
+      <p class="text-gray-500 text-sm mt-1">Explore e se matricule nos cursos disponíveis</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      <button (click)="onNivel('')"
+        [class]="nivelFiltro() === '' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'"
+        class="px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer border-0">
+        Todos
+      </button>
+      <button *ngFor="let n of niveis" (click)="onNivel(n)"
+        [class]="nivelFiltro() === n ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'"
+        class="px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer border-0">
+        {{ n }}
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading()" class="flex justify-center py-20">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+
+    <!-- Grid de cursos -->
+    <div *ngIf="!loading() && cursos()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div *ngFor="let curso of cursos()!.content" [routerLink]="['/cursos', curso.id]"
+           class="bg-white rounded-2xl border border-gray-100 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer overflow-hidden group">
+        <div class="h-2 w-full" [class]="getNivelBg(curso.nivel)"></div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <span [class]="getNivelClass(curso.nivel)" class="px-2.5 py-1 rounded-full text-xs font-semibold">{{ curso.nivel }}</span>
+          </div>
+          <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-indigo-600 transition-colors">{{ curso.titulo }}</h3>
+          <p class="text-gray-500 text-sm mb-4">{{ curso.descricao || 'Sem descrição disponível.' }}</p>
+          <div class="flex items-center justify-between pt-4 border-t border-gray-50">
+            <span class="text-xs text-gray-400">{{ curso.criadoEm | date:'MMM yyyy' }}</span>
+            <span class="text-sm font-medium text-indigo-600 group-hover:underline">Ver detalhes →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p *ngIf="!loading() && cursos()?.content?.length === 0"
+       class="text-center text-gray-500 py-20">Nenhum curso encontrado para este filtro.</p>
+
+    <!-- Paginação -->
+    <div class="mt-6">
+      <mat-paginator *ngIf="cursos() && cursos()!.totalPages > 1"
+        [length]="cursos()!.totalElements" [pageSize]="10" (page)="onPage($event)"
+        class="bg-white rounded-xl border border-gray-100 shadow-sm">
+      </mat-paginator>
+    </div>
+  </div>
 </div>
-
-<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
-
-<div class="grid" *ngIf="!loading() && cursos()">
-  <mat-card *ngFor="let curso of cursos()!.content" class="curso-card" [routerLink]="['/cursos', curso.id]">
-    <mat-card-header>
-      <mat-card-title>{{ curso.titulo }}</mat-card-title>
-      <mat-card-subtitle>
-        <span class="chip" [class]="'nivel-' + curso.nivel.toLowerCase()">{{ curso.nivel }}</span>
-      </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p>{{ curso.descricao }}</p>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button color="primary">Ver detalhes</button>
-    </mat-card-actions>
-  </mat-card>
-</div>
-
-<p *ngIf="!loading() && cursos()?.content?.length === 0" class="center">Nenhum curso encontrado.</p>
-
-<mat-paginator *ngIf="cursos() && cursos()!.totalPages > 1"
-  [length]="cursos()!.totalElements"
-  [pageSize]="10"
-  (page)="onPage($event)">
-</mat-paginator>

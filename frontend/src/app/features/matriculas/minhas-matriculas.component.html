@@ -1,29 +1,65 @@
-<h2>Minhas Matrículas</h2>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Minhas Matrículas</h1>
+      <p class="text-gray-500 text-sm mt-1">Acompanhe seu progresso em cada curso</p>
+    </div>
 
-<p *ngIf="!loading() && matriculas().length === 0">Você ainda não está matriculado em nenhum curso. <a routerLink="/cursos">Explorar cursos</a></p>
+    <div *ngIf="loading()" class="flex justify-center py-20">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
 
-<div class="grid" *ngIf="!loading()">
-  <mat-card *ngFor="let m of matriculas()" class="matricula-card">
-    <mat-card-header>
-      <mat-card-title>{{ m.cursoTitulo }}</mat-card-title>
-      <mat-card-subtitle>Matriculado em {{ m.matriculadoEm | date:'dd/MM/yyyy' }}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="status-row">
-        <span class="chip status-{{ m.status.toLowerCase() }}">{{ m.status }}</span>
+    <div *ngIf="!loading() && matriculas().length === 0" class="text-center py-20">
+      <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <mat-icon class="text-gray-400" style="font-size:40px;width:40px;height:40px">school</mat-icon>
       </div>
-      <div *ngIf="m.progresso" class="progresso">
-        <div class="progresso-label">
-          <span>Progresso</span>
-          <span>{{ m.progresso.aulasConcluidas }}/{{ m.progresso.totalAulas }} aulas ({{ m.progresso.percentual | number:'1.0-0' }}%)</span>
+      <p class="text-gray-600 font-semibold text-lg">Você ainda não está matriculado em nenhum curso</p>
+      <p class="text-gray-400 text-sm mt-2 mb-6">Explore o catálogo e comece sua jornada de aprendizado</p>
+      <a routerLink="/cursos"
+         class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors no-underline">
+        <mat-icon>explore</mat-icon> Explorar Cursos
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" *ngIf="!loading() && matriculas().length > 0">
+      <div *ngFor="let m of matriculas()" class="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
+        <div class="h-1.5 w-full bg-gray-100">
+          <div class="h-1.5 bg-indigo-500 transition-all duration-700 rounded-full"
+               [style.width.%]="m.progresso?.percentual || 0"></div>
         </div>
-        <mat-progress-bar mode="determinate" [value]="m.progresso.percentual"></mat-progress-bar>
+        <div class="p-6">
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-11 h-11 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              <mat-icon class="text-white">menu_book</mat-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-gray-900 truncate">{{ m.cursoTitulo }}</h3>
+              <p class="text-xs text-gray-400 mt-0.5">Desde {{ m.matriculadoEm | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-500">Progresso</span>
+              <span class="text-sm font-bold text-indigo-600">{{ m.progresso?.percentual | number:'1.0-0' }}%</span>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="m.progresso?.percentual || 0" class="rounded-full"></mat-progress-bar>
+            <p class="text-xs text-gray-400 mt-1.5">
+              {{ m.progresso?.aulasConcluidas || 0 }} de {{ m.progresso?.totalAulas || 0 }} aulas concluídas
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span [class]="m.status === 'CONCLUIDO' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'"
+              class="px-2.5 py-1 rounded-full text-xs font-semibold">{{ m.status }}</span>
+            <a [routerLink]="['/cursos', m.cursoId]"
+               class="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-medium no-underline">
+              Continuar <mat-icon class="text-sm">arrow_forward</mat-icon>
+            </a>
+          </div>
+        </div>
       </div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button color="primary" [routerLink]="['/cursos', m.cursoId]">Ver curso</button>
-    </mat-card-actions>
-  </mat-card>
+    </div>
+  </div>
 </div>

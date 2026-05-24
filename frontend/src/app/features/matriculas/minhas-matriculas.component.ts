@@ -1,11 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { CursoService, Matricula, Progresso } from '../../core/services/curso.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -13,7 +11,7 @@ import { catchError } from 'rxjs/operators';
 @Component({
   selector: 'app-minhas-matriculas',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatProgressBarModule, MatChipsModule, MatProgressSpinnerModule],
+  imports: [CommonModule, RouterModule, MatProgressBarModule, MatProgressSpinnerModule, MatIconModule],
   templateUrl: './minhas-matriculas.component.html',
   styleUrls: ['./minhas-matriculas.component.scss']
 })

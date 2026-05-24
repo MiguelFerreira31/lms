@@ -1,20 +1,173 @@
-<div class="dashboard">
-  <h1>Olá, {{ auth.currentUser()?.nome }}!</h1>
-  <p class="subtitle">Bem-vindo ao LMS Lite</p>
-  <div class="cards">
-    <mat-card class="stat-card" routerLink="/cursos">
-      <mat-card-content>
-        <mat-icon>school</mat-icon>
-        <h3>Explorar Cursos</h3>
-        <p>Encontre novos cursos para aprender</p>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="stat-card" routerLink="/matriculas">
-      <mat-card-content>
-        <mat-icon>assignment</mat-icon>
-        <h3>{{ totalMatriculas() }} Matrículas</h3>
-        <p>Cursos em andamento</p>
-      </mat-card-content>
-    </mat-card>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Header de boas-vindas -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">
+        {{ saudacao }}, <span class="text-indigo-600">{{ (auth.currentUser()?.nome || '').split(' ')[0] }}!</span> 👋
+      </h1>
+      <p class="text-gray-500 mt-1">Aqui está um resumo da sua jornada de aprendizado.</p>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading()" class="flex justify-center py-20">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading()">
+
+      <!-- Cards de estatísticas -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+
+        <div class="bg-white rounded-2xl p-6 shadow-card border border-gray-100">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <mat-icon class="text-indigo-600">school</mat-icon>
+            </div>
+            <span class="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-full">Total</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-900">{{ matriculas().length }}</p>
+          <p class="text-sm text-gray-500 mt-1">Matrículas</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-card border border-gray-100">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <mat-icon class="text-blue-600">play_circle</mat-icon>
+            </div>
+            <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Ativo</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-900">{{ emAndamento().length }}</p>
+          <p class="text-sm text-gray-500 mt-1">Em andamento</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-card border border-gray-100">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <mat-icon class="text-green-600">check_circle</mat-icon>
+            </div>
+            <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">Concluído</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-900">{{ concluidos().length }}</p>
+          <p class="text-sm text-gray-500 mt-1">Concluídos</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-card border border-gray-100">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+              <mat-icon class="text-purple-600">trending_up</mat-icon>
+            </div>
+            <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">Média</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-900">{{ mediaProgresso() }}%</p>
+          <p class="text-sm text-gray-500 mt-1">Progresso médio</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Cursos em andamento -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-card border border-gray-100 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-gray-900">Cursos em Andamento</h2>
+            <a routerLink="/matriculas" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Ver todos →</a>
+          </div>
+
+          <div *ngIf="emAndamento().length === 0" class="text-center py-10">
+            <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="text-gray-400 text-3xl">menu_book</mat-icon>
+            </div>
+            <p class="text-gray-500 font-medium">Nenhum curso em andamento</p>
+            <p class="text-gray-400 text-sm mt-1">Explore o catálogo e comece a aprender</p>
+            <a routerLink="/cursos"
+               class="mt-4 inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors no-underline">
+              <mat-icon class="text-sm">explore</mat-icon>
+              Explorar cursos
+            </a>
+          </div>
+
+          <div class="space-y-4">
+            <div *ngFor="let m of emAndamento()" [routerLink]="['/cursos', m.cursoId]"
+                 class="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50 cursor-pointer transition-all group">
+              <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <mat-icon class="text-white">menu_book</mat-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 truncate group-hover:text-indigo-700">{{ m.cursoTitulo }}</p>
+                <div class="flex items-center gap-2 mt-2">
+                  <mat-progress-bar mode="determinate" [value]="m.progresso?.percentual || 0"
+                    class="flex-1 rounded-full"></mat-progress-bar>
+                  <span class="text-xs font-medium flex-shrink-0"
+                    [class]="getProgressoColor(m.progresso?.percentual || 0)">
+                    {{ m.progresso?.percentual | number:'1.0-0' }}%
+                  </span>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">
+                  {{ m.progresso?.aulasConcluidas || 0 }}/{{ m.progresso?.totalAulas || 0 }} aulas concluídas
+                </p>
+              </div>
+              <mat-icon class="text-gray-400 group-hover:text-indigo-600 transition-colors">chevron_right</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel lateral -->
+        <div class="space-y-5">
+
+          <!-- Ações rápidas -->
+          <div class="bg-white rounded-2xl shadow-card border border-gray-100 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h2>
+            <div class="space-y-3">
+              <a routerLink="/cursos"
+                 class="flex items-center gap-3 p-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer no-underline">
+                <div class="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <mat-icon class="text-white text-lg">explore</mat-icon>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-indigo-900">Explorar Cursos</p>
+                  <p class="text-xs text-indigo-600">{{ totalCursos() }} disponíveis</p>
+                </div>
+              </a>
+              <a routerLink="/matriculas"
+                 class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer no-underline">
+                <div class="w-9 h-9 bg-gray-600 rounded-lg flex items-center justify-center">
+                  <mat-icon class="text-white text-lg">assignment</mat-icon>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-900">Minhas Matrículas</p>
+                  <p class="text-xs text-gray-500">{{ matriculas().length }} cursos</p>
+                </div>
+              </a>
+              <a *ngIf="auth.isAdmin()" routerLink="/admin/cursos"
+                 class="flex items-center gap-3 p-3 rounded-xl bg-purple-50 hover:bg-purple-100 transition-colors cursor-pointer no-underline">
+                <div class="w-9 h-9 bg-purple-600 rounded-lg flex items-center justify-center">
+                  <mat-icon class="text-white text-lg">admin_panel_settings</mat-icon>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-purple-900">Painel Admin</p>
+                  <p class="text-xs text-purple-600">Gerenciar sistema</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Progresso geral -->
+          <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-6 text-white">
+            <h3 class="font-semibold mb-1">Progresso Geral</h3>
+            <p class="text-indigo-200 text-sm mb-4">Continue assim, você está indo bem!</p>
+            <div class="text-4xl font-bold mb-2">{{ mediaProgresso() }}%</div>
+            <div class="w-full bg-white/20 rounded-full h-2 mb-3">
+              <div class="bg-white rounded-full h-2 transition-all duration-500"
+                   [style.width.%]="mediaProgresso()"></div>
+            </div>
+            <p class="text-indigo-200 text-xs">
+              {{ concluidos().length }} de {{ matriculas().length }} cursos concluídos
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>

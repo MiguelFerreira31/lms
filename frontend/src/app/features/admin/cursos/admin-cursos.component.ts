@@ -4,19 +4,17 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CursoService, Curso } from '../../../core/services/curso.service';
 
 @Component({
   selector: 'app-admin-cursos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSnackBarModule, MatCardModule, MatProgressSpinnerModule],
+  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSnackBarModule, MatProgressSpinnerModule],
   templateUrl: './admin-cursos.component.html',
   styleUrls: ['./admin-cursos.component.scss']
 })
@@ -31,7 +29,7 @@ export class AdminCursosComponent implements OnInit {
   editando = signal<Curso | null>(null);
   mostrarForm = signal(false);
   niveis = ['BASICO', 'INTERMEDIARIO', 'AVANCADO'];
-  colunas = ['titulo', 'nivel', 'acoes'];
+  colunas = ['titulo', 'nivel', 'criado', 'acoes'];
 
   form = this.fb.group({
     titulo: ['', [Validators.required, Validators.minLength(3)]],
@@ -82,5 +80,14 @@ export class AdminCursosComponent implements OnInit {
       next: () => { this.snack.open('Curso desativado!', 'OK', { duration: 3000 }); this.carregar(); },
       error: () => this.snack.open('Erro ao desativar curso', 'Fechar', { duration: 3000 })
     });
+  }
+
+  getNivelClass(nivel: string): string {
+    const map: Record<string, string> = {
+      'BASICO': 'bg-green-100 text-green-800',
+      'INTERMEDIARIO': 'bg-yellow-100 text-yellow-800',
+      'AVANCADO': 'bg-red-100 text-red-800'
+    };
+    return map[nivel] || 'bg-gray-100 text-gray-800';
   }
 }

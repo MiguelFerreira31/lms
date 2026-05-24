@@ -10,9 +10,7 @@ import { AuthService } from './core/services/auth.service';
   imports: [CommonModule, RouterOutlet, NavbarComponent],
   template: `
     <app-navbar *ngIf="auth.isLoggedIn()"></app-navbar>
-    <main style="padding: 24px; max-width: 1200px; margin: 0 auto;">
-      <router-outlet></router-outlet>
-    </main>
+    <router-outlet></router-outlet>
   `
 })
 export class AppComponent {
