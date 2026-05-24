@@ -1,73 +1,133 @@
-<div class="page-header">
-  <h2>Gerenciar Cursos</h2>
-  <button mat-raised-button color="primary" (click)="abrirForm()">
-    <mat-icon>add</mat-icon> Novo Curso
-  </button>
-</div>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-<mat-card *ngIf="mostrarForm()" class="form-card">
-  <mat-card-header>
-    <mat-card-title>{{ editando() ? 'Editar Curso' : 'Novo Curso' }}</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <form [formGroup]="form" (ngSubmit)="salvar()" class="form-grid">
-      <mat-form-field appearance="outline" class="field-titulo">
-        <mat-label>Título</mat-label>
-        <input matInput formControlName="titulo" placeholder="Nome do curso">
-        <mat-error *ngIf="form.get('titulo')?.hasError('required')">Título obrigatório</mat-error>
-      </mat-form-field>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Gerenciar Cursos</h1>
+        <p class="text-gray-500 text-sm mt-1">{{ cursos().length }} curso(s) cadastrado(s)</p>
+      </div>
+      <button (click)="abrirForm()"
+        class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm border-0 cursor-pointer">
+        <mat-icon>add</mat-icon>
+        Novo Curso
+      </button>
+    </div>
 
-      <mat-form-field appearance="outline" class="field-nivel">
-        <mat-label>Nível</mat-label>
-        <mat-select formControlName="nivel">
-          <mat-option *ngFor="let n of niveis" [value]="n">{{ n }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="field-descricao">
-        <mat-label>Descrição</mat-label>
-        <textarea matInput formControlName="descricao" rows="3" placeholder="Descreva o curso"></textarea>
-      </mat-form-field>
-
-      <div class="form-actions">
-        <button mat-button type="button" (click)="fecharForm()">Cancelar</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="salvando() || form.invalid">
-          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+    <!-- Formulário -->
+    <div *ngIf="mostrarForm()" class="bg-white rounded-2xl shadow-card border border-gray-100 p-6 mb-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-semibold text-gray-900">
+          {{ editando() ? 'Editar Curso' : 'Novo Curso' }}
+        </h2>
+        <button (click)="fecharForm()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100">
+          <mat-icon>close</mat-icon>
         </button>
       </div>
-    </form>
-  </mat-card-content>
-</mat-card>
+      <form [formGroup]="form" (ngSubmit)="salvar()">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div class="md:col-span-2">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Título do Curso</mat-label>
+              <input matInput formControlName="titulo" placeholder="Ex: Java para Iniciantes">
+              <mat-error *ngIf="form.get('titulo')?.hasError('required')">Título obrigatório</mat-error>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Nível</mat-label>
+              <mat-select formControlName="nivel">
+                <mat-option *ngFor="let n of niveis" [value]="n">{{ n }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="md:col-span-3">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Descrição</mat-label>
+              <textarea matInput formControlName="descricao" rows="3"
+                placeholder="Descreva o conteúdo e objetivos do curso"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3">
+          <button type="button" (click)="fecharForm()"
+            class="px-5 py-2.5 rounded-xl text-gray-700 font-medium hover:bg-gray-100 transition-colors border border-gray-200 bg-white cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" [disabled]="salvando() || form.invalid"
+            class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 border-0 cursor-pointer">
+            <mat-icon class="text-sm">{{ salvando() ? 'hourglass_empty' : 'save' }}</mat-icon>
+            {{ salvando() ? 'Salvando...' : 'Salvar Curso' }}
+          </button>
+        </div>
+      </form>
+    </div>
 
-<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
+    <!-- Loading -->
+    <div *ngIf="loading()" class="flex justify-center py-20">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
 
-<table mat-table [dataSource]="cursos()" *ngIf="!loading()" class="tabela">
-  <ng-container matColumnDef="titulo">
-    <th mat-header-cell *matHeaderCellDef>Título</th>
-    <td mat-cell *matCellDef="let c">{{ c.titulo }}</td>
-  </ng-container>
+    <!-- Tabela -->
+    <div *ngIf="!loading()" class="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden">
+      <div *ngIf="cursos().length === 0" class="text-center py-16">
+        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <mat-icon class="text-gray-400 text-3xl">menu_book</mat-icon>
+        </div>
+        <p class="text-gray-600 font-medium">Nenhum curso cadastrado</p>
+        <p class="text-gray-400 text-sm mt-1">Clique em "Novo Curso" para começar</p>
+      </div>
 
-  <ng-container matColumnDef="nivel">
-    <th mat-header-cell *matHeaderCellDef>Nível</th>
-    <td mat-cell *matCellDef="let c">
-      <span class="chip nivel-{{ c.nivel.toLowerCase() }}">{{ c.nivel }}</span>
-    </td>
-  </ng-container>
+      <table mat-table [dataSource]="cursos()" *ngIf="cursos().length > 0" class="w-full">
 
-  <ng-container matColumnDef="acoes">
-    <th mat-header-cell *matHeaderCellDef>Ações</th>
-    <td mat-cell *matCellDef="let c">
-      <button mat-icon-button color="primary" (click)="abrirForm(c)" title="Editar">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button color="warn" (click)="excluir(c)" title="Desativar">
-        <mat-icon>delete</mat-icon>
-      </button>
-    </td>
-  </ng-container>
+        <ng-container matColumnDef="titulo">
+          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4">Curso</th>
+          <td mat-cell *matCellDef="let c" class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <mat-icon class="text-indigo-600 text-lg">menu_book</mat-icon>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900">{{ c.titulo }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ c.descricao || 'Sem descrição' }}</p>
+              </div>
+            </div>
+          </td>
+        </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="colunas"></tr>
-  <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
-</table>
+        <ng-container matColumnDef="nivel">
+          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4">Nível</th>
+          <td mat-cell *matCellDef="let c" class="px-6 py-4">
+            <span [class]="getNivelClass(c.nivel)" class="px-3 py-1 rounded-full text-xs font-semibold">{{ c.nivel }}</span>
+          </td>
+        </ng-container>
 
-<p *ngIf="!loading() && cursos().length === 0" class="center">Nenhum curso cadastrado. Clique em "Novo Curso" para começar.</p>
+        <ng-container matColumnDef="criado">
+          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4">Criado em</th>
+          <td mat-cell *matCellDef="let c" class="px-6 py-4 text-sm text-gray-500">
+            {{ c.criadoEm | date:'dd/MM/yyyy' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4 text-right">Ações</th>
+          <td mat-cell *matCellDef="let c" class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button (click)="abrirForm(c)"
+                class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors text-sm font-medium border border-indigo-200 bg-white cursor-pointer">
+                <mat-icon class="text-sm">edit</mat-icon> Editar
+              </button>
+              <button (click)="excluir(c)"
+                class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors text-sm font-medium border border-red-200 bg-white cursor-pointer">
+                <mat-icon class="text-sm">delete</mat-icon> Excluir
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas" class="border-b border-gray-100"></tr>
+        <tr mat-row *matRowDef="let row; columns: colunas;" class="border-b border-gray-50 hover:bg-gray-50 transition-colors"></tr>
+      </table>
+    </div>
+  </div>
+</div>
