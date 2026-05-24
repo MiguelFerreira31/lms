@@ -1,6 +1,8 @@
-# Claude
+# Claude (arquivos internos, não versionados)
 .claude/
 **/.claude/
+.claude.json
+CLAUDE.md
 
 # Backend
 backend/target/
