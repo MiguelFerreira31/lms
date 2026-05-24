@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h2>Gerenciar Usuários</h2>
+  <button mat-raised-button color="primary" (click)="abrirForm()">
+    <mat-icon>person_add</mat-icon> Novo Usuário
+  </button>
+</div>
+
+<mat-card *ngIf="mostrarForm()" class="form-card">
+  <mat-card-header>
+    <mat-card-title>Novo Usuário</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome">
+        <mat-error *ngIf="form.get('nome')?.hasError('required')">Nome obrigatório</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email">
+        <mat-error *ngIf="form.get('email')?.hasError('email')">Email inválido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Senha</mat-label>
+        <input matInput formControlName="senha" type="password">
+        <mat-error *ngIf="form.get('senha')?.hasError('minlength')">Mínimo 6 caracteres</mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="fecharForm()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="salvando() || form.invalid">
+          {{ salvando() ? 'Criando...' : 'Criar Usuário' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
+
+<table mat-table [dataSource]="usuarios()" *ngIf="!loading()" class="tabela">
+  <ng-container matColumnDef="nome">
+    <th mat-header-cell *matHeaderCellDef>Nome</th>
+    <td mat-cell *matCellDef="let u">{{ u.nome }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef>Email</th>
+    <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="role">
+    <th mat-header-cell *matHeaderCellDef>Perfil</th>
+    <td mat-cell *matCellDef="let u">
+      <span class="chip role-{{ u.role.toLowerCase() }}">{{ u.role }}</span>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+  <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
+</table>
+
+<p *ngIf="!loading() && usuarios().length === 0" class="center">Nenhum usuário encontrado.</p>

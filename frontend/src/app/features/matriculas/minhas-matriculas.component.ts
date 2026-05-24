@@ -1,0 +1,38 @@
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CursoService, Matricula, Progresso } from '../../core/services/curso.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-minhas-matriculas',
+  standalone: true,
+  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatProgressBarModule, MatChipsModule, MatProgressSpinnerModule],
+  templateUrl: './minhas-matriculas.component.html',
+  styleUrls: ['./minhas-matriculas.component.scss']
+})
+export class MinhasMatriculasComponent implements OnInit {
+  private cursoService = inject(CursoService);
+  matriculas = signal<(Matricula & { progresso?: Progresso })[]>([]);
+  loading = signal(true);
+
+  ngOnInit() {
+    this.cursoService.minhasMatriculas().subscribe({
+      next: lista => {
+        if (!lista.length) { this.matriculas.set([]); this.loading.set(false); return; }
+        const progressos$ = lista.map(m => this.cursoService.progresso(m.id).pipe(catchError(() => of(null))));
+        forkJoin(progressos$).subscribe(progressos => {
+          this.matriculas.set(lista.map((m, i) => ({ ...m, progresso: progressos[i] as Progresso })));
+          this.loading.set(false);
+        });
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+}

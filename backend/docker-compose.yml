@@ -1,0 +1,15 @@
+﻿services:
+  db:
+    image: postgres:15
+    container_name: lms-postgres
+    environment:
+      POSTGRES_DB: lmsdb
+      POSTGRES_USER: lms
+      POSTGRES_PASSWORD: lms123
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

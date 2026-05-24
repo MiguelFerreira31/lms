@@ -1,0 +1,46 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>LMS Lite</mat-card-title>
+      <mat-card-subtitle>Sistema de Gestão de Cursos</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-tab-group>
+        <mat-tab label="Entrar">
+          <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Senha</mat-label>
+              <input matInput formControlName="senha" type="password">
+            </mat-form-field>
+            <button mat-raised-button color="primary" class="full-width" [disabled]="loading">
+              {{ loading ? 'Entrando...' : 'Entrar' }}
+            </button>
+          </form>
+        </mat-tab>
+        <mat-tab label="Criar Conta">
+          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nome</mat-label>
+              <input matInput formControlName="nome">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Senha</mat-label>
+              <input matInput formControlName="senha" type="password">
+            </mat-form-field>
+            <button mat-raised-button color="accent" class="full-width" [disabled]="loading">
+              {{ loading ? 'Criando...' : 'Criar Conta' }}
+            </button>
+          </form>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>

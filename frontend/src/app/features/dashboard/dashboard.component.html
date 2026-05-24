@@ -1,0 +1,20 @@
+<div class="dashboard">
+  <h1>Olá, {{ auth.currentUser()?.nome }}!</h1>
+  <p class="subtitle">Bem-vindo ao LMS Lite</p>
+  <div class="cards">
+    <mat-card class="stat-card" routerLink="/cursos">
+      <mat-card-content>
+        <mat-icon>school</mat-icon>
+        <h3>Explorar Cursos</h3>
+        <p>Encontre novos cursos para aprender</p>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="stat-card" routerLink="/matriculas">
+      <mat-card-content>
+        <mat-icon>assignment</mat-icon>
+        <h3>{{ totalMatriculas() }} Matrículas</h3>
+        <p>Cursos em andamento</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

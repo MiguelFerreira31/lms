@@ -1,0 +1,9 @@
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.curso-card { cursor: pointer; transition: transform 0.2s; }
+.curso-card:hover { transform: translateY(-2px); }
+.center { display: flex; justify-content: center; padding: 48px; }
+.chip { padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; }
+.nivel-basico { background: #e8f5e9; color: #2e7d32; }
+.nivel-intermediario { background: #fff3e0; color: #e65100; }
+.nivel-avancado { background: #fce4ec; color: #b71c1c; }

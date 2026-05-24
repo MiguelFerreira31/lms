@@ -1,0 +1,9 @@
+.center { display: flex; justify-content: center; padding: 48px; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.chip { padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; }
+.nivel-basico { background: #e8f5e9; color: #2e7d32; }
+.nivel-intermediario { background: #fff3e0; color: #e65100; }
+.nivel-avancado { background: #fce4ec; color: #b71c1c; }
+.descricao { color: #555; margin-bottom: 24px; font-size: 1rem; }
+.aulas-list { list-style: none; padding: 0; }
+.aulas-list li { padding: 8px 0; border-bottom: 1px solid #eee; color: #444; }

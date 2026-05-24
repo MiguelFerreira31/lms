@@ -1,0 +1,8 @@
+.dashboard { padding: 24px 0; }
+h1 { font-size: 2rem; margin: 0; }
+.subtitle { color: #666; margin-bottom: 32px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.stat-card { cursor: pointer; transition: transform 0.2s; text-align: center; padding: 24px; }
+.stat-card:hover { transform: translateY(-4px); }
+mat-icon { font-size: 48px; height: 48px; width: 48px; color: #3f51b5; }
+h3 { font-size: 1.4rem; margin: 16px 0 8px; }

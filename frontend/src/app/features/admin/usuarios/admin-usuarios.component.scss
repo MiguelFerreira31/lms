@@ -1,0 +1,9 @@
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.form-card { margin-bottom: 24px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 16px; }
+.form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; }
+.tabela { width: 100%; }
+.center { display: flex; justify-content: center; padding: 48px; }
+.chip { padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; }
+.role-admin { background: #fce4ec; color: #b71c1c; }
+.role-aluno { background: #e3f2fd; color: #1565c0; }

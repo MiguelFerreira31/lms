@@ -1,0 +1,13 @@
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.form-card { margin-bottom: 24px; }
+.form-grid { display: grid; grid-template-columns: 1fr 200px; gap: 16px; padding-top: 16px; }
+.field-titulo { grid-column: 1; }
+.field-nivel { grid-column: 2; }
+.field-descricao { grid-column: 1 / -1; }
+.form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; }
+.tabela { width: 100%; }
+.center { display: flex; justify-content: center; padding: 48px; }
+.chip { padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; }
+.nivel-basico { background: #e8f5e9; color: #2e7d32; }
+.nivel-intermediario { background: #fff3e0; color: #e65100; }
+.nivel-avancado { background: #fce4ec; color: #b71c1c; }

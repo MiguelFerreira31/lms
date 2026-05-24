@@ -1,0 +1,29 @@
+<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
+
+<div *ngIf="!loading() && curso()">
+  <div class="header">
+    <div>
+      <h2>{{ curso().titulo }}</h2>
+      <span class="chip nivel-{{ curso().nivel.toLowerCase() }}">{{ curso().nivel }}</span>
+    </div>
+    <button mat-raised-button color="primary" (click)="matricular()" [disabled]="matriculando()">
+      {{ matriculando() ? 'Matriculando...' : 'Matricular-se' }}
+    </button>
+  </div>
+
+  <p class="descricao">{{ curso().descricao }}</p>
+
+  <h3>Conteúdo do Curso</h3>
+  <mat-accordion *ngIf="curso().modulos?.length">
+    <mat-expansion-panel *ngFor="let modulo of curso().modulos">
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ modulo.titulo }}</mat-panel-title>
+        <mat-panel-description>{{ modulo.aulas?.length || 0 }} aulas</mat-panel-description>
+      </mat-expansion-panel-header>
+      <ul class="aulas-list">
+        <li *ngFor="let aula of modulo.aulas">{{ aula.titulo }} — {{ aula.duracaoMin }} min</li>
+      </ul>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <p *ngIf="!curso().modulos?.length">Nenhum módulo cadastrado ainda.</p>
+</div>

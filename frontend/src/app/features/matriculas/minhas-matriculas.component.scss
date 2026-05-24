@@ -1,0 +1,10 @@
+h2 { margin-bottom: 24px; }
+.center { display: flex; justify-content: center; padding: 48px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.matricula-card { padding: 8px; }
+.status-row { margin-bottom: 16px; }
+.chip { padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; }
+.status-em_andamento { background: #e3f2fd; color: #1565c0; }
+.status-concluido { background: #e8f5e9; color: #2e7d32; }
+.progresso { margin-top: 8px; }
+.progresso-label { display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-bottom: 6px; }

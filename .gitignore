@@ -1,0 +1,25 @@
+# Claude
+.claude/
+**/.claude/
+
+# Backend
+backend/target/
+backend/*.class
+backend/*.jar
+backend/*.war
+backend/.idea/
+backend/*.iml
+backend/application-local.yml
+backend/*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/*.log
+frontend/.env
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log

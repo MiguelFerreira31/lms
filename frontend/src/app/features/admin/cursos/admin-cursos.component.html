@@ -1,0 +1,73 @@
+<div class="page-header">
+  <h2>Gerenciar Cursos</h2>
+  <button mat-raised-button color="primary" (click)="abrirForm()">
+    <mat-icon>add</mat-icon> Novo Curso
+  </button>
+</div>
+
+<mat-card *ngIf="mostrarForm()" class="form-card">
+  <mat-card-header>
+    <mat-card-title>{{ editando() ? 'Editar Curso' : 'Novo Curso' }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="form-grid">
+      <mat-form-field appearance="outline" class="field-titulo">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="titulo" placeholder="Nome do curso">
+        <mat-error *ngIf="form.get('titulo')?.hasError('required')">Título obrigatório</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-nivel">
+        <mat-label>Nível</mat-label>
+        <mat-select formControlName="nivel">
+          <mat-option *ngFor="let n of niveis" [value]="n">{{ n }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-descricao">
+        <mat-label>Descrição</mat-label>
+        <textarea matInput formControlName="descricao" rows="3" placeholder="Descreva o curso"></textarea>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="fecharForm()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="salvando() || form.invalid">
+          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
+
+<table mat-table [dataSource]="cursos()" *ngIf="!loading()" class="tabela">
+  <ng-container matColumnDef="titulo">
+    <th mat-header-cell *matHeaderCellDef>Título</th>
+    <td mat-cell *matCellDef="let c">{{ c.titulo }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="nivel">
+    <th mat-header-cell *matHeaderCellDef>Nível</th>
+    <td mat-cell *matCellDef="let c">
+      <span class="chip nivel-{{ c.nivel.toLowerCase() }}">{{ c.nivel }}</span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="acoes">
+    <th mat-header-cell *matHeaderCellDef>Ações</th>
+    <td mat-cell *matCellDef="let c">
+      <button mat-icon-button color="primary" (click)="abrirForm(c)" title="Editar">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="excluir(c)" title="Desativar">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+  <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
+</table>
+
+<p *ngIf="!loading() && cursos().length === 0" class="center">Nenhum curso cadastrado. Clique em "Novo Curso" para começar.</p>

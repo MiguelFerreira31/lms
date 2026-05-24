@@ -1,0 +1,37 @@
+<div class="header">
+  <h2>Cursos Disponíveis</h2>
+  <mat-form-field appearance="outline">
+    <mat-label>Filtrar por nível</mat-label>
+    <mat-select (selectionChange)="onNivel($event.value)" [value]="nivelFiltro()">
+      <mat-option value="">Todos</mat-option>
+      <mat-option *ngFor="let n of niveis" [value]="n">{{ n }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
+
+<div class="grid" *ngIf="!loading() && cursos()">
+  <mat-card *ngFor="let curso of cursos()!.content" class="curso-card" [routerLink]="['/cursos', curso.id]">
+    <mat-card-header>
+      <mat-card-title>{{ curso.titulo }}</mat-card-title>
+      <mat-card-subtitle>
+        <span class="chip" [class]="'nivel-' + curso.nivel.toLowerCase()">{{ curso.nivel }}</span>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{ curso.descricao }}</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="primary">Ver detalhes</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<p *ngIf="!loading() && cursos()?.content?.length === 0" class="center">Nenhum curso encontrado.</p>
+
+<mat-paginator *ngIf="cursos() && cursos()!.totalPages > 1"
+  [length]="cursos()!.totalElements"
+  [pageSize]="10"
+  (page)="onPage($event)">
+</mat-paginator>
