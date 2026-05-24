@@ -1,12 +1,14 @@
 package br.com.lms.domain.usuario;
 
 import br.com.lms.dto.DTOs.*;
+import br.com.lms.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -22,6 +24,21 @@ public class UsuarioController {
 
     @GetMapping("/me")
     public ResponseEntity<UsuarioResponse> me(@AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(UsuarioResponse.from(usuario));
+    }
+
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<UsuarioResponse> atualizarRole(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> body
+    ) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
+        String novaRole = body.get("role");
+        if (novaRole != null && (novaRole.equals("ADMIN") || novaRole.equals("ALUNO"))) {
+            usuario.setRole(Usuario.Role.valueOf(novaRole));
+            usuarioRepository.save(usuario);
+        }
         return ResponseEntity.ok(UsuarioResponse.from(usuario));
     }
 }

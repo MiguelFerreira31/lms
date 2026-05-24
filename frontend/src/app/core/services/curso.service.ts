@@ -52,4 +52,8 @@ export class CursoService {
   criarUsuario(data: { nome: string; email: string; senha: string }) {
     return this.http.post<any>(`${environment.apiUrl}/auth/register`, data);
   }
+
+  atualizarRole(id: number, role: string) {
+    return this.http.patch<any>(`${environment.apiUrl}/usuarios/${id}/role`, { role });
+  }
 }
