@@ -13,6 +13,7 @@ export interface ConteudoAula { id: number; titulo: string; tipo: string; conteu
 export interface Presenca { id: number; matriculaId: number; aulaId: number; presente: boolean; dataAula: string; }
 export interface PresencaResumo { matriculaId: number; presencas: number; totalAulas: number; percentual: number; }
 export interface NotaResponse { matriculaId: number; nota: number; aprovado: boolean; lancadaEm: string; }
+export interface MatriculaDetalhe { id: number; usuarioId: number; usuarioNome: string; usuarioEmail: string; status: string; matriculadoEm: string; nota: number | null; aprovado: boolean | null; notaLancadaEm: string | null; }
 
 @Injectable({ providedIn: 'root' })
 export class CursoService {
@@ -67,8 +68,16 @@ export class CursoService {
     return this.http.post<any>(`${environment.apiUrl}/auth/register`, data);
   }
 
+  atualizarUsuario(id: number, data: { nome: string; email: string; role: string; unidadeId: number | null }) {
+    return this.http.put<any>(`${environment.apiUrl}/usuarios/${id}`, data);
+  }
+
   atualizarRole(id: number, role: string) {
     return this.http.patch<any>(`${environment.apiUrl}/usuarios/${id}/role`, { role });
+  }
+
+  listarMatriculasCurso(cursoId: number) {
+    return this.http.get<MatriculaDetalhe[]>(`${environment.apiUrl}/matriculas/curso/${cursoId}`);
   }
 
   // --- Regiões ---

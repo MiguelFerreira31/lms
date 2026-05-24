@@ -6,25 +6,27 @@
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Gerenciar Usuários</h1>
         <p class="text-gray-500 text-sm mt-1">
-          {{ usuarios().length }} usuário(s) — {{ adminCount() }} admin(s)
+          {{ usuarios().length }} usuário(s) —
+          <span class="text-purple-600 font-medium">{{ adminCount() }} admin</span> ·
+          <span class="text-emerald-600 font-medium">{{ professoresCount() }} professor(es)</span>
         </p>
       </div>
-      <button (click)="abrirForm()"
+      <button (click)="abrirCriar()"
         class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm border-0 cursor-pointer">
         <mat-icon>person_add</mat-icon>
         Novo Usuário
       </button>
     </div>
 
-    <!-- Formulário -->
-    <div *ngIf="mostrarForm()" class="bg-white rounded-2xl shadow-card border border-gray-100 p-6 mb-6">
-      <div class="flex items-center justify-between mb-6">
+    <!-- Formulário criar -->
+    <div *ngIf="mostrarFormCriar()" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+      <div class="flex items-center justify-between mb-5">
         <h2 class="text-lg font-semibold text-gray-900">Novo Usuário</h2>
-        <button (click)="fecharForm()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100">
+        <button (click)="fecharCriar()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100">
           <mat-icon>close</mat-icon>
         </button>
       </div>
-      <form [formGroup]="form" (ngSubmit)="salvar()">
+      <form [formGroup]="formCriar" (ngSubmit)="salvarCriar()">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Nome completo</mat-label>
@@ -42,12 +44,13 @@
             <mat-error>Mínimo 6 caracteres</mat-error>
           </mat-form-field>
         </div>
+        <p class="text-xs text-gray-400 mb-4">O usuário criado terá perfil ALUNO por padrão. Edite após criar para alterar o perfil.</p>
         <div class="flex justify-end gap-3">
-          <button type="button" (click)="fecharForm()"
+          <button type="button" (click)="fecharCriar()"
             class="px-5 py-2.5 rounded-xl text-gray-700 font-medium hover:bg-gray-100 transition-colors border border-gray-200 bg-white cursor-pointer">
             Cancelar
           </button>
-          <button type="submit" [disabled]="salvando() || form.invalid"
+          <button type="submit" [disabled]="salvando() || formCriar.invalid"
             class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 border-0 cursor-pointer">
             <mat-icon class="text-sm">{{ salvando() ? 'hourglass_empty' : 'person_add' }}</mat-icon>
             {{ salvando() ? 'Criando...' : 'Criar Usuário' }}
@@ -61,65 +64,85 @@
       <mat-spinner diameter="48"></mat-spinner>
     </div>
 
-    <!-- Tabela -->
-    <div *ngIf="!loading()" class="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden">
-      <div *ngIf="usuarios().length === 0" class="text-center py-16">
-        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <mat-icon class="text-gray-400 text-3xl">group</mat-icon>
-        </div>
+    <!-- Lista de usuários -->
+    <div *ngIf="!loading()" class="space-y-3">
+      <div *ngIf="usuarios().length === 0" class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+        <mat-icon class="text-gray-300 mb-4" style="font-size: 64px;">group</mat-icon>
         <p class="text-gray-600 font-medium">Nenhum usuário encontrado</p>
       </div>
 
-      <table mat-table [dataSource]="usuarios()" *ngIf="usuarios().length > 0" class="w-full">
+      <div *ngFor="let u of usuarios()"
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-        <ng-container matColumnDef="usuario">
-          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4">Usuário</th>
-          <td mat-cell *matCellDef="let u" class="px-6 py-4">
-            <div class="flex items-center gap-3">
-              <div [class]="getAvatarColor(u.role)"
-                class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                {{ getIniciais(u.nome) }}
-              </div>
-              <div>
-                <p class="font-semibold text-gray-900">{{ u.nome }}</p>
-                <p class="text-xs text-gray-400">ID #{{ u.id }}</p>
-              </div>
+        <!-- Linha do usuário -->
+        <div class="flex items-center gap-4 p-5">
+          <div [class]="getAvatarColor(u.role)"
+            class="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+            {{ getIniciais(u.nome) }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <p class="font-semibold text-gray-900">{{ u.nome }}</p>
+              <span [class]="getRoleClass(u.role)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ u.role }}</span>
             </div>
-          </td>
-        </ng-container>
+            <p class="text-sm text-gray-500 truncate">{{ u.email }}</p>
+            <p *ngIf="u.unidadeNome" class="text-xs text-gray-400 mt-0.5">
+              <mat-icon class="text-xs align-middle">location_on</mat-icon>
+              {{ u.unidadeNome }}
+            </p>
+          </div>
+          <button (click)="editandoId() === u.id ? fecharEditar() : abrirEditar(u)"
+            class="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border transition-colors cursor-pointer"
+            [class]="editandoId() === u.id
+              ? 'bg-gray-100 text-gray-600 border-gray-200'
+              : 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'">
+            <mat-icon class="text-sm">{{ editandoId() === u.id ? 'close' : 'edit' }}</mat-icon>
+            {{ editandoId() === u.id ? 'Fechar' : 'Editar' }}
+          </button>
+        </div>
 
-        <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4">Email</th>
-          <td mat-cell *matCellDef="let u" class="px-6 py-4 text-sm text-gray-600">{{ u.email }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="role">
-          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4">Perfil</th>
-          <td mat-cell *matCellDef="let u" class="px-6 py-4">
-            <span [class]="u.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'"
-              class="px-3 py-1 rounded-full text-xs font-semibold">{{ u.role }}</span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="acoes">
-          <th mat-header-cell *matHeaderCellDef class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 px-6 py-4 text-right">Ações</th>
-          <td mat-cell *matCellDef="let u" class="px-6 py-4 text-right">
-            <button (click)="alternarRole(u)"
-              [disabled]="editandoRole() === u.id"
-              [matTooltip]="u.role === 'ADMIN' ? 'Rebaixar para Aluno' : 'Promover a Admin'"
-              [class]="u.role === 'ADMIN'
-                ? 'border-orange-200 text-orange-600 hover:bg-orange-50'
-                : 'border-purple-200 text-purple-600 hover:bg-purple-50'"
-              class="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors text-sm font-medium border bg-white cursor-pointer disabled:opacity-50">
-              <mat-icon class="text-sm">{{ editandoRole() === u.id ? 'hourglass_empty' : (u.role === 'ADMIN' ? 'arrow_downward' : 'arrow_upward') }}</mat-icon>
-              {{ u.role === 'ADMIN' ? 'Rebaixar' : 'Promover' }}
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="colunas" class="border-b border-gray-100"></tr>
-        <tr mat-row *matRowDef="let row; columns: colunas;" class="border-b border-gray-50 hover:bg-gray-50 transition-colors"></tr>
-      </table>
+        <!-- Formulário de edição inline -->
+        <div *ngIf="editandoId() === u.id" class="border-t border-gray-100 bg-gray-50 p-5">
+          <form [formGroup]="formEditar" (ngSubmit)="salvarEdicao(u.id)">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Nome completo</mat-label>
+                <input matInput formControlName="nome">
+                <mat-error>Nome obrigatório</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email">
+                <mat-error>Email inválido</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Perfil</mat-label>
+                <mat-select formControlName="role">
+                  <mat-option *ngFor="let r of roles" [value]="r">{{ r }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Unidade</mat-label>
+                <mat-select formControlName="unidadeId">
+                  <mat-option [value]="null">Nenhuma</mat-option>
+                  <mat-option *ngFor="let un of unidades()" [value]="un.id">{{ un.nome }} — {{ un.regiaoNome }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="flex justify-end gap-3">
+              <button type="button" (click)="fecharEditar()"
+                class="px-4 py-2 rounded-xl text-gray-700 text-sm font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer">
+                Cancelar
+              </button>
+              <button type="submit" [disabled]="salvando() || formEditar.invalid"
+                class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer">
+                <mat-icon class="text-sm">{{ salvando() ? 'hourglass_empty' : 'save' }}</mat-icon>
+                {{ salvando() ? 'Salvando...' : 'Salvar Alterações' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </div>

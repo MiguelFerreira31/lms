@@ -12,6 +12,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CursoService, Curso, ConteudoAula } from '../../../core/services/curso.service';
+import { AuthService } from '../../../core/services/auth.service';
+
+interface CursoDetalhe {
+  id: number; titulo: string; descricao: string; nivel: string; criadoEm: string;
+  modulos: { id: number; titulo: string; ordem: number; aulas: { id: number; titulo: string; urlVideo: string; duracaoMin: number; ordem: number }[] }[];
+}
 
 @Component({
   selector: 'app-professor-cursos',
@@ -24,13 +30,18 @@ import { CursoService, Curso, ConteudoAula } from '../../../core/services/curso.
 })
 export class ProfessorCursosComponent implements OnInit {
   private svc = inject(CursoService);
+  private auth = inject(AuthService);
   private fb = inject(FormBuilder);
   private snack = inject(MatSnackBar);
 
   cursos = signal<Curso[]>([]);
+  cursoDetalhe = signal<Record<number, CursoDetalhe>>({});
   conteudosPorAula = signal<Record<number, ConteudoAula[]>>({});
   loading = signal(true);
+  loadingDetalhe = signal<number | null>(null);
   salvando = signal(false);
+  cursoAberto = signal<number | null>(null);
+  aulaAberta = signal<number | null>(null);
   mostrarFormConteudo = signal<number | null>(null);
   tiposConteudo = ['VIDEO', 'PDF', 'TEXTO', 'LINK'];
 
@@ -41,20 +52,71 @@ export class ProfessorCursosComponent implements OnInit {
     ordem: [0]
   });
 
+  get isAdmin(): boolean { return this.auth.isAdmin(); }
+
   ngOnInit() { this.carregar(); }
 
   carregar() {
     this.loading.set(true);
-    this.svc.meusCursosProfessor().subscribe({
-      next: data => { this.cursos.set(data); this.loading.set(false); },
-      error: () => this.loading.set(false)
+    const obs = this.isAdmin
+      ? this.svc.listarCursos(0).pipe()
+      : this.svc.meusCursosProfessor();
+
+    if (this.isAdmin) {
+      this.svc.listarCursos(0).subscribe({
+        next: page => { this.cursos.set(page.content); this.loading.set(false); },
+        error: () => this.loading.set(false)
+      });
+    } else {
+      this.svc.meusCursosProfessor().subscribe({
+        next: data => { this.cursos.set(data); this.loading.set(false); },
+        error: () => this.loading.set(false)
+      });
+    }
+  }
+
+  abrirCurso(cursoId: number) {
+    if (this.cursoAberto() === cursoId) {
+      this.cursoAberto.set(null);
+      return;
+    }
+    this.cursoAberto.set(cursoId);
+    this.aulaAberta.set(null);
+    if (!this.cursoDetalhe()[cursoId]) {
+      this.carregarDetalhe(cursoId);
+    }
+  }
+
+  carregarDetalhe(cursoId: number) {
+    this.loadingDetalhe.set(cursoId);
+    this.svc.buscarCurso(cursoId).subscribe({
+      next: (data: any) => {
+        this.cursoDetalhe.update(m => ({ ...m, [cursoId]: data }));
+        this.loadingDetalhe.set(null);
+      },
+      error: () => this.loadingDetalhe.set(null)
     });
+  }
+
+  abrirAula(aulaId: number) {
+    if (this.aulaAberta() === aulaId) {
+      this.aulaAberta.set(null);
+      this.mostrarFormConteudo.set(null);
+      return;
+    }
+    this.aulaAberta.set(aulaId);
+    this.mostrarFormConteudo.set(null);
+    this.carregarConteudos(aulaId);
   }
 
   carregarConteudos(aulaId: number) {
     this.svc.listarConteudos(aulaId).subscribe({
       next: data => this.conteudosPorAula.update(m => ({ ...m, [aulaId]: data }))
     });
+  }
+
+  getDetalhe(cursoId: number): CursoDetalhe | null {
+    return this.cursoDetalhe()[cursoId] || null;
   }
 
   getConteudos(aulaId: number): ConteudoAula[] {
@@ -101,27 +163,30 @@ export class ProfessorCursosComponent implements OnInit {
         this.snack.open('Conteúdo excluído!', 'OK', { duration: 3000 });
         this.carregarConteudos(aulaId);
       },
-      error: () => this.snack.open('Erro ao excluir conteúdo', 'Fechar', { duration: 3000 })
+      error: () => this.snack.open('Erro ao excluir', 'Fechar', { duration: 3000 })
     });
   }
 
   getTipoIcon(tipo: string): string {
     const icons: Record<string, string> = {
-      VIDEO: 'play_circle', PDF: 'picture_as_pdf',
-      TEXTO: 'article', LINK: 'link'
+      VIDEO: 'play_circle', PDF: 'picture_as_pdf', TEXTO: 'article', LINK: 'link'
     };
     return icons[tipo] || 'description';
   }
 
   getTipoColor(tipo: string): string {
     const colors: Record<string, string> = {
-      VIDEO: 'text-red-500', PDF: 'text-orange-500',
-      TEXTO: 'text-blue-500', LINK: 'text-green-500'
+      VIDEO: 'text-red-500', PDF: 'text-orange-500', TEXTO: 'text-blue-500', LINK: 'text-green-500'
     };
     return colors[tipo] || 'text-gray-500';
   }
 
-  getLoadedAulaIds(): number[] {
-    return Object.keys(this.conteudosPorAula()).map(Number);
+  getNivelClass(nivel: string): string {
+    const map: Record<string, string> = {
+      BASICO: 'bg-green-100 text-green-800',
+      INTERMEDIARIO: 'bg-yellow-100 text-yellow-800',
+      AVANCADO: 'bg-red-100 text-red-800'
+    };
+    return map[nivel] || 'bg-gray-100 text-gray-800';
   }
 }

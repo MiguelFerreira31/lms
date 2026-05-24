@@ -1,14 +1,16 @@
 package br.com.lms.domain.usuario;
 
+import br.com.lms.domain.regiao.Unidade;
+import br.com.lms.domain.regiao.UnidadeRepository;
 import br.com.lms.dto.DTOs.*;
 import br.com.lms.exception.ResourceNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -16,6 +18,7 @@ import java.util.Map;
 public class UsuarioController {
 
     private final UsuarioRepository usuarioRepository;
+    private final UnidadeRepository unidadeRepository;
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> listar() {
@@ -27,10 +30,33 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioResponse.from(usuario));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioResponse> atualizar(
+        @PathVariable Long id,
+        @Valid @RequestBody UsuarioUpdateRequest request
+    ) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
+
+        usuario.setNome(request.nome());
+        usuario.setEmail(request.email());
+        usuario.setRole(request.role());
+
+        if (request.unidadeId() != null) {
+            Unidade unidade = unidadeRepository.findById(request.unidadeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Unidade", request.unidadeId()));
+            usuario.setUnidade(unidade);
+        } else {
+            usuario.setUnidade(null);
+        }
+
+        return ResponseEntity.ok(UsuarioResponse.from(usuarioRepository.save(usuario)));
+    }
+
     @PatchMapping("/{id}/role")
     public ResponseEntity<UsuarioResponse> atualizarRole(
         @PathVariable Long id,
-        @RequestBody Map<String, String> body
+        @RequestBody java.util.Map<String, String> body
     ) {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
