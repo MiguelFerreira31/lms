@@ -1,6 +1,6 @@
-# LMS Lite — Monorepo
+# LMS — Sistema de Gestão de Aprendizado
 
-Sistema de gestão de cursos educacionais fullstack. Projeto de portfólio desenvolvido com Spring Boot no backend e Angular no frontend.
+Sistema de gestão de cursos educacionais fullstack, inspirado na plataforma de educação profissional do **Senac**. Projeto de portfólio desenvolvido com Spring Boot no backend e Angular no frontend.
 
 ---
 
@@ -13,20 +13,19 @@ Sistema de gestão de cursos educacionais fullstack. Projeto de portfólio desen
 5. [Frontend](#5-frontend)
 6. [Segurança e Autenticação](#6-segurança-e-autenticação)
 7. [Como Rodar Localmente](#7-como-rodar-localmente)
-8. [Repositórios GitHub](#8-repositórios-github)
 
 ---
 
 ## 1. Visão Geral
 
-O LMS Lite permite que alunos naveguem em catálogos de cursos, se matriculem e acompanhem seu progresso por aula. Administradores gerenciam o catálogo de cursos e visualizam usuários cadastrados.
+O LMS permite que alunos naveguem em catálogos de cursos, se matriculem e acompanhem seu progresso por aula. Administradores gerenciam o catálogo de cursos, visualizam usuários cadastrados e alteram perfis de acesso.
 
 ### Papéis de usuário
 
 | Role | Permissões |
 |------|-----------|
 | `ALUNO` | Login, listar cursos, se matricular, marcar aulas como concluídas, ver próprio progresso |
-| `ADMIN` | Tudo do ALUNO + criar/editar/desativar cursos, listar todos os usuários |
+| `ADMIN` | Tudo do ALUNO + criar/editar/desativar cursos, listar todos os usuários, promover/rebaixar perfis |
 
 ---
 
@@ -59,7 +58,7 @@ lms/
         │   ├── matriculas/   minhas-matriculas
         │   └── admin/        admin-cursos, admin-usuarios
         └── shared/
-            └── navbar/       NavbarComponent
+            └── navbar/       NavbarComponent (sidebar + top bar)
 ```
 
 ---
@@ -151,7 +150,7 @@ usuarios ──< matriculas >── cursos ──< modulos ──< aulas
 | POST | `/api/auth/login` | `{"email","senha"}` | `{token, tipo, nome, email, role}` |
 | POST | `/api/auth/register` | `{"nome","email","senha"}` | `{id, nome, email, role}` |
 
-> Novos registros recebem `role = ALUNO` automaticamente. Promoção para ADMIN é feita diretamente no banco.
+> Novos registros recebem `role = ALUNO` automaticamente.
 
 #### Cursos — `/api/cursos`
 
@@ -178,12 +177,13 @@ usuarios ──< matriculas >── cursos ──< modulos ──< aulas
 |--------|----------|--------|-----------|
 | GET | `/api/usuarios` | ADMIN | Lista todos os usuários |
 | GET | `/api/usuarios/me` | Autenticado | Perfil atual (sempre do banco, não do token) |
+| PATCH | `/api/usuarios/{id}/role` | ADMIN | Promover/rebaixar usuário `{"role":"ADMIN"\|"ALUNO"}` |
 
 ---
 
 ## 5. Frontend
 
-**Stack:** Angular 18 · Standalone Components · Signals · Angular Material 18 (tema indigo-pink) · TypeScript
+**Stack:** Angular 18 · Standalone Components · Signals · Angular Material 18 (tema indigo-pink) · Tailwind CSS · TypeScript
 
 ### Rotas
 
@@ -200,6 +200,10 @@ usuarios ──< matriculas >── cursos ──< modulos ──< aulas
 | `/**` | → redirect `/dashboard` | — |
 
 > Todos os componentes são **lazy-loaded** via `loadComponent`.
+
+### Layout
+
+A interface usa um layout fixo com **top bar** (h-16) + **sidebar colapsável** (w-64) que desaparece em mobile com overlay. O conteúdo principal tem offset `pt-16 lg:pl-64`.
 
 ### AuthService
 
@@ -231,16 +235,17 @@ usuarios ──< matriculas >── cursos ──< modulos ──< aulas
 6. Frontend: refreshUser() no constructor sincroniza o signal com a role do banco
 ```
 
-> **Detalhe crítico:** As roles **não estão no token JWT**. O `JwtAuthFilter` recarrega o usuário do banco a cada request — alterações de role têm efeito imediato no backend. O `refreshUser()` garante sincronia no frontend.
+> **Detalhe importante:** As roles **não estão no token JWT**. O `JwtAuthFilter` recarrega o usuário do banco a cada request — alterações de role têm efeito imediato no backend. O `refreshUser()` garante sincronia no frontend.
 
 ### Autorização (`SecurityConfig`)
 
 ```
-/api/auth/**                    → público
-GET /api/cursos, /api/cursos/** → público
-POST/PUT/DELETE /api/cursos/**  → ROLE_ADMIN
-GET /api/usuarios               → ROLE_ADMIN
-demais                          → autenticado
+/api/auth/**                      → público
+GET /api/cursos, /api/cursos/**   → público
+POST/PUT/DELETE /api/cursos/**    → ROLE_ADMIN
+GET /api/usuarios                 → ROLE_ADMIN
+PATCH /api/usuarios/**            → ROLE_ADMIN
+demais                            → autenticado
 ```
 
 ### Segurança adicional
@@ -276,10 +281,9 @@ cd backend
 # API disponível em http://localhost:8080
 ```
 
-No Windows com JDK do IntelliJ:
+No Windows:
 
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\JetBrains\IntelliJ IDEA 2026.1.2\jbr"
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
@@ -293,27 +297,9 @@ ng serve
 # App disponível em http://localhost:4200
 ```
 
-### Usuário de teste
-
-| Campo | Valor |
-|-------|-------|
-| Email | `miguel@lms.com` |
-| Senha | `123456` |
-| Role  | `ADMIN` |
-
-Para promover um usuário a ADMIN:
+### Promover usuário a ADMIN
 
 ```bash
 docker exec lms-postgres psql -U lms -d lmsdb \
   -c "UPDATE usuarios SET role='ADMIN' WHERE email='usuario@exemplo.com';"
 ```
-
----
-
-## 8. Repositórios GitHub
-
-| Parte | URL |
-|-------|-----|
-| **Monorepo** (backend + frontend) | https://github.com/MiguelFerreira31/lms |
-| Backend standalone | https://github.com/MiguelFerreira31/lms-backend |
-| Frontend standalone | https://github.com/MiguelFerreira31/lms-frontend |
