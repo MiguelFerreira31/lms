@@ -13,6 +13,7 @@ Sistema de gestão de cursos educacionais fullstack, inspirado na plataforma de 
 5. [Frontend](#5-frontend)
 6. [Segurança e Autenticação](#6-segurança-e-autenticação)
 7. [Como Rodar Localmente](#7-como-rodar-localmente)
+8. [Roadmap](#8-roadmap)
 
 ---
 
@@ -303,3 +304,20 @@ ng serve
 docker exec lms-postgres psql -U lms -d lmsdb \
   -c "UPDATE usuarios SET role='ADMIN' WHERE email='usuario@exemplo.com';"
 ```
+
+---
+
+## 8. Roadmap
+
+O LMS está em desenvolvimento ativo. Os próximos passos planejados são:
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Regiões e Unidades | Estrutura geográfica hierárquica para multi-tenant | Planejado |
+| Role Professor | Novo perfil com permissões intermediárias | Planejado |
+| Conteúdo das Aulas | Professor adiciona vídeos, PDFs e textos nas aulas | Planejado |
+| Presença | Professor registra presença dos alunos por aula | Planejado |
+| Nota Final | Professor lança nota e sistema calcula aprovação | Planejado |
+| Dashboard v2 | Admin e aluno com gráficos, presença e notas | Planejado |
+
+Consulte [ROADMAP.md](./ROADMAP.md) para detalhes técnicos completos de cada feature.
