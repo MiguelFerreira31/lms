@@ -90,4 +90,31 @@ export class AdminCursosComponent implements OnInit {
     };
     return map[nivel] || 'bg-gray-100 text-gray-800';
   }
+
+  getNivelBgIcon(nivel: string): string {
+    const map: Record<string, string> = {
+      'BASICO': 'bg-green-100',
+      'INTERMEDIARIO': 'bg-yellow-100',
+      'AVANCADO': 'bg-red-100'
+    };
+    return map[nivel] || 'bg-gray-100';
+  }
+
+  getNivelIconColor(nivel: string): string {
+    const map: Record<string, string> = {
+      'BASICO': 'text-green-600',
+      'INTERMEDIARIO': 'text-yellow-600',
+      'AVANCADO': 'text-red-600'
+    };
+    return map[nivel] || 'text-gray-600';
+  }
+
+  getNivelDot(nivel: string): string {
+    const map: Record<string, string> = {
+      'BASICO': 'bg-green-400',
+      'INTERMEDIARIO': 'bg-yellow-400',
+      'AVANCADO': 'bg-red-400'
+    };
+    return map[nivel] || 'bg-gray-400';
+  }
 }

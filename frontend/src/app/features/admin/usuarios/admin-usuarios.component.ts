@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -7,15 +7,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CursoService } from '../../../core/services/curso.service';
 
 @Component({
   selector: 'app-admin-usuarios',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSnackBarModule, MatCardModule, MatProgressSpinnerModule, MatChipsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule,
+    MatFormFieldModule, MatInputModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './admin-usuarios.component.html',
   styleUrls: ['./admin-usuarios.component.scss']
 })
@@ -27,8 +27,10 @@ export class AdminUsuariosComponent implements OnInit {
   usuarios = signal<any[]>([]);
   loading = signal(true);
   salvando = signal(false);
+  editandoRole = signal<number | null>(null);
   mostrarForm = signal(false);
-  colunas = ['nome', 'email', 'role'];
+  colunas = ['usuario', 'email', 'role', 'acoes'];
+  adminCount = computed(() => this.usuarios().filter(u => u.role === 'ADMIN').length);
 
   form = this.fb.group({
     nome: ['', Validators.required],
@@ -64,5 +66,29 @@ export class AdminUsuariosComponent implements OnInit {
         this.salvando.set(false);
       }
     });
+  }
+
+  alternarRole(usuario: any) {
+    const novaRole = usuario.role === 'ADMIN' ? 'ALUNO' : 'ADMIN';
+    this.editandoRole.set(usuario.id);
+    this.cursoService.atualizarRole(usuario.id, novaRole).subscribe({
+      next: () => {
+        this.snack.open(`Perfil alterado para ${novaRole}!`, 'OK', { duration: 3000 });
+        this.editandoRole.set(null);
+        this.carregar();
+      },
+      error: () => {
+        this.snack.open('Erro ao alterar perfil', 'Fechar', { duration: 3000 });
+        this.editandoRole.set(null);
+      }
+    });
+  }
+
+  getIniciais(nome: string): string {
+    return nome.split(' ').slice(0, 2).map((n: string) => n[0]).join('').toUpperCase();
+  }
+
+  getAvatarColor(role: string): string {
+    return role === 'ADMIN' ? 'bg-purple-600' : 'bg-indigo-600';
   }
 }
