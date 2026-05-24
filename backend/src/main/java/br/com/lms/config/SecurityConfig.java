@@ -49,7 +49,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/cursos/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/cursos/**").hasRole("ADMIN")
                 // Usuários
-                .requestMatchers("/api/usuarios").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/usuarios/**").hasRole("ADMIN")
                 // Regiões e Unidades
                 .requestMatchers(HttpMethod.GET, "/api/regioes", "/api/regioes/**").authenticated()
@@ -69,6 +70,8 @@ public class SecurityConfig {
                 // Presença
                 .requestMatchers(HttpMethod.POST, "/api/presenca").hasAnyRole("ADMIN", "PROFESSOR")
                 .requestMatchers(HttpMethod.GET, "/api/presenca/**").authenticated()
+                // Matrículas — listagem por curso para admin/professor
+                .requestMatchers(HttpMethod.GET, "/api/matriculas/curso/**").hasAnyRole("ADMIN", "PROFESSOR")
                 // Nota
                 .requestMatchers(HttpMethod.PATCH, "/api/matriculas/*/nota").hasAnyRole("ADMIN", "PROFESSOR")
                 .anyRequest().authenticated()

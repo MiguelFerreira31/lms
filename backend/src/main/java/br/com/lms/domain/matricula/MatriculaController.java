@@ -70,6 +70,12 @@ public class MatriculaController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/curso/{cursoId}")
+    public ResponseEntity<List<MatriculaDetalheResponse>> porCurso(@PathVariable Long cursoId) {
+        return ResponseEntity.ok(matriculaRepository.findByCursoId(cursoId)
+            .stream().map(MatriculaDetalheResponse::from).toList());
+    }
+
     @PatchMapping("/{id}/nota")
     public ResponseEntity<NotaResponse> lancarNota(@PathVariable Long id,
                                                      @Valid @RequestBody NotaRequest request,

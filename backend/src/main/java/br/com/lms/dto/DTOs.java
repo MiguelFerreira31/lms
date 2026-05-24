@@ -143,4 +143,28 @@ public class DTOs {
         Long matriculaId, BigDecimal nota,
         boolean aprovado, LocalDateTime lancadaEm
     ) {}
+
+    // Edição completa de usuário
+    public record UsuarioUpdateRequest(
+        @NotBlank String nome,
+        @NotBlank @Email String email,
+        @NotNull Usuario.Role role,
+        Long unidadeId
+    ) {}
+
+    // Matrícula com dados do aluno (para admin/professor)
+    public record MatriculaDetalheResponse(
+        Long id, Long usuarioId, String usuarioNome, String usuarioEmail,
+        Matricula.Status status, LocalDateTime matriculadoEm,
+        BigDecimal nota, Boolean aprovado, LocalDateTime notaLancadaEm
+    ) {
+        public static MatriculaDetalheResponse from(Matricula m) {
+            return new MatriculaDetalheResponse(
+                m.getId(), m.getUsuario().getId(),
+                m.getUsuario().getNome(), m.getUsuario().getEmail(),
+                m.getStatus(), m.getMatriculadoEm(),
+                m.getNota(), m.getAprovado(), m.getNotaLancadaEm()
+            );
+        }
+    }
 }

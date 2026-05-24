@@ -112,7 +112,7 @@ import { AuthService } from '../../core/services/auth.service';
              (click)="sidebarOpen.set(false)"
              class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
             <mat-icon class="flex-shrink-0">cast_for_education</mat-icon>
-            Meus Cursos (Prof.)
+            Conteúdo das Aulas
           </a>
         </div>
       </nav>

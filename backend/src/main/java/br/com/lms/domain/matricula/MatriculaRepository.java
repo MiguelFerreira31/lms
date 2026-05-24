@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
     List<Matricula> findByUsuarioId(Long usuarioId);
+    List<Matricula> findByCursoId(Long cursoId);
     Optional<Matricula> findByUsuarioIdAndCursoId(Long usuarioId, Long cursoId);
     boolean existsByUsuarioIdAndCursoId(Long usuarioId, Long cursoId);
 

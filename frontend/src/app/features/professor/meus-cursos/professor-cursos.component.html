@@ -1,9 +1,14 @@
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
+    <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-gray-900">Meus Cursos</h1>
-      <p class="text-gray-500 text-sm mt-1">Gerencie o conteúdo dos seus cursos</p>
+      <h1 class="text-2xl font-bold text-gray-900">
+        {{ isAdmin ? 'Conteúdo das Aulas' : 'Meus Cursos' }}
+      </h1>
+      <p class="text-gray-500 text-sm mt-1">
+        {{ isAdmin ? 'Gerencie o conteúdo de todos os cursos' : 'Gerencie o conteúdo dos seus cursos' }}
+      </p>
     </div>
 
     <!-- Loading -->
@@ -15,131 +20,172 @@
     <div *ngIf="!loading() && cursos().length === 0"
       class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
       <mat-icon class="text-gray-300 mb-4" style="font-size: 64px;">cast_for_education</mat-icon>
-      <p class="text-gray-500 font-medium">Você ainda não está vinculado a nenhum curso.</p>
-      <p class="text-gray-400 text-sm mt-1">Solicite ao administrador para vincular você a um curso.</p>
+      <p class="text-gray-500 font-medium">Nenhum curso disponível.</p>
+      <p *ngIf="!isAdmin" class="text-gray-400 text-sm mt-1">
+        Solicite ao administrador para vincular você a um curso.
+      </p>
     </div>
 
     <!-- Lista de cursos -->
-    <div *ngIf="!loading() && cursos().length > 0" class="space-y-6">
+    <div *ngIf="!loading() && cursos().length > 0" class="space-y-4">
       <div *ngFor="let curso of cursos()"
         class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-        <!-- Cabeçalho do curso -->
-        <div class="p-6 border-b border-gray-50">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <mat-icon class="text-indigo-600">menu_book</mat-icon>
-            </div>
-            <div class="flex-1">
-              <h2 class="text-lg font-semibold text-gray-900">{{ curso.titulo }}</h2>
-              <p class="text-sm text-gray-500 mt-1">{{ curso.descricao }}</p>
-              <span class="inline-block mt-2 px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full">
-                {{ curso.nivel }}
-              </span>
-            </div>
-            <a [routerLink]="['/cursos', curso.id]"
-              class="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-medium no-underline">
-              <mat-icon class="text-sm">open_in_new</mat-icon>
-              Ver curso
-            </a>
+        <!-- Cabeçalho do curso (clicável) -->
+        <div class="flex items-center gap-4 p-5 cursor-pointer hover:bg-gray-50 transition-colors"
+          (click)="abrirCurso(curso.id)">
+          <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <mat-icon class="text-indigo-600">menu_book</mat-icon>
           </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="font-semibold text-gray-900">{{ curso.titulo }}</h2>
+              <span [class]="getNivelClass(curso.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ curso.nivel }}</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-0.5 truncate">{{ curso.descricao }}</p>
+          </div>
+          <mat-icon class="text-gray-400 transition-transform flex-shrink-0"
+            [class.rotate-180]="cursoAberto() === curso.id">expand_more</mat-icon>
         </div>
 
-        <!-- Nota: conteúdo por aula requer detalhes do curso com módulos/aulas -->
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Adicionar Conteúdo</h3>
+        <!-- Painel expandido do curso -->
+        <div *ngIf="cursoAberto() === curso.id" class="border-t border-gray-100">
+
+          <!-- Loading detalhe -->
+          <div *ngIf="loadingDetalhe() === curso.id" class="flex justify-center py-8">
+            <mat-spinner diameter="32"></mat-spinner>
           </div>
 
-          <p class="text-sm text-gray-500 mb-4">
-            Para adicionar conteúdo a uma aula específica, informe o ID da aula abaixo.
-          </p>
+          <!-- Sem módulos -->
+          <div *ngIf="loadingDetalhe() !== curso.id && getDetalhe(curso.id) && getDetalhe(curso.id)!.modulos.length === 0"
+            class="bg-gray-50 p-8 text-center">
+            <mat-icon class="text-gray-300 mb-2" style="font-size: 40px;">layers</mat-icon>
+            <p class="text-gray-400 text-sm">Este curso ainda não tem módulos cadastrados.</p>
+            <p class="text-gray-300 text-xs mt-1">Módulos e aulas são criados no banco de dados pelo administrador do sistema.</p>
+          </div>
 
-          <!-- Quick-add por ID de aula -->
-          <div class="bg-gray-50 rounded-xl p-4">
-            <div class="flex gap-3 items-end mb-3">
-              <mat-form-field appearance="outline" class="w-40">
-                <mat-label>ID da Aula</mat-label>
-                <input matInput type="number" #aulaIdInput placeholder="Ex: 3">
-              </mat-form-field>
-              <button (click)="abrirFormConteudo(+aulaIdInput.value); aulaIdInput.value = ''"
-                [disabled]="!aulaIdInput.value"
-                class="flex items-center gap-1 bg-emerald-600 text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 border-0 cursor-pointer mb-5">
-                <mat-icon class="text-sm">add</mat-icon>
-                Adicionar Conteúdo
-              </button>
-              <button (click)="carregarConteudos(+aulaIdInput.value)"
-                [disabled]="!aulaIdInput.value"
-                class="flex items-center gap-1 bg-gray-200 text-gray-700 px-4 py-3 rounded-xl text-sm font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 border-0 cursor-pointer mb-5">
-                <mat-icon class="text-sm">refresh</mat-icon>
-                Carregar
-              </button>
-            </div>
+          <!-- Módulos e Aulas -->
+          <div *ngIf="loadingDetalhe() !== curso.id && getDetalhe(curso.id) as detalhe">
+            <div *ngFor="let modulo of detalhe.modulos" class="border-b border-gray-50 last:border-0">
 
-            <!-- Form conteúdo -->
-            <div *ngIf="mostrarFormConteudo() !== null" class="bg-white rounded-xl border border-gray-200 p-4 mb-3">
-              <div class="flex items-center justify-between mb-3">
-                <h4 class="text-sm font-semibold text-gray-900">Novo Conteúdo — Aula #{{ mostrarFormConteudo() }}</h4>
-                <button (click)="fecharFormConteudo()"
-                  class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded">
-                  <mat-icon class="text-sm">close</mat-icon>
-                </button>
+              <!-- Cabeçalho do módulo -->
+              <div class="flex items-center gap-3 px-5 py-3 bg-gray-50">
+                <div class="w-6 h-6 bg-indigo-200 rounded-lg flex items-center justify-center">
+                  <span class="text-indigo-700 text-xs font-bold">{{ modulo.ordem }}</span>
+                </div>
+                <p class="font-semibold text-gray-700 text-sm">{{ modulo.titulo }}</p>
+                <span class="text-xs text-gray-400">({{ modulo.aulas.length }} aula(s))</span>
               </div>
-              <form [formGroup]="formConteudo" (ngSubmit)="salvarConteudo(mostrarFormConteudo()!)">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Título</mat-label>
-                    <input matInput formControlName="titulo" placeholder="Ex: Introdução ao tema">
-                    <mat-error>Título obrigatório</mat-error>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Tipo</mat-label>
-                    <mat-select formControlName="tipo">
-                      <mat-option *ngFor="let tipo of tiposConteudo" [value]="tipo">{{ tipo }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="md:col-span-2">
-                    <mat-label>Conteúdo (URL ou texto)</mat-label>
-                    <textarea matInput formControlName="conteudo" rows="3"
-                      placeholder="URL do vídeo, link do PDF, ou texto do conteúdo"></textarea>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Ordem</mat-label>
-                    <input matInput type="number" formControlName="ordem">
-                  </mat-form-field>
-                </div>
-                <div class="flex justify-end gap-2">
-                  <button type="button" (click)="fecharFormConteudo()"
-                    class="px-4 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer">
-                    Cancelar
-                  </button>
-                  <button type="submit" [disabled]="salvando() || formConteudo.invalid"
-                    class="flex items-center gap-1 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 border-0 cursor-pointer">
-                    <mat-icon class="text-sm">save</mat-icon>
-                    {{ salvando() ? 'Salvando...' : 'Salvar' }}
-                  </button>
-                </div>
-              </form>
-            </div>
 
-            <!-- Conteúdos carregados -->
-            <ng-container *ngFor="let item of [] | keyvalue"><!-- intentionally empty --></ng-container>
-            <div *ngFor="let aulaId of getLoadedAulaIds()"
-              class="mb-3">
-              <p class="text-xs font-semibold text-gray-500 mb-2">Aula #{{ aulaId }}</p>
-              <div *ngFor="let c of getConteudos(aulaId)"
-                class="bg-white rounded-lg border border-gray-100 p-3 mb-1 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <mat-icon [class]="getTipoColor(c.tipo)" class="text-sm">{{ getTipoIcon(c.tipo) }}</mat-icon>
-                  <div>
-                    <p class="text-sm font-medium text-gray-800">{{ c.titulo }}</p>
-                    <p class="text-xs text-gray-400">{{ c.tipo }} — ordem {{ c.ordem }}</p>
+              <!-- Aulas do módulo -->
+              <div *ngFor="let aula of modulo.aulas"
+                class="border-t border-gray-50">
+
+                <!-- Linha da aula -->
+                <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                  (click)="abrirAula(aula.id)">
+                  <div class="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
+                    <span class="text-gray-500 text-xs">{{ aula.ordem }}</span>
                   </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">{{ aula.titulo }}</p>
+                    <p class="text-xs text-gray-400">{{ aula.duracaoMin }} min
+                      <span *ngIf="getConteudos(aula.id).length > 0" class="ml-2 text-indigo-500">
+                        · {{ getConteudos(aula.id).length }} conteúdo(s)
+                      </span>
+                    </p>
+                  </div>
+                  <mat-icon class="text-gray-400 text-sm transition-transform"
+                    [class.rotate-180]="aulaAberta() === aula.id">expand_more</mat-icon>
                 </div>
-                <button (click)="deletarConteudo(aulaId, c.id)" matTooltip="Excluir"
-                  class="p-1 rounded text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer">
-                  <mat-icon class="text-sm">delete</mat-icon>
-                </button>
+
+                <!-- Painel de conteúdo da aula -->
+                <div *ngIf="aulaAberta() === aula.id" class="bg-indigo-50 px-6 py-4">
+
+                  <!-- Conteúdos existentes -->
+                  <div *ngFor="let c of getConteudos(aula.id)"
+                    class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <mat-icon [class]="getTipoColor(c.tipo)" class="text-sm">{{ getTipoIcon(c.tipo) }}</mat-icon>
+                      <div>
+                        <p class="text-sm font-medium text-gray-800">{{ c.titulo }}</p>
+                        <p class="text-xs text-gray-400">{{ c.tipo }} · ordem {{ c.ordem }}</p>
+                        <a *ngIf="c.conteudo && (c.tipo === 'VIDEO' || c.tipo === 'LINK')"
+                          [href]="c.conteudo" target="_blank"
+                          class="text-xs text-indigo-500 hover:text-indigo-700 truncate block max-w-xs">
+                          {{ c.conteudo }}
+                        </a>
+                        <p *ngIf="c.conteudo && c.tipo === 'TEXTO'"
+                          class="text-xs text-gray-500 line-clamp-2">{{ c.conteudo }}</p>
+                      </div>
+                    </div>
+                    <button (click)="deletarConteudo(aula.id, c.id)" matTooltip="Excluir conteúdo"
+                      class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer flex-shrink-0">
+                      <mat-icon class="text-sm">delete</mat-icon>
+                    </button>
+                  </div>
+
+                  <!-- Sem conteúdo -->
+                  <div *ngIf="getConteudos(aula.id).length === 0 && mostrarFormConteudo() !== aula.id"
+                    class="text-center py-3 text-sm text-gray-400">
+                    Nenhum conteúdo nesta aula ainda.
+                  </div>
+
+                  <!-- Form novo conteúdo -->
+                  <div *ngIf="mostrarFormConteudo() === aula.id"
+                    class="bg-white rounded-xl border border-indigo-200 p-4 mb-3">
+                    <div class="flex items-center justify-between mb-3">
+                      <h4 class="text-sm font-semibold text-gray-900">Novo Conteúdo</h4>
+                      <button (click)="fecharFormConteudo()"
+                        class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded">
+                        <mat-icon class="text-sm">close</mat-icon>
+                      </button>
+                    </div>
+                    <form [formGroup]="formConteudo" (ngSubmit)="salvarConteudo(aula.id)">
+                      <div class="grid grid-cols-2 gap-3 mb-3">
+                        <mat-form-field appearance="outline" class="w-full">
+                          <mat-label>Título</mat-label>
+                          <input matInput formControlName="titulo" placeholder="Ex: Introdução">
+                          <mat-error>Título obrigatório</mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full">
+                          <mat-label>Tipo</mat-label>
+                          <mat-select formControlName="tipo">
+                            <mat-option *ngFor="let tipo of tiposConteudo" [value]="tipo">{{ tipo }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="col-span-2 w-full">
+                          <mat-label>Conteúdo (URL ou texto)</mat-label>
+                          <textarea matInput formControlName="conteudo" rows="2"
+                            placeholder="URL do vídeo, link, ou texto"></textarea>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full">
+                          <mat-label>Ordem</mat-label>
+                          <input matInput type="number" formControlName="ordem">
+                        </mat-form-field>
+                      </div>
+                      <div class="flex justify-end gap-2">
+                        <button type="button" (click)="fecharFormConteudo()"
+                          class="px-4 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer">
+                          Cancelar
+                        </button>
+                        <button type="submit" [disabled]="salvando() || formConteudo.invalid"
+                          class="flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer">
+                          <mat-icon class="text-sm">save</mat-icon>
+                          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- Botão adicionar conteúdo -->
+                  <button *ngIf="mostrarFormConteudo() !== aula.id"
+                    (click)="abrirFormConteudo(aula.id)"
+                    class="flex items-center gap-1 text-sm bg-indigo-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors border-0 cursor-pointer mt-2">
+                    <mat-icon class="text-sm">add</mat-icon>
+                    Adicionar Conteúdo
+                  </button>
+                </div>
               </div>
             </div>
           </div>

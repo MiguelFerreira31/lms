@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,17 +9,21 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CursoService, Curso } from '../../../core/services/curso.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
+import { CursoService, Curso, MatriculaDetalhe } from '../../../core/services/curso.service';
 
 @Component({
   selector: 'app-admin-cursos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSnackBarModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
+    MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSnackBarModule,
+    MatProgressSpinnerModule, MatTooltipModule, MatTabsModule],
   templateUrl: './admin-cursos.component.html',
   styleUrls: ['./admin-cursos.component.scss']
 })
 export class AdminCursosComponent implements OnInit {
-  private cursoService = inject(CursoService);
+  private svc = inject(CursoService);
   private fb = inject(FormBuilder);
   private snack = inject(MatSnackBar);
 
@@ -28,6 +32,11 @@ export class AdminCursosComponent implements OnInit {
   salvando = signal(false);
   editando = signal<Curso | null>(null);
   mostrarForm = signal(false);
+  cursoExpandido = signal<number | null>(null);
+  matriculasCurso = signal<Record<number, MatriculaDetalhe[]>>({});
+  loadingAlunos = signal<number | null>(null);
+  notasEditando = signal<Record<number, string>>({});
+  salvandoNota = signal<number | null>(null);
   niveis = ['BASICO', 'INTERMEDIARIO', 'AVANCADO'];
   colunas = ['titulo', 'nivel', 'criado', 'acoes'];
 
@@ -41,7 +50,7 @@ export class AdminCursosComponent implements OnInit {
 
   carregar() {
     this.loading.set(true);
-    this.cursoService.listarCursos(0).subscribe({
+    this.svc.listarCursos(0).subscribe({
       next: page => { this.cursos.set(page.content); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
@@ -51,6 +60,7 @@ export class AdminCursosComponent implements OnInit {
     this.editando.set(curso || null);
     this.form.reset({ titulo: curso?.titulo || '', descricao: curso?.descricao || '', nivel: curso?.nivel || 'BASICO' });
     this.mostrarForm.set(true);
+    this.cursoExpandido.set(null);
   }
 
   fecharForm() { this.mostrarForm.set(false); this.editando.set(null); this.form.reset(); }
@@ -60,9 +70,8 @@ export class AdminCursosComponent implements OnInit {
     this.salvando.set(true);
     const data = this.form.value as { titulo: string; descricao: string; nivel: string };
     const op = this.editando()
-      ? this.cursoService.atualizarCurso(this.editando()!.id, data)
-      : this.cursoService.criarCurso(data);
-
+      ? this.svc.atualizarCurso(this.editando()!.id, data)
+      : this.svc.criarCurso(data);
     op.subscribe({
       next: () => {
         this.snack.open(this.editando() ? 'Curso atualizado!' : 'Curso criado!', 'OK', { duration: 3000 });
@@ -76,45 +85,80 @@ export class AdminCursosComponent implements OnInit {
 
   excluir(curso: Curso) {
     if (!confirm(`Desativar o curso "${curso.titulo}"?`)) return;
-    this.cursoService.deletarCurso(curso.id).subscribe({
+    this.svc.deletarCurso(curso.id).subscribe({
       next: () => { this.snack.open('Curso desativado!', 'OK', { duration: 3000 }); this.carregar(); },
       error: () => this.snack.open('Erro ao desativar curso', 'Fechar', { duration: 3000 })
     });
   }
 
+  // --- Alunos e notas ---
+  toggleAlunos(cursoId: number) {
+    if (this.cursoExpandido() === cursoId) {
+      this.cursoExpandido.set(null);
+      return;
+    }
+    this.mostrarForm.set(false);
+    this.cursoExpandido.set(cursoId);
+    this.carregarAlunos(cursoId);
+  }
+
+  carregarAlunos(cursoId: number) {
+    this.loadingAlunos.set(cursoId);
+    this.svc.listarMatriculasCurso(cursoId).subscribe({
+      next: data => {
+        this.matriculasCurso.update(m => ({ ...m, [cursoId]: data }));
+        const notas: Record<number, string> = {};
+        data.forEach(mat => { notas[mat.id] = mat.nota != null ? String(mat.nota) : ''; });
+        this.notasEditando.update(n => ({ ...n, ...notas }));
+        this.loadingAlunos.set(null);
+      },
+      error: () => this.loadingAlunos.set(null)
+    });
+  }
+
+  getAlunos(cursoId: number): MatriculaDetalhe[] {
+    return this.matriculasCurso()[cursoId] || [];
+  }
+
+  getNota(matriculaId: number): string {
+    return this.notasEditando()[matriculaId] ?? '';
+  }
+
+  setNota(matriculaId: number, valor: string) {
+    this.notasEditando.update(n => ({ ...n, [matriculaId]: valor }));
+  }
+
+  lancarNota(matricula: MatriculaDetalhe, cursoId: number) {
+    const notaStr = this.getNota(matricula.id);
+    const nota = parseFloat(notaStr);
+    if (isNaN(nota) || nota < 0 || nota > 10) {
+      this.snack.open('Nota inválida. Use um valor entre 0 e 10.', 'Fechar', { duration: 3000 });
+      return;
+    }
+    this.salvandoNota.set(matricula.id);
+    this.svc.lancarNota(matricula.id, nota).subscribe({
+      next: () => {
+        this.snack.open(`Nota ${nota} lançada para ${matricula.usuarioNome}!`, 'OK', { duration: 3000 });
+        this.salvandoNota.set(null);
+        this.carregarAlunos(cursoId);
+      },
+      error: () => {
+        this.snack.open('Erro ao lançar nota', 'Fechar', { duration: 3000 });
+        this.salvandoNota.set(null);
+      }
+    });
+  }
+
   getNivelClass(nivel: string): string {
     const map: Record<string, string> = {
-      'BASICO': 'bg-green-100 text-green-800',
-      'INTERMEDIARIO': 'bg-yellow-100 text-yellow-800',
-      'AVANCADO': 'bg-red-100 text-red-800'
+      BASICO: 'bg-green-100 text-green-800',
+      INTERMEDIARIO: 'bg-yellow-100 text-yellow-800',
+      AVANCADO: 'bg-red-100 text-red-800'
     };
     return map[nivel] || 'bg-gray-100 text-gray-800';
   }
 
-  getNivelBgIcon(nivel: string): string {
-    const map: Record<string, string> = {
-      'BASICO': 'bg-green-100',
-      'INTERMEDIARIO': 'bg-yellow-100',
-      'AVANCADO': 'bg-red-100'
-    };
-    return map[nivel] || 'bg-gray-100';
-  }
-
-  getNivelIconColor(nivel: string): string {
-    const map: Record<string, string> = {
-      'BASICO': 'text-green-600',
-      'INTERMEDIARIO': 'text-yellow-600',
-      'AVANCADO': 'text-red-600'
-    };
-    return map[nivel] || 'text-gray-600';
-  }
-
-  getNivelDot(nivel: string): string {
-    const map: Record<string, string> = {
-      'BASICO': 'bg-green-400',
-      'INTERMEDIARIO': 'bg-yellow-400',
-      'AVANCADO': 'bg-red-400'
-    };
-    return map[nivel] || 'bg-gray-400';
+  getStatusClass(status: string): string {
+    return status === 'CONCLUIDO' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700';
   }
 }

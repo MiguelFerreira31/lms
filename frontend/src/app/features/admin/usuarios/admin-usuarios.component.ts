@@ -6,58 +6,112 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CursoService } from '../../../core/services/curso.service';
+import { CursoService, Unidade } from '../../../core/services/curso.service';
 
 @Component({
   selector: 'app-admin-usuarios',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatFormFieldModule, MatInputModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
+    MatFormFieldModule, MatInputModule, MatSelectModule, MatSnackBarModule,
+    MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './admin-usuarios.component.html',
   styleUrls: ['./admin-usuarios.component.scss']
 })
 export class AdminUsuariosComponent implements OnInit {
-  private cursoService = inject(CursoService);
+  private svc = inject(CursoService);
   private fb = inject(FormBuilder);
   private snack = inject(MatSnackBar);
 
   usuarios = signal<any[]>([]);
+  unidades = signal<Unidade[]>([]);
   loading = signal(true);
   salvando = signal(false);
-  editandoRole = signal<number | null>(null);
-  mostrarForm = signal(false);
-  colunas = ['usuario', 'email', 'role', 'acoes'];
-  adminCount = computed(() => this.usuarios().filter(u => u.role === 'ADMIN').length);
+  editandoId = signal<number | null>(null);
+  mostrarFormCriar = signal(false);
+  colunas = ['usuario', 'email', 'role', 'unidade', 'acoes'];
+  roles = ['ADMIN', 'PROFESSOR', 'ALUNO'];
 
-  form = this.fb.group({
+  adminCount = computed(() => this.usuarios().filter(u => u.role === 'ADMIN').length);
+  professoresCount = computed(() => this.usuarios().filter(u => u.role === 'PROFESSOR').length);
+
+  formCriar = this.fb.group({
     nome: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     senha: ['', [Validators.required, Validators.minLength(6)]]
+  });
+
+  formEditar = this.fb.group({
+    nome: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    role: ['ALUNO', Validators.required],
+    unidadeId: [null as number | null]
   });
 
   ngOnInit() { this.carregar(); }
 
   carregar() {
     this.loading.set(true);
-    this.cursoService.listarUsuarios().subscribe({
+    this.svc.listarUsuarios().subscribe({
       next: data => { this.usuarios.set(data); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
+    this.svc.listarTodasUnidades().subscribe({
+      next: data => this.unidades.set(data)
+    });
   }
 
-  abrirForm() { this.form.reset(); this.mostrarForm.set(true); }
-  fecharForm() { this.mostrarForm.set(false); this.form.reset(); }
+  abrirEditar(u: any) {
+    this.editandoId.set(u.id);
+    this.formEditar.setValue({
+      nome: u.nome,
+      email: u.email,
+      role: u.role,
+      unidadeId: u.unidadeId ?? null
+    });
+  }
 
-  salvar() {
-    if (this.form.invalid) return;
+  fecharEditar() {
+    this.editandoId.set(null);
+    this.formEditar.reset();
+  }
+
+  salvarEdicao(userId: number) {
+    if (this.formEditar.invalid) return;
     this.salvando.set(true);
-    this.cursoService.criarUsuario(this.form.value as any).subscribe({
+    const v = this.formEditar.value;
+    this.svc.atualizarUsuario(userId, {
+      nome: v.nome!,
+      email: v.email!,
+      role: v.role!,
+      unidadeId: v.unidadeId ?? null
+    }).subscribe({
+      next: () => {
+        this.snack.open('Usuário atualizado!', 'OK', { duration: 3000 });
+        this.fecharEditar();
+        this.carregar();
+        this.salvando.set(false);
+      },
+      error: (e: any) => {
+        this.snack.open(e.error?.message || 'Erro ao atualizar usuário', 'Fechar', { duration: 3000 });
+        this.salvando.set(false);
+      }
+    });
+  }
+
+  abrirCriar() { this.formCriar.reset(); this.mostrarFormCriar.set(true); }
+  fecharCriar() { this.mostrarFormCriar.set(false); this.formCriar.reset(); }
+
+  salvarCriar() {
+    if (this.formCriar.invalid) return;
+    this.salvando.set(true);
+    this.svc.criarUsuario(this.formCriar.value as any).subscribe({
       next: () => {
         this.snack.open('Usuário criado!', 'OK', { duration: 3000 });
-        this.fecharForm();
+        this.fecharCriar();
         this.carregar();
         this.salvando.set(false);
       },
@@ -68,27 +122,23 @@ export class AdminUsuariosComponent implements OnInit {
     });
   }
 
-  alternarRole(usuario: any) {
-    const novaRole = usuario.role === 'ADMIN' ? 'ALUNO' : 'ADMIN';
-    this.editandoRole.set(usuario.id);
-    this.cursoService.atualizarRole(usuario.id, novaRole).subscribe({
-      next: () => {
-        this.snack.open(`Perfil alterado para ${novaRole}!`, 'OK', { duration: 3000 });
-        this.editandoRole.set(null);
-        this.carregar();
-      },
-      error: () => {
-        this.snack.open('Erro ao alterar perfil', 'Fechar', { duration: 3000 });
-        this.editandoRole.set(null);
-      }
-    });
-  }
-
   getIniciais(nome: string): string {
     return nome.split(' ').slice(0, 2).map((n: string) => n[0]).join('').toUpperCase();
   }
 
+  getRoleClass(role: string): string {
+    const map: Record<string, string> = {
+      ADMIN: 'bg-purple-100 text-purple-800',
+      PROFESSOR: 'bg-emerald-100 text-emerald-800',
+      ALUNO: 'bg-blue-100 text-blue-800'
+    };
+    return map[role] || 'bg-gray-100 text-gray-800';
+  }
+
   getAvatarColor(role: string): string {
-    return role === 'ADMIN' ? 'bg-purple-600' : 'bg-indigo-600';
+    const map: Record<string, string> = {
+      ADMIN: 'bg-purple-600', PROFESSOR: 'bg-emerald-600', ALUNO: 'bg-indigo-600'
+    };
+    return map[role] || 'bg-gray-600';
   }
 }
