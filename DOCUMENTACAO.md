@@ -345,9 +345,4 @@ curl -s -X POST http://localhost:8080/api/auth/login \
 
 ---
 
-## 8. Repositórios GitHub
 
-| Parte | URL |
-|-------|-----|
-| Backend | https://github.com/MiguelFerreira31/lms-backend |
-| Frontend | https://github.com/MiguelFerreira31/lms-frontend |
