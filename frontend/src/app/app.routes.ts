@@ -2,24 +2,52 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  {
+    path: 'home',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+  },
+  {
+    path: 'unidades',
+    loadComponent: () => import('./features/unidades/unidades.component').then(m => m.UnidadesComponent)
+  },
+  {
+    path: 'sobre',
+    loadComponent: () => import('./features/sobre/sobre.component').then(m => m.SobreComponent)
+  },
   {
     path: 'login',
     loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent)
   },
-  {
-    path: 'dashboard',
-    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    canActivate: [authGuard]
-  },
+  // Public course catalog and detail (API is public)
   {
     path: 'cursos',
-    loadComponent: () => import('./features/cursos/lista-cursos/lista-cursos.component').then(m => m.ListaCursosComponent),
-    canActivate: [authGuard]
+    loadComponent: () => import('./features/cursos/lista-cursos/lista-cursos.component').then(m => m.ListaCursosComponent)
+  },
+  {
+    path: 'cursos/areas',
+    loadComponent: () => import('./features/areas/lista-areas/lista-areas.component').then(m => m.ListaAreasComponent)
+  },
+  {
+    path: 'cursos/areas/:areaSlug',
+    loadComponent: () => import('./features/areas/detalhe-area/detalhe-area.component').then(m => m.DetalheAreaComponent)
+  },
+  {
+    path: 'cursos/areas/:areaSlug/:categoriaSlug',
+    loadComponent: () => import('./features/areas/lista-cursos-categoria/lista-cursos-categoria.component').then(m => m.ListaCursosCategoriaComponent)
+  },
+  {
+    path: 'cursos/tipos/:tipoSlug',
+    loadComponent: () => import('./features/areas/lista-cursos-tipo/lista-cursos-tipo.component').then(m => m.ListaCursosTipoComponent)
   },
   {
     path: 'cursos/:id',
-    loadComponent: () => import('./features/cursos/detalhe-curso/detalhe-curso.component').then(m => m.DetalheCursoComponent),
+    loadComponent: () => import('./features/cursos/detalhe-curso/detalhe-curso.component').then(m => m.DetalheCursoComponent)
+  },
+  // Authenticated routes
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard]
   },
   {
@@ -61,5 +89,5 @@ export const routes: Routes = [
       { path: '', redirectTo: 'cursos', pathMatch: 'full' }
     ]
   },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: '/home' }
 ];

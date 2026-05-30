@@ -45,6 +45,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 // Cursos — leitura pública, escrita ADMIN
                 .requestMatchers(HttpMethod.GET, "/api/cursos", "/api/cursos/{id}").permitAll()
+                // Áreas, Categorias e Tipos — totalmente públicos
+                .requestMatchers(HttpMethod.GET, "/api/areas/**", "/api/tipos/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/cursos").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/cursos/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/cursos/**").hasRole("ADMIN")
@@ -52,8 +54,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/usuarios/**").hasRole("ADMIN")
-                // Regiões e Unidades
-                .requestMatchers(HttpMethod.GET, "/api/regioes", "/api/regioes/**").authenticated()
+                // Regiões e Unidades — lista e todas-unidades são públicas, detalhes exigem auth
+                .requestMatchers(HttpMethod.GET, "/api/regioes", "/api/regioes/unidades").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/regioes/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/regioes", "/api/regioes/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/regioes/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/regioes/**").hasRole("ADMIN")

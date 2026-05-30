@@ -1,46 +1,112 @@
-<div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>LMS Lite</mat-card-title>
-      <mat-card-subtitle>Sistema de Gestão de Cursos</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-tab-group>
-        <mat-tab label="Entrar">
-          <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="form">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput formControlName="email" type="email">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Senha</mat-label>
-              <input matInput formControlName="senha" type="password">
-            </mat-form-field>
-            <button mat-raised-button color="primary" class="full-width" [disabled]="loading">
-              {{ loading ? 'Entrando...' : 'Entrar' }}
-            </button>
-          </form>
-        </mat-tab>
-        <mat-tab label="Criar Conta">
-          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="form">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nome</mat-label>
-              <input matInput formControlName="nome">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput formControlName="email" type="email">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Senha</mat-label>
-              <input matInput formControlName="senha" type="password">
-            </mat-form-field>
-            <button mat-raised-button color="accent" class="full-width" [disabled]="loading">
-              {{ loading ? 'Criando...' : 'Criar Conta' }}
-            </button>
-          </form>
-        </mat-tab>
-      </mat-tab-group>
-    </mat-card-content>
-  </mat-card>
+<div class="min-h-screen flex bg-gradient-to-br from-[#003087] via-[#0054A6] to-[#0072ce]">
+
+  <!-- Left branding panel (hidden on mobile) -->
+  <div class="hidden lg:flex lg:flex-1 flex-col justify-center px-16 text-white relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-80 h-80 bg-white/5 rounded-full -ml-20 -mt-20"></div>
+    <div class="absolute bottom-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-16 -mb-16"></div>
+    <div class="relative">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+          <span class="material-icons text-white text-2xl">school</span>
+        </div>
+        <span class="text-2xl font-bold">Senac <span class="text-[#F7941E]">LMS</span></span>
+      </div>
+      <h1 class="text-4xl font-bold mb-4 leading-tight">
+        Educação<br>Profissional<br>de Excelência
+      </h1>
+      <p class="text-blue-200 text-lg leading-relaxed">
+        Acesse sua conta para continuar<br>sua jornada de aprendizado.
+      </p>
+      <div class="mt-10 flex flex-col gap-3">
+        <div class="flex items-center gap-3 text-blue-200">
+          <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="material-icons text-sm">check</span>
+          </div>
+          <span class="text-sm">Cursos de nível básico ao avançado</span>
+        </div>
+        <div class="flex items-center gap-3 text-blue-200">
+          <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="material-icons text-sm">check</span>
+          </div>
+          <span class="text-sm">Acompanhe seu progresso em tempo real</span>
+        </div>
+        <div class="flex items-center gap-3 text-blue-200">
+          <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="material-icons text-sm">check</span>
+          </div>
+          <span class="text-sm">Certificação reconhecida pelo mercado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right login panel -->
+  <div class="flex-1 flex items-center justify-center p-6 lg:p-16">
+    <div class="w-full max-w-md">
+      <!-- Mobile logo -->
+      <div class="flex items-center gap-2 mb-8 lg:hidden justify-center">
+        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+          <span class="material-icons text-white">school</span>
+        </div>
+        <span class="text-xl font-bold text-white">Senac <span class="text-[#F7941E]">LMS</span></span>
+      </div>
+
+      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <!-- Card header -->
+        <div class="px-8 pt-8 pb-4">
+          <h2 class="text-2xl font-bold text-gray-900">Bem-vindo!</h2>
+          <p class="text-gray-500 text-sm mt-1">Faça login ou crie sua conta para continuar</p>
+        </div>
+
+        <mat-tab-group class="login-tabs" color="accent" [dynamicHeight]="true">
+          <!-- LOGIN TAB -->
+          <mat-tab label="Entrar">
+            <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="px-8 pb-8 pt-4 flex flex-col gap-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="seu@email.com">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Senha</mat-label>
+                <input matInput formControlName="senha" type="password" placeholder="••••••">
+              </mat-form-field>
+              <button type="submit"
+                [disabled]="loading"
+                class="w-full py-3.5 bg-[#0054A6] hover:bg-[#003087] disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-base mt-2">
+                {{ loading ? 'Entrando...' : 'Entrar' }}
+              </button>
+            </form>
+          </mat-tab>
+
+          <!-- REGISTER TAB -->
+          <mat-tab label="Criar Conta">
+            <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="px-8 pb-8 pt-4 flex flex-col gap-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Nome completo</mat-label>
+                <input matInput formControlName="nome" placeholder="Seu nome">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="seu@email.com">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Senha</mat-label>
+                <input matInput formControlName="senha" type="password" placeholder="Mínimo 6 caracteres">
+              </mat-form-field>
+              <button type="submit"
+                [disabled]="loading"
+                class="w-full py-3.5 bg-[#F7941E] hover:bg-orange-500 disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-base mt-2">
+                {{ loading ? 'Criando...' : 'Criar Conta' }}
+              </button>
+            </form>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+
+      <p class="text-center text-blue-200 text-xs mt-6">
+        © {{ year }} Senac LMS · Sistema de Gestão de Cursos
+      </p>
+    </div>
+  </div>
+
 </div>

@@ -5,6 +5,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        senac: {
+          50:  '#e6f0fb',
+          100: '#c0d9f4',
+          200: '#8bb8e9',
+          500: '#0072ce',
+          600: '#0054A6',
+          700: '#003f90',
+          800: '#003087',
+          900: '#001f5b',
+        },
         primary: {
           50:  '#eef2ff',
           100: '#e0e7ff',

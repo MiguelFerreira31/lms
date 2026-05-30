@@ -1,5 +1,8 @@
 package br.com.lms.dto;
 
+import br.com.lms.domain.area.Area;
+import br.com.lms.domain.area.Categoria;
+import br.com.lms.domain.area.Tipo;
 import br.com.lms.domain.conteudo.ConteudoAula;
 import br.com.lms.domain.curso.Aula;
 import br.com.lms.domain.curso.Curso;
@@ -28,12 +31,41 @@ public class DTOs {
 
     public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId) {}
 
+    // ---- Áreas, Categorias e Tipos ----
+
+    public record TipoResponse(Long id, String nome, String slug) {
+        public static TipoResponse from(Tipo t) {
+            return new TipoResponse(t.getId(), t.getNome(), t.getSlug());
+        }
+    }
+
+    public record CategoriaResponse(Long id, String nome, String slug, String areaNome, String areaSlug) {
+        public static CategoriaResponse from(Categoria c) {
+            return new CategoriaResponse(c.getId(), c.getNome(), c.getSlug(),
+                    c.getArea().getNome(), c.getArea().getSlug());
+        }
+    }
+
+    public record AreaResponse(Long id, String nome, String slug, List<CategoriaResponse> categorias) {
+        public static AreaResponse from(Area a) {
+            return new AreaResponse(a.getId(), a.getNome(), a.getSlug(),
+                    a.getCategorias().stream().map(CategoriaResponse::from).toList());
+        }
+    }
+
+    // ---- Cursos ----
+
     public record CursoResumoResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
-                                       LocalDateTime criadoEm, Long unidadeId, String unidadeNome) {
+                                       LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
+                                       List<CategoriaResponse> categorias, List<TipoResponse> tipos) {
         public static CursoResumoResponse from(Curso c) {
-            return new CursoResumoResponse(c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
+            return new CursoResumoResponse(
+                c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
                 c.getUnidade() != null ? c.getUnidade().getId() : null,
-                c.getUnidade() != null ? c.getUnidade().getNome() : null);
+                c.getUnidade() != null ? c.getUnidade().getNome() : null,
+                c.getCategorias().stream().map(CategoriaResponse::from).toList(),
+                c.getTipos().stream().map(TipoResponse::from).toList()
+            );
         }
     }
 
@@ -52,12 +84,17 @@ public class DTOs {
 
     public record CursoDetalheResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
+                                       List<CategoriaResponse> categorias, List<TipoResponse> tipos,
                                        List<ModuloResponse> modulos) {
         public static CursoDetalheResponse from(Curso c) {
-            return new CursoDetalheResponse(c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
+            return new CursoDetalheResponse(
+                c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
                 c.getUnidade() != null ? c.getUnidade().getId() : null,
                 c.getUnidade() != null ? c.getUnidade().getNome() : null,
-                c.getModulos().stream().map(ModuloResponse::from).toList());
+                c.getCategorias().stream().map(CategoriaResponse::from).toList(),
+                c.getTipos().stream().map(TipoResponse::from).toList(),
+                c.getModulos().stream().map(ModuloResponse::from).toList()
+            );
         }
     }
 
@@ -83,7 +120,6 @@ public class DTOs {
         }
     }
 
-    // Regiões e Unidades
     public record RegiaoRequest(@NotBlank String nome) {}
 
     public record RegiaoResponse(Long id, String nome, int totalUnidades) {
@@ -101,7 +137,6 @@ public class DTOs {
         }
     }
 
-    // Conteúdo das Aulas
     public record ConteudoAulaRequest(
         @NotBlank String titulo,
         @NotNull ConteudoAula.TipoConteudo tipo,
@@ -120,7 +155,6 @@ public class DTOs {
         }
     }
 
-    // Presença
     public record PresencaRequest(
         @NotNull Long matriculaId,
         @NotNull Long aulaId,
@@ -142,7 +176,6 @@ public class DTOs {
         Long matriculaId, long presencas, long totalAulas, double percentual
     ) {}
 
-    // Nota Final
     public record NotaRequest(@NotNull BigDecimal nota) {}
 
     public record NotaResponse(
@@ -150,7 +183,6 @@ public class DTOs {
         boolean aprovado, LocalDateTime lancadaEm
     ) {}
 
-    // Edição completa de usuário
     public record UsuarioUpdateRequest(
         @NotBlank String nome,
         @NotBlank @Email String email,
@@ -158,7 +190,6 @@ public class DTOs {
         Long unidadeId
     ) {}
 
-    // Matrícula com dados do aluno (para admin/professor)
     public record MatriculaDetalheResponse(
         Long id, Long usuarioId, String usuarioNome, String usuarioEmail,
         Matricula.Status status, LocalDateTime matriculadoEm,
