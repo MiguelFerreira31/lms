@@ -1,29 +1,215 @@
-<div *ngIf="loading()" class="center"><mat-spinner></mat-spinner></div>
+<!-- Loading -->
+<div *ngIf="loading()" class="flex justify-center py-24">
+  <mat-spinner diameter="48"></mat-spinner>
+</div>
 
-<div *ngIf="!loading() && curso()">
-  <div class="header">
-    <div>
-      <h2>{{ curso().titulo }}</h2>
-      <span class="chip nivel-{{ curso().nivel.toLowerCase() }}">{{ curso().nivel }}</span>
+<!-- Not found -->
+<div *ngIf="!loading() && !curso()" class="max-w-4xl mx-auto px-6 py-20 text-center">
+  <mat-icon class="text-gray-300" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
+  <h2 class="text-xl font-semibold text-gray-700 mt-4 mb-2">Curso não encontrado</h2>
+  <a routerLink="/cursos" class="text-[#0054A6] hover:underline no-underline text-sm font-medium">← Voltar ao catálogo</a>
+</div>
+
+<!-- Course detail -->
+<div *ngIf="!loading() && curso()" class="min-h-screen">
+
+  <!-- HERO HEADER -->
+  <div class="relative overflow-hidden bg-gradient-to-br" [ngClass]="getNivelBg(curso().nivel)">
+    <!-- Decorative -->
+    <div class="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-20 -mt-20 pointer-events-none"></div>
+    <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-black/10 rounded-full -mb-12 pointer-events-none"></div>
+    <mat-icon class="absolute right-8 top-1/2 -translate-y-1/2 text-white/10 pointer-events-none"
+              style="font-size:180px;height:180px;width:180px">school</mat-icon>
+
+    <div class="relative max-w-5xl mx-auto px-6 py-12">
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 text-white/60 text-sm mb-6">
+        <a routerLink="/cursos" class="hover:text-white transition-colors no-underline text-white/60">Cursos</a>
+        <mat-icon style="font-size:16px;height:16px;width:16px">chevron_right</mat-icon>
+        <span class="text-white/80 truncate">{{ curso().titulo }}</span>
+      </div>
+
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+        <div class="flex-1">
+          <span class="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
+            {{ curso().nivel === 'BASICO' ? 'Básico' : curso().nivel === 'INTERMEDIARIO' ? 'Intermediário' : 'Avançado' }}
+          </span>
+          <h1 class="text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">
+            {{ curso().titulo }}
+          </h1>
+          <p class="text-white/80 text-base leading-relaxed max-w-2xl">
+            {{ curso().descricao || 'Curso de educação profissional com conteúdo prático e atualizado.' }}
+          </p>
+          <!-- Badges de Categoria e Tipo -->
+          <div class="flex flex-wrap gap-2 mt-4">
+            <a *ngFor="let cat of curso().categorias"
+               [routerLink]="['/cursos/areas', cat.areaSlug, cat.slug]"
+               class="inline-flex items-center gap-1 bg-white/15 hover:bg-white/25 text-white text-xs font-medium px-3 py-1.5 rounded-full transition-colors no-underline">
+              <mat-icon style="font-size:13px;height:13px;width:13px">folder_open</mat-icon>
+              {{ cat.nome }}
+            </a>
+            <span *ngFor="let t of curso().tipos"
+                  class="inline-flex items-center gap-1 bg-[#F7941E]/80 text-white text-xs font-medium px-3 py-1.5 rounded-full">
+              <mat-icon style="font-size:13px;height:13px;width:13px">label</mat-icon>
+              {{ t.nome }}
+            </span>
+          </div>
+          <div *ngIf="curso().unidadeNome" class="flex items-center gap-1.5 mt-3 text-white/70 text-sm">
+            <mat-icon style="font-size:16px;height:16px;width:16px">location_on</mat-icon>
+            <span>{{ curso().unidadeNome }}</span>
+          </div>
+        </div>
+
+        <!-- CTA Card -->
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full lg:w-72 flex-shrink-0">
+          <div class="text-center mb-4">
+            <div class="text-2xl font-extrabold text-[#0054A6] mb-0.5">Gratuito</div>
+            <div class="text-gray-400 text-xs">Acesso com matrícula</div>
+          </div>
+
+          <!-- Enrolled CTA -->
+          <button *ngIf="auth.isLoggedIn()" (click)="matricular()" [disabled]="matriculando()"
+            class="w-full py-3.5 bg-[#0054A6] hover:bg-[#003087] disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3">
+            {{ matriculando() ? 'Realizando matrícula...' : 'Matricular-se agora' }}
+          </button>
+
+          <!-- Public CTA -->
+          <ng-container *ngIf="!auth.isLoggedIn()">
+            <a routerLink="/login" [queryParams]="{ returnUrl: '/cursos/' + curso().id }"
+               class="w-full py-3.5 bg-[#0054A6] hover:bg-[#003087] text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3 flex items-center justify-center gap-2 no-underline">
+              <mat-icon style="font-size:18px;height:18px;width:18px">login</mat-icon>
+              Entrar para se matricular
+            </a>
+            <a routerLink="/login"
+               class="w-full py-3 border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium rounded-xl transition-colors text-sm flex items-center justify-center no-underline">
+              Criar conta grátis
+            </a>
+          </ng-container>
+
+          <div class="mt-4 pt-4 border-t border-gray-100 space-y-2">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <mat-icon style="font-size:15px;height:15px;width:15px" class="text-green-500">check_circle</mat-icon>
+              Acesso imediato após matrícula
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <mat-icon style="font-size:15px;height:15px;width:15px" class="text-green-500">check_circle</mat-icon>
+              Aulas em módulos organizados
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <mat-icon style="font-size:15px;height:15px;width:15px" class="text-green-500">check_circle</mat-icon>
+              Certificado ao concluir
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <button mat-raised-button color="primary" (click)="matricular()" [disabled]="matriculando()">
-      {{ matriculando() ? 'Matriculando...' : 'Matricular-se' }}
-    </button>
   </div>
 
-  <p class="descricao">{{ curso().descricao }}</p>
+  <!-- CONTENT -->
+  <div class="max-w-5xl mx-auto px-6 py-10">
+    <div class="grid lg:grid-cols-3 gap-8">
 
-  <h3>Conteúdo do Curso</h3>
-  <mat-accordion *ngIf="curso().modulos?.length">
-    <mat-expansion-panel *ngFor="let modulo of curso().modulos">
-      <mat-expansion-panel-header>
-        <mat-panel-title>{{ modulo.titulo }}</mat-panel-title>
-        <mat-panel-description>{{ modulo.aulas?.length || 0 }} aulas</mat-panel-description>
-      </mat-expansion-panel-header>
-      <ul class="aulas-list">
-        <li *ngFor="let aula of modulo.aulas">{{ aula.titulo }} — {{ aula.duracaoMin }} min</li>
-      </ul>
-    </mat-expansion-panel>
-  </mat-accordion>
-  <p *ngIf="!curso().modulos?.length">Nenhum módulo cadastrado ainda.</p>
+      <!-- Main content -->
+      <div class="lg:col-span-2">
+
+        <!-- Course info cards -->
+        <div class="grid grid-cols-3 gap-3 mb-8">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-card p-4 text-center">
+            <mat-icon class="text-[#0054A6] mb-2" style="font-size:24px;height:24px;width:24px">menu_book</mat-icon>
+            <div class="font-bold text-gray-900">{{ curso().modulos?.length || 0 }}</div>
+            <div class="text-xs text-gray-500">Módulos</div>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-card p-4 text-center">
+            <mat-icon class="text-[#0054A6] mb-2" style="font-size:24px;height:24px;width:24px">play_circle</mat-icon>
+            <div class="font-bold text-gray-900">
+              {{ getTotalAulas() }}
+            </div>
+            <div class="text-xs text-gray-500">Aulas</div>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-card p-4 text-center">
+            <mat-icon class="text-emerald-500 mb-2" style="font-size:24px;height:24px;width:24px">workspace_premium</mat-icon>
+            <div class="font-bold text-gray-900">Sim</div>
+            <div class="text-xs text-gray-500">Certificado</div>
+          </div>
+        </div>
+
+        <!-- Course content accordion -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
+          <div class="p-6 border-b border-gray-50">
+            <h2 class="text-lg font-bold text-gray-900">Conteúdo do curso</h2>
+            <p class="text-gray-400 text-sm mt-0.5">
+              {{ curso().modulos?.length || 0 }} módulo{{ (curso().modulos?.length || 0) !== 1 ? 's' : '' }}
+            </p>
+          </div>
+
+          <mat-accordion *ngIf="curso().modulos?.length" class="block" [multi]="false">
+            <mat-expansion-panel *ngFor="let modulo of curso().modulos; let i = index"
+              class="shadow-none border-b border-gray-50 last:border-0 rounded-none">
+              <mat-expansion-panel-header class="py-4 px-6">
+                <mat-panel-title class="font-medium text-gray-800">
+                  <span class="w-6 h-6 bg-[#EBF4FF] text-[#0054A6] rounded-full text-xs font-bold flex items-center justify-center mr-3 flex-shrink-0">
+                    {{ i + 1 }}
+                  </span>
+                  {{ modulo.titulo }}
+                </mat-panel-title>
+                <mat-panel-description class="text-gray-400 text-xs">
+                  {{ modulo.aulas?.length || 0 }} aula{{ (modulo.aulas?.length || 0) !== 1 ? 's' : '' }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="px-6 pb-4">
+                <ul class="space-y-2">
+                  <li *ngFor="let aula of modulo.aulas"
+                      class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+                    <div class="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <mat-icon class="text-gray-400" style="font-size:16px;height:16px;width:16px">play_arrow</mat-icon>
+                    </div>
+                    <span class="text-sm text-gray-700 flex-1">{{ aula.titulo }}</span>
+                    <span class="text-xs text-gray-400 flex-shrink-0">{{ aula.duracaoMin }} min</span>
+                  </li>
+                </ul>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+
+          <div *ngIf="!curso().modulos?.length" class="p-8 text-center">
+            <mat-icon class="text-gray-200" style="font-size:48px;height:48px;width:48px">menu_book</mat-icon>
+            <p class="text-gray-400 mt-3 text-sm">Conteúdo sendo preparado. Em breve!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar (desktop) -->
+      <div class="hidden lg:block">
+        <!-- Sticky CTA repeated for sidebar -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-card p-5 sticky top-4">
+          <h3 class="font-semibold text-gray-900 mb-4">Comece agora</h3>
+
+          <button *ngIf="auth.isLoggedIn()" (click)="matricular()" [disabled]="matriculando()"
+            class="w-full py-3 bg-[#0054A6] hover:bg-[#003087] disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3">
+            {{ matriculando() ? 'Aguarde...' : 'Matricular-se' }}
+          </button>
+
+          <ng-container *ngIf="!auth.isLoggedIn()">
+            <a routerLink="/login" [queryParams]="{ returnUrl: '/cursos/' + curso().id }"
+               class="w-full py-3 bg-[#0054A6] hover:bg-[#003087] text-white font-semibold rounded-xl transition-colors text-sm mb-3 flex items-center justify-center gap-1.5 no-underline">
+              <mat-icon style="font-size:18px;height:18px;width:18px">login</mat-icon>
+              Entrar para matricular
+            </a>
+            <a routerLink="/login"
+               class="w-full py-2.5 border border-gray-200 text-gray-500 hover:bg-gray-50 font-medium rounded-xl transition-colors text-sm flex items-center justify-center no-underline">
+              Criar conta grátis
+            </a>
+          </ng-container>
+
+          <div class="mt-4 pt-4 border-t border-gray-50">
+            <a routerLink="/cursos" class="text-sm text-[#0054A6] hover:underline no-underline flex items-center gap-1">
+              <mat-icon style="font-size:16px;height:16px;width:16px">arrow_back</mat-icon>
+              Voltar ao catálogo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

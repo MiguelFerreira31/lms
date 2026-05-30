@@ -1,5 +1,7 @@
 package br.com.lms.domain.curso;
 
+import br.com.lms.domain.area.Categoria;
+import br.com.lms.domain.area.Tipo;
 import br.com.lms.domain.regiao.Unidade;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,6 +47,18 @@ public class Curso {
     @OrderBy("ordem ASC")
     @Builder.Default
     private List<Modulo> modulos = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "cursos", fetch = FetchType.EAGER)
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Categoria> categorias = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "cursos", fetch = FetchType.EAGER)
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Tipo> tipos = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() { criadoEm = LocalDateTime.now(); }

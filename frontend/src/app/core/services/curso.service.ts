@@ -2,7 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
-export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; }
+export interface CategoriaInfo { id: number; nome: string; slug: string; areaNome: string; areaSlug: string; }
+export interface TipoCurso { id: number; nome: string; slug: string; }
+export interface Area { id: number; nome: string; slug: string; categorias: CategoriaInfo[]; }
+export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; categorias: CategoriaInfo[]; tipos: TipoCurso[]; }
 export interface Page<T> { content: T[]; totalElements: number; totalPages: number; number: number; }
 export interface Matricula { id: number; cursoId: number; cursoTitulo: string; status: string; matriculadoEm: string; }
 export interface Progresso { matriculaId: number; aulasConcluidas: number; totalAulas: number; percentual: number; }
@@ -19,10 +22,34 @@ export interface MatriculaDetalhe { id: number; usuarioId: number; usuarioNome: 
 export class CursoService {
   constructor(private http: HttpClient) {}
 
+  // --- Áreas e Tipos ---
+  listarAreas() {
+    return this.http.get<Area[]>(`${environment.apiUrl}/areas`);
+  }
+
+  buscarArea(slug: string) {
+    return this.http.get<Area>(`${environment.apiUrl}/areas/${slug}`);
+  }
+
+  listarCursosPorCategoria(areaSlug: string, categoriaSlug: string, page = 0) {
+    const params = new HttpParams().set('page', page).set('size', 10);
+    return this.http.get<Page<Curso>>(`${environment.apiUrl}/areas/${areaSlug}/${categoriaSlug}`, { params });
+  }
+
+  listarTipos() {
+    return this.http.get<TipoCurso[]>(`${environment.apiUrl}/tipos`);
+  }
+
+  listarCursosPorTipo(tipoSlug: string, page = 0) {
+    const params = new HttpParams().set('page', page).set('size', 10);
+    return this.http.get<Page<Curso>>(`${environment.apiUrl}/tipos/${tipoSlug}/cursos`, { params });
+  }
+
   // --- Cursos ---
-  listarCursos(page = 0, nivel?: string) {
+  listarCursos(page = 0, nivel?: string, unidadeId?: number) {
     let params = new HttpParams().set('page', page).set('size', 10);
     if (nivel) params = params.set('nivel', nivel);
+    if (unidadeId) params = params.set('unidadeId', unidadeId);
     return this.http.get<Page<Curso>>(`${environment.apiUrl}/cursos`, { params });
   }
 

@@ -23,10 +23,27 @@ public class CursoController {
     @GetMapping
     public ResponseEntity<Page<CursoResumoResponse>> listar(
             @RequestParam(required = false) Curso.Nivel nivel,
+            @RequestParam(required = false) Long unidadeId,
+            @RequestParam(required = false) String areaSlug,
+            @RequestParam(required = false) String categoriaSlug,
+            @RequestParam(required = false) String tipoSlug,
             @PageableDefault(size = 10, sort = "criadoEm") Pageable pageable) {
-        Page<Curso> page = nivel != null
-                ? cursoRepository.findByAtivoTrueAndNivel(nivel, pageable)
-                : cursoRepository.findByAtivoTrue(pageable);
+        Page<Curso> page;
+        if (tipoSlug != null) {
+            page = cursoRepository.findByTipoSlug(tipoSlug, pageable);
+        } else if (categoriaSlug != null && areaSlug != null) {
+            page = cursoRepository.findByCategoriaSlug(areaSlug, categoriaSlug, pageable);
+        } else if (areaSlug != null) {
+            page = cursoRepository.findByAreaSlug(areaSlug, pageable);
+        } else if (nivel != null && unidadeId != null) {
+            page = cursoRepository.findByAtivoTrueAndNivelAndUnidade_Id(nivel, unidadeId, pageable);
+        } else if (nivel != null) {
+            page = cursoRepository.findByAtivoTrueAndNivel(nivel, pageable);
+        } else if (unidadeId != null) {
+            page = cursoRepository.findByAtivoTrueAndUnidade_Id(unidadeId, pageable);
+        } else {
+            page = cursoRepository.findByAtivoTrue(pageable);
+        }
         return ResponseEntity.ok(page.map(CursoResumoResponse::from));
     }
 

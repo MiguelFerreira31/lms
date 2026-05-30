@@ -27,6 +27,7 @@ export class LoginComponent {
   loginForm = this.fb.group({ email: ['', [Validators.required, Validators.email]], senha: ['', Validators.required] });
   registerForm = this.fb.group({ nome: ['', Validators.required], email: ['', [Validators.required, Validators.email]], senha: ['', [Validators.required, Validators.minLength(6)]] });
   loading = false;
+  year = new Date().getFullYear();
 
   onLogin() {
     if (this.loginForm.invalid) return;
