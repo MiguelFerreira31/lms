@@ -1,6 +1,6 @@
 # Documentação Técnica — LMS Lite
 
-Sistema de gestão de cursos educacionais fullstack. Projeto de portfólio desenvolvido com Spring Boot no backend e Angular no frontend.
+Sistema de gestão de cursos educacionais fullstack. Projeto de portfólio com Spring Boot no backend e Angular no frontend, inspirado na plataforma do **Senac SP**.
 
 ---
 
@@ -13,20 +13,38 @@ Sistema de gestão de cursos educacionais fullstack. Projeto de portfólio desen
 5. [Frontend](#5-frontend)
 6. [Segurança e Autenticação](#6-segurança-e-autenticação)
 7. [Como Rodar Localmente](#7-como-rodar-localmente)
-8. [Repositórios GitHub](#8-repositórios-github)
+8. [Repositório GitHub](#8-repositório-github)
+9. [Decisões de Arquitetura](#9-decisões-de-arquitetura)
 
 ---
 
 ## 1. Visão Geral
 
-O LMS Lite permite que alunos naveguem em catálogos de cursos, se matriculem e acompanhem seu progresso por aula. Administradores gerenciam o catálogo de cursos e visualizam usuários cadastrados.
+O LMS Lite permite que alunos naveguem no catálogo de cursos por área, tipo e unidade; se matriculem; e acompanhem seu progresso. Professores gerenciam conteúdos e lançam notas. Administradores têm controle total sobre cursos, usuários, regiões e vínculos.
 
 ### Papéis de usuário
 
-| Role  | Permissões |
-|-------|-----------|
-| `ALUNO` | Login, listar cursos, se matricular, marcar aulas como concluídas, ver próprio progresso |
-| `ADMIN` | Tudo do ALUNO + criar/editar/desativar cursos, listar todos os usuários |
+| Role | Permissões |
+|------|-----------|
+| `ALUNO` | Navegar cursos (público), se matricular, marcar aulas concluídas, ver próprio progresso e histórico |
+| `PROFESSOR` | Tudo do ALUNO + gerenciar conteúdo dos cursos vinculados, lançar notas, registrar presença, ver alunos por curso |
+| `ADMIN` | Tudo + CRUD de cursos, usuários, regiões, unidades, professores, vínculos |
+
+### Funcionalidades implementadas (v0.3)
+
+**Seção pública (sem autenticação)**
+- Catálogo de cursos paginado com filtros (nível, região, unidade, área, tipo)
+- Exploração por área (10 áreas, 44 categorias) e tipo (11 tipos)
+- Página de unidades com 64 unidades reais do Senac SP, agrupadas por 4 regiões
+- Navbar com mega-dropdown: Cursos (áreas + tipos) e Unidades (grid 4 colunas)
+- Páginas: Home, Sobre, Unidades
+
+**Seção autenticada**
+- Login e cadastro (JWT, 24h de validade)
+- Dashboard do aluno com matrículas e progresso
+- Progresso por aula, presença, histórico de notas
+- Admin: CRUD cursos + vínculo unidade, CRUD usuários (role/unidade), CRUD regiões/unidades, gestão de professores
+- Professor: conteúdo de aulas (vídeo/PDF/texto/link) por módulo, notas e presenças
 
 ---
 
@@ -34,210 +52,358 @@ O LMS Lite permite que alunos naveguem em catálogos de cursos, se matriculem e 
 
 ```
 lms/
-├── backend/          Spring Boot 3.2 — API REST na porta 8080
-│   ├── docker-compose.yml
-│   └── src/main/java/br/com/lms/
-│       ├── config/           SecurityConfig (Spring Security + CORS)
-│       ├── domain/
-│       │   ├── curso/        Curso, Modulo, Aula + CursoController + CursoRepository
-│       │   ├── matricula/    Matricula, ProgressoAula + MatriculaController + repos
-│       │   └── usuario/      Usuario + AuthController + UsuarioController + repo
-│       ├── dto/              DTOs.java (todos os records de request/response)
-│       ├── exception/        GlobalExceptionHandler + ResourceNotFoundException
-│       └── security/         JwtTokenProvider + JwtAuthFilter + UserDetailsServiceImpl
-│
-└── frontend/         Angular 18 — SPA na porta 4200
+├── backend/                          # Spring Boot 3.5.14, Java 17
+│   ├── src/main/java/br/com/lms/
+│   │   ├── config/
+│   │   │   └── SecurityConfig.java
+│   │   ├── domain/
+│   │   │   ├── area/
+│   │   │   │   ├── Area.java
+│   │   │   │   ├── Categoria.java
+│   │   │   │   ├── Tipo.java
+│   │   │   │   ├── AreaController.java
+│   │   │   │   ├── AreaRepository.java
+│   │   │   │   ├── CategoriaRepository.java
+│   │   │   │   └── TipoRepository.java
+│   │   │   ├── conteudo/
+│   │   │   │   ├── ConteudoAula.java
+│   │   │   │   ├── ConteudoAulaController.java
+│   │   │   │   └── ConteudoAulaRepository.java
+│   │   │   ├── curso/
+│   │   │   │   ├── Curso.java
+│   │   │   │   ├── Modulo.java
+│   │   │   │   ├── Aula.java
+│   │   │   │   ├── CursoController.java
+│   │   │   │   └── CursoRepository.java
+│   │   │   ├── matricula/
+│   │   │   │   ├── Matricula.java
+│   │   │   │   ├── ProgressoAula.java
+│   │   │   │   ├── MatriculaController.java
+│   │   │   │   ├── MatriculaRepository.java
+│   │   │   │   └── ProgressoAulaRepository.java
+│   │   │   ├── presenca/
+│   │   │   │   ├── PresencaAula.java
+│   │   │   │   ├── PresencaController.java
+│   │   │   │   └── PresencaAulaRepository.java
+│   │   │   ├── professor/
+│   │   │   │   ├── ProfessorCurso.java
+│   │   │   │   ├── ProfessorCursoId.java
+│   │   │   │   ├── ProfessorController.java
+│   │   │   │   └── ProfessorCursoRepository.java
+│   │   │   ├── regiao/
+│   │   │   │   ├── Regiao.java
+│   │   │   │   ├── Unidade.java
+│   │   │   │   ├── RegiaoController.java
+│   │   │   │   ├── RegiaoRepository.java
+│   │   │   │   └── UnidadeRepository.java
+│   │   │   └── usuario/
+│   │   │       ├── Usuario.java
+│   │   │       ├── AuthController.java
+│   │   │       ├── UsuarioController.java
+│   │   │       └── UsuarioRepository.java
+│   │   ├── dto/
+│   │   │   └── DTOs.java             # Todos os records de request/response
+│   │   ├── exception/
+│   │   │   ├── GlobalExceptionHandler.java
+│   │   │   └── ResourceNotFoundException.java
+│   │   └── security/
+│   │       ├── JwtAuthFilter.java
+│   │       ├── JwtTokenProvider.java
+│   │       └── UserDetailsServiceImpl.java
+│   ├── src/main/resources/
+│   │   ├── application.properties
+│   │   └── db/migration/             # V1 até V12
+│   └── docker-compose.yml
+└── frontend/                         # Angular 18, Tailwind 3.4
     └── src/app/
+        ├── app.component.ts          # Decide qual nav mostrar (public vs auth)
+        ├── app.routes.ts             # Todas as rotas com lazy loading
+        ├── app.config.ts             # providers globais
         ├── core/
-        │   ├── guards/       authGuard (protege rotas privadas)
-        │   ├── interceptors/ (JWT interceptor — injeta Bearer token)
-        │   └── services/     AuthService, CursoService
+        │   ├── guards/auth.guard.ts
+        │   ├── interceptors/jwt.interceptor.ts
+        │   └── services/
+        │       ├── auth.service.ts
+        │       └── curso.service.ts
         ├── features/
-        │   ├── login/
+        │   ├── areas/                # detalhe-area, lista-areas, lista-cursos-categoria, lista-cursos-tipo
+        │   ├── admin/                # cursos, professores, regioes, usuarios
+        │   ├── cursos/               # detalhe-curso, lista-cursos
         │   ├── dashboard/
-        │   ├── cursos/       lista-cursos, detalhe-curso
-        │   ├── matriculas/   minhas-matriculas
-        │   └── admin/        admin-cursos, admin-usuarios
+        │   ├── home/
+        │   ├── login/
+        │   ├── matriculas/
+        │   ├── professor/meus-cursos/
+        │   ├── sobre/
+        │   └── unidades/
         └── shared/
-            └── navbar/       NavbarComponent
+            ├── navbar/               # Sidebar + topbar para usuários autenticados
+            └── public-nav/           # Navbar branca com mega-dropdown (público)
 ```
 
 ---
 
 ## 3. Banco de Dados
 
-**PostgreSQL 15** via Docker. Container `lms-postgres`, porta `5433` (mapeada de 5432 interno).
-
-- Banco: `lmsdb` | Usuário: `lms` | Senha: `lms123`
-- Migrations gerenciadas pelo **Flyway** (diretório `src/main/resources/db/migration/`)
-
-### Schema
-
-```sql
--- V1__create_usuarios.sql
-CREATE TABLE usuarios (
-    id         BIGSERIAL PRIMARY KEY,
-    nome       VARCHAR(150) NOT NULL,
-    email      VARCHAR(150) NOT NULL UNIQUE,
-    senha_hash VARCHAR(255) NOT NULL,
-    role       VARCHAR(20)  NOT NULL DEFAULT 'ALUNO',  -- 'ADMIN' ou 'ALUNO'
-    criado_em  TIMESTAMP    NOT NULL DEFAULT NOW()
-);
-
--- V2__create_cursos.sql
-CREATE TABLE cursos (
-    id        BIGSERIAL PRIMARY KEY,
-    titulo    VARCHAR(200) NOT NULL,
-    descricao TEXT,
-    nivel     VARCHAR(20)  NOT NULL DEFAULT 'BASICO',  -- 'BASICO', 'INTERMEDIARIO', 'AVANCADO'
-    ativo     BOOLEAN      NOT NULL DEFAULT TRUE,
-    criado_em TIMESTAMP    NOT NULL DEFAULT NOW()
-);
-CREATE TABLE modulos (
-    id       BIGSERIAL PRIMARY KEY,
-    curso_id BIGINT NOT NULL REFERENCES cursos(id) ON DELETE CASCADE,
-    titulo   VARCHAR(200) NOT NULL,
-    ordem    INT NOT NULL DEFAULT 0
-);
-CREATE TABLE aulas (
-    id          BIGSERIAL PRIMARY KEY,
-    modulo_id   BIGINT NOT NULL REFERENCES modulos(id) ON DELETE CASCADE,
-    titulo      VARCHAR(200) NOT NULL,
-    url_video   VARCHAR(500),
-    duracao_min INT NOT NULL DEFAULT 0,
-    ordem       INT NOT NULL DEFAULT 0
-);
-
--- V3__create_matriculas.sql
-CREATE TABLE matriculas (
-    id             BIGSERIAL PRIMARY KEY,
-    usuario_id     BIGINT NOT NULL REFERENCES usuarios(id),
-    curso_id       BIGINT NOT NULL REFERENCES cursos(id),
-    status         VARCHAR(20) NOT NULL DEFAULT 'EM_ANDAMENTO',  -- 'EM_ANDAMENTO', 'CONCLUIDO'
-    matriculado_em TIMESTAMP NOT NULL DEFAULT NOW(),
-    concluido_em   TIMESTAMP,
-    UNIQUE (usuario_id, curso_id)
-);
-CREATE TABLE progresso_aulas (
-    id           BIGSERIAL PRIMARY KEY,
-    matricula_id BIGINT NOT NULL REFERENCES matriculas(id) ON DELETE CASCADE,
-    aula_id      BIGINT NOT NULL REFERENCES aulas(id),
-    concluida    BOOLEAN NOT NULL DEFAULT FALSE,
-    concluido_em TIMESTAMP,
-    UNIQUE (matricula_id, aula_id)
-);
-```
-
 ### Diagrama de relacionamentos
 
 ```
-usuarios ──< matriculas >── cursos ──< modulos ──< aulas
-                 │                                   │
-                 └──< progresso_aulas >──────────────┘
+usuarios ──< matriculas >── cursos ──< modulos ──< aulas ──< conteudos_aula
+    │             │           │              └──< presencas_aula
+    │             └──< progresso_aulas
+    └── unidades ──> regioes
+         └──< cursos (FK unidade_id)
+
+cursos >──< curso_categorias >──< categorias >── areas
+cursos >──< curso_tipos      >──< tipos
+
+usuarios >──< professor_cursos >──< cursos
 ```
+
+### Tabelas
+
+| Tabela | Colunas principais | Notas |
+|--------|-------------------|-------|
+| `usuarios` | id, nome, email (UNIQUE), senha_hash, role, unidade_id, criado_em | role: ADMIN/PROFESSOR/ALUNO |
+| `cursos` | id, titulo, descricao, nivel, ativo, unidade_id, criado_em | nivel: BASICO/INTERMEDIARIO/AVANCADO; soft delete via `ativo` |
+| `modulos` | id, curso_id, titulo, ordem | ordem determina sequência de exibição |
+| `aulas` | id, modulo_id, titulo, url_video, duracao_min, ordem | |
+| `matriculas` | id, usuario_id, curso_id (UNIQUE juntos), status, nota, aprovado, nota_lancada_em, nota_lancada_por, matriculado_em | status: EM_ANDAMENTO/CONCLUIDO/CANCELADO |
+| `progresso_aulas` | id, matricula_id, aula_id (UNIQUE juntos), concluida, concluido_em | |
+| `regioes` | id, nome (UNIQUE), criado_em | |
+| `unidades` | id, regiao_id, nome, endereco, criado_em | |
+| `professor_cursos` | professor_id + curso_id (PK composta), vinculado_em | |
+| `conteudos_aula` | id, aula_id, tipo, titulo, conteudo, ordem, criado_em | tipo: VIDEO/PDF/TEXTO/LINK |
+| `presencas_aula` | id, matricula_id, aula_id, data_aula (UNIQUE os 3), presente, registrado_por, registrado_em | |
+| `areas` | id, nome, slug (UNIQUE) | |
+| `categorias` | id, area_id, nome, slug — UNIQUE(area_id, slug) | |
+| `tipos` | id, nome, slug (UNIQUE) | |
+| `curso_categorias` | curso_id + categoria_id (PK) | N:N |
+| `curso_tipos` | curso_id + tipo_id (PK) | N:N |
+
+### Migrations Flyway
+
+| Migration | Data | O que faz |
+|-----------|------|-----------|
+| `V1__create_usuarios.sql` | 2026-05-24 | Tabela `usuarios` |
+| `V2__create_cursos.sql` | 2026-05-24 | Tabelas `cursos`, `modulos`, `aulas` |
+| `V3__create_matriculas.sql` | 2026-05-24 | Tabelas `matriculas`, `progresso_aulas` |
+| `V4__create_regioes.sql` | 2026-05-24 | Tabelas `regioes`, `unidades`; `unidade_id` em `usuarios` |
+| `V5__create_professor_cursos.sql` | 2026-05-24 | Tabela `professor_cursos` (PK composta) |
+| `V6__create_conteudos_aula.sql` | 2026-05-24 | Tabela `conteudos_aula` |
+| `V7__create_presencas.sql` | 2026-05-24 | Tabela `presencas_aula` (constraint unique 3 colunas) |
+| `V8__add_nota_matricula.sql` | 2026-05-24 | Colunas `nota`, `aprovado`, `nota_lancada_em`, `nota_lancada_por` em `matriculas` |
+| `V9__add_unidade_curso.sql` | 2026-05-24 | Coluna `unidade_id` (nullable FK) em `cursos` |
+| `V10__create_areas_tipos_categorias.sql` | 2026-05-30 | Tabelas `areas`, `categorias`, `tipos`, `curso_categorias`, `curso_tipos` |
+| `V11__seed_areas_tipos_categorias.sql` | 2026-05-30 | Seed: 10 áreas, 44 categorias, 11 tipos; associa cursos iniciais |
+| `V12__seed_rico_cursos_unidades.sql` | 2026-05-30 | Seed: 4 regiões, 64 unidades Senac SP, 35 cursos com vínculos completos |
+
+**Regra**: nunca alterar migrations existentes. Nova necessidade → `V13__descricao.sql`.
 
 ---
 
 ## 4. Backend
 
-**Stack:** Java 17 · Spring Boot 3.2 · Maven · Spring Data JPA · Hibernate · Flyway · Lombok · JJWT 0.12
-
-### Endpoints da API
-
-#### Autenticação — `/api/auth` (público)
-
-| Método | Endpoint | Body | Resposta |
-|--------|----------|------|----------|
-| POST | `/api/auth/login` | `{"email","senha"}` | `{token, tipo, nome, email, role}` |
-| POST | `/api/auth/register` | `{"nome","email","senha"}` | `{id, nome, email, role}` |
-
-> Novos registros recebem `role = ALUNO` automaticamente. Promoção para ADMIN é feita diretamente no banco.
-
-#### Cursos — `/api/cursos`
-
-| Método | Endpoint | Acesso | Descrição |
-|--------|----------|--------|-----------|
-| GET | `/api/cursos` | Público | Lista paginada (10/página), filtro por `?nivel=` |
-| GET | `/api/cursos/{id}` | Público | Detalhes com módulos e aulas |
-| POST | `/api/cursos` | ADMIN | Criar curso |
-| PUT | `/api/cursos/{id}` | ADMIN | Atualizar curso |
-| DELETE | `/api/cursos/{id}` | ADMIN | Desativar curso (soft delete — seta `ativo=false`) |
-
-#### Matrículas — `/api/matriculas` (autenticado)
-
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/matriculas/minhas` | Lista matrículas do usuário logado |
-| POST | `/api/matriculas` | Matricular em um curso (`{"cursoId"}`) |
-| GET | `/api/matriculas/{id}/progresso` | Percentual de aulas concluídas |
-| POST | `/api/matriculas/progresso` | Marcar aula como concluída (`{"matriculaId","aulaId"}`) |
-
-#### Usuários — `/api/usuarios` (autenticado)
-
-| Método | Endpoint | Acesso | Descrição |
-|--------|----------|--------|-----------|
-| GET | `/api/usuarios` | ADMIN | Lista todos os usuários |
-| GET | `/api/usuarios/me` | Autenticado | Perfil do usuário atual (do banco, não do token) |
-
 ### Configuração (`application.properties`)
-
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5433/lmsdb
 spring.datasource.username=lms
 spring.datasource.password=lms123
 spring.jpa.hibernate.ddl-auto=validate
 spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
 server.port=8080
-jwt.secret=3cfa76ef14937c1c0ea519f8fc057a80fcd04a7d3c8d028cb4b0a3e50bec9d7c
 jwt.expiration-ms=86400000   # 24 horas
 ```
+
+### Endpoints por controller
+
+#### AuthController — `/api/auth` (público)
+| Método | Path | Body | Resposta |
+|--------|------|------|----------|
+| `POST` | `/api/auth/login` | `{email, senha}` | `{token, tipo, nome, email, role}` |
+| `POST` | `/api/auth/register` | `{nome, email, senha}` | `UsuarioResponse` (201, role=ALUNO) |
+
+#### CursoController — `/api/cursos`
+| Método | Path | Auth | Query Params | Resposta |
+|--------|------|------|-------------|----------|
+| `GET` | `/api/cursos` | público | nivel, unidadeId, areaSlug, categoriaSlug, tipoSlug, page, size | `Page<CursoResumoResponse>` |
+| `GET` | `/api/cursos/{id}` | público | — | `CursoDetalheResponse` |
+| `POST` | `/api/cursos` | ADMIN | — | `CursoResumoResponse` (201) |
+| `PUT` | `/api/cursos/{id}` | ADMIN | — | `CursoResumoResponse` |
+| `DELETE` | `/api/cursos/{id}` | ADMIN | — | 204 (soft delete) |
+
+#### AreaController — `/api/areas`, `/api/tipos`
+| Método | Path | Auth | Resposta |
+|--------|------|------|----------|
+| `GET` | `/api/areas` | público | `List<AreaResponse>` (com categorias) |
+| `GET` | `/api/areas/{areaSlug}` | público | `AreaResponse` |
+| `GET` | `/api/areas/{areaSlug}/{catSlug}` | público | `Page<CursoResumoResponse>` |
+| `GET` | `/api/tipos` | público | `List<TipoResponse>` (ordem alfabética) |
+| `GET` | `/api/tipos/{tipoSlug}/cursos` | público | `Page<CursoResumoResponse>` |
+
+#### MatriculaController — `/api/matriculas`
+| Método | Path | Auth | Resposta |
+|--------|------|------|----------|
+| `GET` | `/api/matriculas/minhas` | auth | `List<MatriculaResponse>` |
+| `POST` | `/api/matriculas` | auth | `MatriculaResponse` (201) |
+| `GET` | `/api/matriculas/{id}/progresso` | auth | `ProgressoResponse` |
+| `POST` | `/api/matriculas/progresso` | auth | 200 (marca aula concluída) |
+| `GET` | `/api/matriculas/curso/{cursoId}` | ADMIN/PROF | `List<MatriculaDetalheResponse>` |
+| `PATCH` | `/api/matriculas/{id}/nota` | ADMIN/PROF | `NotaResponse` (nota ≥ 6.0 = aprovado) |
+
+#### UsuarioController — `/api/usuarios`
+| Método | Path | Auth | Resposta |
+|--------|------|------|----------|
+| `GET` | `/api/usuarios` | ADMIN | `List<UsuarioResponse>` |
+| `GET` | `/api/usuarios/me` | auth | `UsuarioResponse` |
+| `PUT` | `/api/usuarios/{id}` | ADMIN | `UsuarioResponse` (edita nome/email/role/unidade) |
+| `PATCH` | `/api/usuarios/{id}/role` | ADMIN | `UsuarioResponse` |
+
+#### RegiaoController — `/api/regioes`
+| Método | Path | Auth | Resposta |
+|--------|------|------|----------|
+| `GET` | `/api/regioes` | público | `List<RegiaoResponse>` (com totalUnidades) |
+| `GET` | `/api/regioes/unidades` | público | `List<UnidadeResponse>` (todas) |
+| `GET` | `/api/regioes/{id}` | auth | `RegiaoResponse` |
+| `POST` | `/api/regioes` | ADMIN | `RegiaoResponse` (201) |
+| `PUT` | `/api/regioes/{id}` | ADMIN | `RegiaoResponse` |
+| `DELETE` | `/api/regioes/{id}` | ADMIN | 204 |
+| `GET` | `/api/regioes/{id}/unidades` | auth | `List<UnidadeResponse>` |
+| `POST` | `/api/regioes/{id}/unidades` | ADMIN | `UnidadeResponse` (201) |
+| `PUT` | `/api/regioes/{id}/unidades/{uid}` | ADMIN | `UnidadeResponse` |
+| `DELETE` | `/api/regioes/{id}/unidades/{uid}` | ADMIN | 204 |
+
+#### ProfessorController — `/api/professores`
+| Método | Path | Auth | Resposta |
+|--------|------|------|----------|
+| `GET` | `/api/professores` | ADMIN/PROF | `List<UsuarioResponse>` |
+| `GET` | `/api/professores/{id}/cursos` | ADMIN/PROF | `List<CursoResumoResponse>` |
+| `GET` | `/api/professores/meus-cursos` | ADMIN/PROF | `List<CursoResumoResponse>` |
+| `POST` | `/api/professores/{id}/cursos` | ADMIN | 201 |
+| `DELETE` | `/api/professores/{id}/cursos/{cid}` | ADMIN | 204 |
+
+#### ConteudoAulaController — `/api/aulas`
+| Método | Path | Auth | Resposta |
+|--------|------|------|----------|
+| `GET` | `/api/aulas/{id}/conteudos` | auth | `List<ConteudoAulaResponse>` |
+| `POST` | `/api/aulas/{id}/conteudos` | ADMIN/PROF | `ConteudoAulaResponse` (201) |
+| `PUT` | `/api/aulas/{id}/conteudos/{cid}` | ADMIN/PROF | `ConteudoAulaResponse` |
+| `DELETE` | `/api/aulas/{id}/conteudos/{cid}` | ADMIN/PROF | 204 |
+
+#### PresencaController — `/api/presenca`
+| Método | Path | Auth | Resposta |
+|--------|------|------|----------|
+| `POST` | `/api/presenca` | ADMIN/PROF | `PresencaResponse` (upsert por matricula+aula+data) |
+| `GET` | `/api/presenca/matricula/{id}` | auth | `List<PresencaResponse>` |
+| `GET` | `/api/presenca/matricula/{id}/resumo` | auth | `PresencaResumoResponse` |
+
+### DTOs (dto/DTOs.java)
+
+Todos os records de request/response estão em um único arquivo. Records usam factory `from(Entidade)` para construção.
+
+| Record | Campos |
+|--------|--------|
+| `AuthRequest` | email, senha |
+| `RegisterRequest` | nome, email, senha |
+| `AuthResponse` | token, tipo, nome, email, role |
+| `CursoRequest` | titulo, descricao, nivel, unidadeId |
+| `TipoResponse` | id, nome, slug |
+| `CategoriaResponse` | id, nome, slug, areaNome, areaSlug |
+| `AreaResponse` | id, nome, slug, categorias[] |
+| `CursoResumoResponse` | id, titulo, descricao, nivel, criadoEm, unidadeId, unidadeNome, categorias[], tipos[] |
+| `CursoDetalheResponse` | + modulos[] (com aulas[]) |
+| `MatriculaRequest` | cursoId |
+| `MatriculaResponse` | id, cursoId, cursoTitulo, status, matriculadoEm |
+| `ProgressoResponse` | matriculaId, aulasConcluidas, totalAulas, percentual |
+| `MarcarAulaRequest` | matriculaId, aulaId |
+| `MatriculaDetalheResponse` | id, usuarioId, usuarioNome, usuarioEmail, status, matriculadoEm, nota, aprovado, notaLancadaEm |
+| `UsuarioResponse` | id, nome, email, role, unidadeId, unidadeNome |
+| `UsuarioUpdateRequest` | nome, email, role, unidadeId |
+| `RegiaoRequest` | nome |
+| `RegiaoResponse` | id, nome, totalUnidades |
+| `UnidadeRequest` | nome, endereco, regiaoId |
+| `UnidadeResponse` | id, nome, endereco, regiaoId, regiaoNome |
+| `ConteudoAulaRequest/Response` | id, titulo, tipo, conteudo, ordem |
+| `PresencaRequest` | matriculaId, aulaId, presente, dataAula |
+| `PresencaResponse` | id, matriculaId, aulaId, presente, dataAula |
+| `PresencaResumoResponse` | matriculaId, presencas, totalAulas, percentual |
+| `NotaRequest` | nota |
+| `NotaResponse` | matriculaId, nota, aprovado, lancadaEm |
 
 ---
 
 ## 5. Frontend
 
-**Stack:** Angular 18 · Standalone Components · Signals · Angular Material 18 (tema indigo-pink) · TypeScript
-
 ### Rotas
 
-| Rota | Componente | Guard |
-|------|-----------|-------|
-| `/` | → redirect `/dashboard` | — |
-| `/login` | `LoginComponent` | — |
-| `/dashboard` | `DashboardComponent` | `authGuard` |
-| `/cursos` | `ListaCursosComponent` | `authGuard` |
-| `/cursos/:id` | `DetalheCursoComponent` | `authGuard` |
-| `/matriculas` | `MinhasMatriculasComponent` | `authGuard` |
-| `/admin/cursos` | `AdminCursosComponent` | `authGuard` |
-| `/admin/usuarios` | `AdminUsuariosComponent` | `authGuard` |
-| `/**` | → redirect `/dashboard` | — |
+| Path | Componente | Guard | Acesso |
+|------|-----------|-------|--------|
+| `/` | redirect `/home` | — | — |
+| `/home` | `HomeComponent` | — | público |
+| `/sobre` | `SobreComponent` | — | público |
+| `/unidades` | `UnidadesComponent` | — | público |
+| `/login` | `LoginComponent` | — | público |
+| `/cursos` | `ListaCursosComponent` | — | público |
+| `/cursos/areas` | `ListaAreasComponent` | — | público |
+| `/cursos/areas/:areaSlug` | `DetalheAreaComponent` | — | público |
+| `/cursos/areas/:areaSlug/:catSlug` | `ListaCursosCategoriaComponent` | — | público |
+| `/cursos/tipos/:tipoSlug` | `ListaCursosTipoComponent` | — | público |
+| `/cursos/:id` | `DetalheCursoComponent` | — | público |
+| `/dashboard` | `DashboardComponent` | `authGuard` | ALUNO+ |
+| `/matriculas` | `MinhasMatriculasComponent` | `authGuard` | ALUNO+ |
+| `/admin/cursos` | `AdminCursosComponent` | `authGuard` | ADMIN |
+| `/admin/usuarios` | `AdminUsuariosComponent` | `authGuard` | ADMIN |
+| `/admin/regioes` | `AdminRegioesComponent` | `authGuard` | ADMIN |
+| `/admin/professores` | `AdminProfessoresComponent` | `authGuard` | ADMIN |
+| `/professor/cursos` | `ProfessorCursosComponent` | `authGuard` | ADMIN/PROF |
+| `/**` | redirect `/home` | — | — |
 
-> Todos os componentes são **lazy-loaded** via `loadComponent`.
+### Componentes e responsabilidades
 
-### AuthService (`core/services/auth.service.ts`)
+| Componente | Path | Responsabilidade |
+|-----------|------|-----------------|
+| `AppComponent` | — | Decide `PublicNavComponent` vs `NavbarComponent` com base em `isLoggedIn()` |
+| `PublicNavComponent` | `shared/public-nav/` | Navbar branca, mega-dropdown Cursos (áreas+tipos) e Unidades (grid 4 colunas), accordion mobile |
+| `NavbarComponent` | `shared/navbar/` | Top bar + sidebar colapsável para usuários autenticados; seções por role |
+| `HomeComponent` | `features/home/` | Landing page com CTA, áreas em destaque, acesso rápido |
+| `ListaCursosComponent` | `features/cursos/lista-cursos/` | Catálogo paginado, filtros nível/região/unidade |
+| `DetalheCursoComponent` | `features/cursos/detalhe-curso/` | Detalhes do curso, módulos, aulas, botão de matrícula |
+| `ListaAreasComponent` | `features/areas/lista-areas/` | Grid de todas as áreas com categorias |
+| `DetalheAreaComponent` | `features/areas/detalhe-area/` | Categorias de uma área com link para cursos |
+| `ListaCursosCategoriaComponent` | `features/areas/lista-cursos-categoria/` | Cursos filtrados por categoria |
+| `ListaCursosTipoComponent` | `features/areas/lista-cursos-tipo/` | Cursos filtrados por tipo |
+| `UnidadesComponent` | `features/unidades/` | Lista real de unidades por região; destaque via `?unidadeId=X`; scroll via `?regiaoId=X` |
+| `DashboardComponent` | `features/dashboard/` | Visão geral do aluno: matrículas, progresso, próximas aulas |
+| `MinhasMatriculasComponent` | `features/matriculas/` | Histórico de matrículas com progresso |
+| `AdminCursosComponent` | `features/admin/cursos/` | CRUD cursos + painel "Alunos & Notas" por curso |
+| `AdminUsuariosComponent` | `features/admin/usuarios/` | CRUD usuários com edição inline de role e unidade |
+| `AdminRegioesComponent` | `features/admin/regioes/` | CRUD regiões + unidades em MatExpansionPanel |
+| `AdminProfessoresComponent` | `features/admin/professores/` | Lista professores + gerencia vínculos com cursos |
+| `ProfessorCursosComponent` | `features/professor/meus-cursos/` | Estrutura módulos/aulas; gestão de conteúdo; dual-mode (admin vê todos, professor vê seus) |
+| `LoginComponent` | `features/login/` | Login e cadastro com validação |
+| `SobreComponent` | `features/sobre/` | Página institucional |
 
-Gerencia o estado de autenticação usando **Angular Signals**:
+### Serviços principais
 
-```typescript
-currentUser = signal<AuthResponse | null>(this.getStoredUser());
-```
+**`AuthService`** — `core/services/auth.service.ts`
+- `signal currentUser` — usuário logado (persistido em `localStorage` como `lms_user` + `lms_token`)
+- `login()`, `register()`, `logout()`
+- `isLoggedIn()`, `isAdmin()`, `isProfessor()` — computed do signal
+- `refreshUser()` — sincroniza com `/api/usuarios/me` (chamado no constructor com setTimeout 100ms para evitar ciclo de DI)
 
-Métodos principais:
+**`CursoService`** — `core/services/curso.service.ts`
+- Todos os métodos de chamada à API organizados por domínio
+- Usa `HttpClient` injetado via `inject()`
+- Interfaces exportadas: `Area`, `TipoCurso`, `Curso`, `Page<T>`, `Matricula`, `Progresso`, `Regiao`, `Unidade`, `Professor`, `ConteudoAula`, `Presenca`, `PresencaResumo`, `NotaResponse`, `MatriculaDetalhe`
 
-| Método | Descrição |
-|--------|-----------|
-| `login(credentials)` | POST `/auth/login`, salva token + user no localStorage, atualiza signal |
-| `logout()` | Limpa localStorage, zera signal, navega para `/login` |
-| `refreshUser()` | GET `/usuarios/me`, sincroniza role do banco com o signal — chamado no constructor |
-| `isAdmin()` | Retorna `currentUser()?.role === 'ADMIN'` |
-| `isLoggedIn()` | Verifica presença do token no localStorage |
-| `getToken()` | Retorna o JWT do localStorage |
+**`JwtInterceptor`** — `core/interceptors/jwt.interceptor.ts`
+- Interceptor funcional (não class-based) adicionado via `provideHttpClient(withInterceptors([jwtInterceptor]))`
+- Injeta `Authorization: Bearer <token>` em toda requisição se o token existir
 
-**Chave importante:** `refreshUser()` é chamado no constructor — garante que o signal sempre reflete o role atual do banco, independente do momento em que o token foi gerado.
-
-### Navbar
-
-O botão **Admin** usa `*ngIf="auth.isAdmin()"`. Como `isAdmin()` lê um Signal, o Angular atualiza a view automaticamente quando `refreshUser()` resolve a chamada HTTP.
+**`authGuard`** — `core/guards/auth.guard.ts`
+- `CanActivateFn` — verifica `authService.isLoggedIn()`
+- Redireciona para `/login?returnUrl=<url-atual>` se não autenticado
 
 ---
 
@@ -246,103 +412,169 @@ O botão **Admin** usa `*ngIf="auth.isAdmin()"`. Como `isAdmin()` lê um Signal,
 ### Fluxo JWT
 
 ```
-1. Cliente envia POST /api/auth/login com email + senha
-2. Spring Security autentica via DaoAuthenticationProvider
-3. Backend gera JWT contendo apenas o email (subject) — sem roles no token
-4. Cliente armazena o JWT no localStorage
-5. A cada request, o JwtAuthFilter:
-   a. Extrai o token do header Authorization: Bearer <token>
-   b. Valida assinatura com HMAC-SHA512
-   c. Extrai o email do subject
-   d. Carrega o Usuario do banco via UserDetailsServiceImpl (role sempre atual)
-   e. Seta Authentication no SecurityContext
+1. POST /api/auth/login {email, senha}
+2. JwtTokenProvider gera token:
+   - Algoritmo: HMAC-SHA512
+   - Subject: email do usuário
+   - Expiry: 24h
+   - SEM roles no payload
+3. Cliente armazena token em localStorage
+4. Cada request inclui: Authorization: Bearer <token>
+5. JwtAuthFilter:
+   a. Extrai email do token
+   b. Chama UserDetailsServiceImpl.loadUserByUsername(email)
+   c. Busca Usuario completo do banco (com role atual)
+   d. Autentica na SecurityContextHolder
 ```
 
-**Detalhe crítico:** As roles NÃO estão no token JWT. O `JwtAuthFilter` recarrega o usuário do banco a cada request, então alterações de role têm efeito imediato no backend. No frontend, o `refreshUser()` no startup do `AuthService` garante que o signal seja sincronizado.
-
-### Autorização no backend (`SecurityConfig`)
+### Regras de autorização (SecurityConfig)
 
 ```
-/api/auth/**             → público
-GET /api/cursos          → público
-GET /api/cursos/{id}     → público
-POST/PUT/DELETE /api/cursos → ROLE_ADMIN
-GET /api/usuarios        → ROLE_ADMIN
-demais                   → autenticado (qualquer role)
+público:         POST /api/auth/**
+                 GET  /api/cursos, /api/cursos/{id}
+                 GET  /api/areas/**, /api/tipos/**
+                 GET  /api/regioes, /api/regioes/unidades
+
+autenticado:     GET  /api/regioes/** (detalhe e sub-recursos)
+                 GET  /api/aulas/**
+                 GET  /api/presenca/**
+                 GET  /api/usuarios/me
+                 GET/POST /api/matriculas/**
+
+ADMIN/PROFESSOR: GET  /api/matriculas/curso/**
+                 PATCH /api/matriculas/*/nota
+                 GET  /api/professores/**
+                 POST/PUT/DELETE /api/aulas/**
+                 POST /api/presenca
+
+ADMIN:           POST/PUT/DELETE /api/cursos/**
+                 GET/PUT/PATCH /api/usuarios/**
+                 POST/PUT/DELETE /api/regioes/**
+                 POST/DELETE /api/professores/**
 ```
 
 ### CORS
-
-Permite apenas `http://localhost:4200` com credenciais.
-
-### Senhas
-
-Armazenadas com **BCrypt** via `BCryptPasswordEncoder`.
+- Origem permitida: `http://localhost:4200` apenas
+- Métodos: GET, POST, PUT, PATCH, DELETE, OPTIONS
+- Headers: todos (`*`)
+- Credentials: true
 
 ---
 
 ## 7. Como Rodar Localmente
 
 ### Pré-requisitos
-
-- Java 17+ (JAVA_HOME configurado)
+- Java 17
+- Maven (ou usar `mvnw.cmd`)
+- Node.js 20+ e npm
 - Docker Desktop
-- Node.js 18+ com Angular CLI (`npm install -g @angular/cli`)
 
-### Passo a passo
+### Passo a passo (Windows)
 
-**1. Banco de dados (Docker)**
-```bash
-cd lms/backend
-docker compose up -d
-# Container lms-postgres sobe na porta 5433
-# Flyway aplica as 3 migrations automaticamente no primeiro start do backend
-```
-
-**2. Backend (Spring Boot)**
-
-No Windows com JDK do IntelliJ:
 ```powershell
+# 1. Clone
+git clone https://github.com/MiguelFerreira31/lms.git
+cd lms
+
+# 2. Banco (primeira vez: cria container; depois: docker start lms-postgres)
+cd backend
+docker compose up -d
+
+# 3. Backend
 $env:JAVA_HOME = "C:\Program Files\JetBrains\IntelliJ IDEA 2026.1.2\jbr"
-cd lms\backend
 .\mvnw.cmd spring-boot:run
-# API disponível em http://localhost:8080
+# Flyway aplica V1-V12 automaticamente na primeira execução
+# API: http://localhost:8080
+
+# 4. Frontend (em outro terminal)
+cd ..\frontend
+npm install
+npx ng serve
+# App: http://localhost:4200
 ```
 
-**3. Frontend (Angular)**
-```bash
-cd lms/frontend
-npm install   # apenas na primeira vez
-ng serve
-# App disponível em http://localhost:4200
-```
+### Credenciais
 
-### Usuário de teste
+| Tipo | Valor |
+|------|-------|
+| Admin email | `miguel@lms.com` |
+| Admin senha | `123456` |
+| DB host | `localhost:5433` |
+| DB name | `lmsdb` |
+| DB user | `lms` |
+| DB pass | `lms123` |
+| Container | `lms-postgres` |
 
-| Campo | Valor |
-|-------|-------|
-| Email | `miguel@lms.com` |
-| Senha | `123456` |
-| Role | `ADMIN` |
+### Aplicar nova migration sem reiniciar
 
-> Para promover um usuário a ADMIN via SQL:
-> ```sql
-> docker exec lms-postgres psql -U lms -d lmsdb \
->   -c "UPDATE usuarios SET role='ADMIN' WHERE email='usuario@exemplo.com';"
-> ```
-
-### Verificar saúde do sistema
-
-```bash
-# Backend respondendo
-curl http://localhost:8080/api/cursos
-
-# Login e validação de role
-curl -s -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"miguel@lms.com","senha":"123456"}'
+```powershell
+cd backend
+.\mvnw.cmd flyway:migrate `
+  -Dflyway.url=jdbc:postgresql://localhost:5433/lmsdb `
+  -Dflyway.user=lms `
+  -Dflyway.password=lms123
 ```
 
 ---
 
+## 8. Repositório GitHub
 
+- **Monorepo:** https://github.com/MiguelFerreira31/lms
+- **Branch principal:** `master`
+- **Autor:** Miguel Ferreira (miguelccezarferreira@gmail.com)
+
+---
+
+## 9. Decisões de Arquitetura
+
+### JWT sem roles no token
+
+**Decisão:** O payload do JWT contém apenas `sub=email`. A role do usuário é carregada do banco a cada request pelo `UserDetailsServiceImpl`.
+
+**Por quê:** Permite alterar a role de um usuário (promoção/rebaixamento) com efeito imediato, sem necessidade de revogar tokens existentes. Se a role estivesse no token, o token emitido com role ALUNO continuaria com permissões de ALUNO mesmo após promoção para ADMIN — até expirar em 24h.
+
+**Trade-off:** Uma consulta SQL extra a cada request autenticado. Para o volume deste projeto, o custo é negligenciável. Em escala, o cache do `UserDetailsService` ou Redis mitigaria o custo.
+
+---
+
+### DTOs centralizados em um arquivo
+
+**Decisão:** Todos os records de request/response estão em `dto/DTOs.java`.
+
+**Por quê:** Elimina a proliferação de arquivos de DTO espalhados pelo projeto. Em projetos de portfólio com 20–30 DTOs, um arquivo central é mais fácil de navegar do que uma pasta com 30 arquivos. A regra de visibilidade fica clara: entidades em `domain/`, DTOs em `dto/`.
+
+**Trade-off:** O arquivo cresce conforme o projeto escala. Para um projeto real com 100+ DTOs, separar em subpacotes (`dto/request/`, `dto/response/`) seria mais adequado.
+
+---
+
+### Soft delete em cursos
+
+**Decisão:** `DELETE /api/cursos/{id}` seta `ativo=false`. Não remove o registro do banco.
+
+**Por quê:** Preserva integridade referencial — matrículas, progresso e notas de alunos continuam existindo mesmo que o curso seja desativado. Um `DELETE` físico exigiria `ON DELETE CASCADE` em todas as FKs filhas, apagando o histórico do aluno.
+
+**Trade-off:** Acumula dados "mortos" no banco ao longo do tempo. Mitigação: job periódico de limpeza ou endpoint de hard-delete para admins.
+
+---
+
+### Flyway ao invés de `ddl-auto=create/update`
+
+**Decisão:** `spring.jpa.hibernate.ddl-auto=validate`. Flyway controla todas as mudanças de schema.
+
+**Por quê:** `ddl-auto=update` é conveniente em desenvolvimento mas perigoso — pode perder dados, adicionar colunas com defaults errados, ou não executar lógica de migração complexa (como backfill de dados). Flyway garante:
+- Versionamento explícito de cada mudança
+- Rollback controlado
+- Mesma sequência em dev, staging e produção
+- Auditoria de quando cada schema foi aplicado
+
+**Trade-off:** Requer criar um arquivo de migration para cada mudança, mesmo pequena. Vale o custo em qualquer projeto que vai além de protótipo.
+
+---
+
+### Navbar com breakpoint `lg` (1024px)
+
+**Decisão:** A nav desktop some e o hamburger aparece abaixo de 1024px (`hidden lg:flex` / `lg:hidden`).
+
+**Por quê:** A navbar tem 5 itens (Home, Cursos, Unidades, Bolsas de Estudo, Eventos) mais botões CTA. Em 768px (breakpoint `md`), o espaço não é suficiente para todos os itens sem causar quebra de linha mesmo com `whitespace-nowrap`. Usar `lg` (1024px) garante que a versão desktop sempre tem espaço suficiente.
+
+**Aprendizado durante desenvolvimento:** Dois elementos com `flex-1` no mesmo container flex competem pelo espaço, comprimindo os itens entre eles. A solução foi remover o spacer duplicado e usar apenas a nav com `flex-1`, deixando o CTA como elemento de largura natural.
