@@ -1,207 +1,92 @@
 # Roadmap — LMS Lite
 
-## Status atual (v1.0)
+## Status atual
 
-### Implementado
-- Autenticação JWT com roles ALUNO e ADMIN
-- Cadastro e login de usuários
-- CRUD de cursos (título, descrição, nível)
-- Módulos e aulas vinculadas aos cursos
-- Matrícula de alunos em cursos
-- Progresso por aula (marcar como concluída)
-- Dashboard do aluno com estatísticas
-- Painel admin: gerenciar cursos e usuários
-- Promoção/rebaixamento de role via painel
-- Frontend Angular 18 + Tailwind + Material com sidebar responsiva
-- API REST documentada, PostgreSQL + Flyway, Docker Compose
+### v0.1 — MVP (2026-05-24)
+- [x] Autenticação JWT (login/cadastro) com roles ADMIN/PROFESSOR/ALUNO
+- [x] CRUD de cursos (soft delete via `ativo=false`)
+- [x] Estrutura de módulos e aulas
+- [x] Matrícula de aluno em curso
+- [x] Progresso por aula (marcar aula como concluída)
+- [x] Dashboard do aluno
+- [x] Sidebar de navegação com controle por role
+- [x] Visual com Tailwind CSS + Angular Material
 
----
+### v0.2 — Gestão completa (2026-05-24)
+- [x] Regiões e unidades (CRUD completo)
+- [x] Vínculo usuário → unidade
+- [x] Professores e vínculo professor ↔ curso
+- [x] Conteúdo de aulas (vídeo, PDF, texto, link)
+- [x] Presença de alunos (upsert por matrícula + aula + data)
+- [x] Lançamento de notas (nota ≥ 6.0 = aprovado)
+- [x] CRUD de usuários com edição inline (nome/email/role/unidade)
+- [x] Painel "Alunos & Notas" por curso no admin
+- [x] Admin de regiões com unidades em MatExpansionPanel
 
-## Próximos passos (v2.0)
-
-### 1. Regiões e Unidades
-**Objetivo:** Estrutura geográfica hierárquica para multi-tenant por localidade.
-
-**Backend:**
-- Entidade `Regiao` (id, nome)
-- Entidade `Unidade` (id, nome, endereco, regiao_id FK)
-- Migrations V4 e V5
-- Endpoints CRUD para regiões e unidades (ADMIN)
-- Associar `Usuario` a uma `Unidade`
-
-**Frontend:**
-- Telas de gerenciamento de regiões e unidades no painel Admin
-- Select cascata: Região → Unidade no cadastro de usuário
-
-**Banco:**
-```sql
-CREATE TABLE regioes (
-    id   BIGSERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL
-);
-CREATE TABLE unidades (
-    id         BIGSERIAL PRIMARY KEY,
-    regiao_id  BIGINT NOT NULL REFERENCES regioes(id),
-    nome       VARCHAR(200) NOT NULL,
-    endereco   TEXT
-);
-ALTER TABLE usuarios ADD COLUMN unidade_id BIGINT REFERENCES unidades(id);
-```
+### v0.3 — Portfólio público (2026-05-30)
+- [x] Áreas, categorias e tipos de curso (domínio + API pública + frontend)
+- [x] 10 áreas, 44 categorias, 11 tipos de curso
+- [x] Seed rico: 4 regiões, 64 unidades reais do Senac SP, 35 cursos reais
+- [x] Navbar pública branca com mega-dropdown (Cursos: áreas + tipos; Unidades: grid 4 colunas por região)
+- [x] Responsividade da nav: hamburger abaixo de 1024px, accordion mobile com dados reais
+- [x] Filtro por região e unidade em `/cursos`
+- [x] Página `/unidades` com dados reais da API, seções por região, destaque via query param
+- [x] Rotas públicas: `/home`, `/sobre`, `/unidades`, `/cursos/areas/**`, `/cursos/tipos/**`
+- [x] Documentação completa (CLAUDE.md, DOCUMENTACAO.md, README.md, ROADMAP.md)
 
 ---
 
-### 2. Tipo de Usuário Professor
-**Objetivo:** Nova role com permissões intermediárias entre ALUNO e ADMIN.
+## Em progresso
 
-**Backend:**
-- Adicionar `PROFESSOR` ao enum `Usuario.Role`
-- Professor vinculado a cursos via tabela `professor_cursos`
-- Endpoints de vinculação (ADMIN vincula professor ao curso)
-- Permissões específicas: professor só acessa cursos dele
-
-**Banco:**
-```sql
-ALTER TYPE usuario_role ADD VALUE 'PROFESSOR';
-CREATE TABLE professor_cursos (
-    professor_id BIGINT NOT NULL REFERENCES usuarios(id),
-    curso_id     BIGINT NOT NULL REFERENCES cursos(id),
-    PRIMARY KEY (professor_id, curso_id)
-);
-```
+- [ ] Módulos e aulas criados via interface admin (atualmente criados diretamente no banco)
+- [ ] Deploy em produção
 
 ---
 
-### 3. Conteúdo das Aulas
-**Objetivo:** Professor pode enriquecer cada aula com materiais.
+## Próximas features — curto prazo
 
-**Backend:**
-- Entidade `ConteudoAula` (id, aula_id, tipo, titulo, url_ou_texto, ordem)
-- Tipos: VIDEO, PDF, TEXTO, LINK
-- Endpoints CRUD restritos ao professor dono do curso
-
-**Frontend:**
-- Tela de edição de aula com upload/link de conteúdo
-- Visualização para o aluno: player de vídeo, PDF viewer, texto formatado
-
-**Banco:**
-```sql
-CREATE TABLE conteudos_aula (
-    id          BIGSERIAL PRIMARY KEY,
-    aula_id     BIGINT      NOT NULL REFERENCES aulas(id) ON DELETE CASCADE,
-    tipo        VARCHAR(20) NOT NULL, -- VIDEO, PDF, TEXTO, LINK
-    titulo      VARCHAR(200) NOT NULL,
-    conteudo    TEXT,
-    ordem       INT NOT NULL DEFAULT 0
-);
-```
+- [ ] **Busca global** de cursos por texto livre (`/api/cursos?q=java`)
+- [ ] **Certificado de conclusão** gerado em PDF ao concluir 100% do curso
+- [ ] **Avaliação de cursos** pelos alunos (rating 1–5 + comentário)
+- [ ] **Página de perfil do aluno** com foto, bio e histórico de cursos
+- [ ] **Notificações in-app** (prazo de matrícula, novo conteúdo disponível)
+- [ ] **CRUD de módulos e aulas** via interface admin (sem edição manual no banco)
+- [ ] **Filtro de alunos** por unidade/região nos relatórios do admin
 
 ---
 
-### 4. Presença nas Aulas
-**Objetivo:** Professor registra presença dos alunos matriculados.
+## Próximas features — médio prazo
 
-**Backend:**
-- Entidade `PresencaAula` (id, matricula_id, aula_id, presente, data_aula, registrado_por)
-- Endpoint: `POST /api/presenca` (PROFESSOR)
-- Endpoint: `GET /api/matriculas/{id}/presenca` (ALUNO e PROFESSOR)
-- Calcular percentual de presença por matrícula
-
-**Frontend:**
-- Tela do professor: lista de alunos por aula com checkbox de presença
-- Tela do aluno: histórico de presença com percentual
-
-**Banco:**
-```sql
-CREATE TABLE presencas_aula (
-    id              BIGSERIAL PRIMARY KEY,
-    matricula_id    BIGINT    NOT NULL REFERENCES matriculas(id),
-    aula_id         BIGINT    NOT NULL REFERENCES aulas(id),
-    presente        BOOLEAN   NOT NULL DEFAULT FALSE,
-    data_aula       DATE      NOT NULL,
-    registrado_por  BIGINT    REFERENCES usuarios(id),
-    UNIQUE (matricula_id, aula_id, data_aula)
-);
-```
+- [ ] Sistema de cupons e descontos
+- [ ] Pagamento integrado (Pix / cartão de crédito)
+- [ ] Fórum de discussão por curso (tópicos + respostas)
+- [ ] App mobile com Angular + Capacitor
+- [ ] Dashboard analytics para admin — gráficos de:
+  - Matrículas por período
+  - Taxa de conclusão por curso
+  - Distribuição de notas
+  - Presença média por unidade
 
 ---
 
-### 5. Nota Final do Aluno
-**Objetivo:** Professor atribui nota ao aluno ao concluir o curso.
+## Melhorias técnicas
 
-**Backend:**
-- Campo `nota` (DECIMAL 4,2) e `aprovado` (BOOLEAN) na tabela `matriculas`
-- Endpoint: `PATCH /api/matriculas/{id}/nota` (PROFESSOR)
-- Regra de aprovação configurável (ex: nota >= 6.0)
-
-**Frontend:**
-- Tela do professor: lançar nota por aluno
-- Tela do aluno: visualizar nota e status de aprovação
-- Certificado visual ao ser aprovado
-
-**Banco:**
-```sql
-ALTER TABLE matriculas ADD COLUMN nota DECIMAL(4,2);
-ALTER TABLE matriculas ADD COLUMN aprovado BOOLEAN DEFAULT FALSE;
-ALTER TABLE matriculas ADD COLUMN nota_lancada_em TIMESTAMP;
-ALTER TABLE matriculas ADD COLUMN nota_lancada_por BIGINT REFERENCES usuarios(id);
-```
+- [ ] **Testes unitários backend** — JUnit 5 + Mockito, cobertura mínima 70%
+- [ ] **Testes e2e frontend** — Playwright, cobertura dos fluxos críticos (login, matrícula, nota)
+- [ ] **CI/CD** com GitHub Actions (build + test em PR, deploy em merge para main)
+- [ ] **Deploy em produção** — Railway (backend) + Vercel ou Netlify (frontend)
+- [ ] **Cache com Redis** para endpoints públicos de alta leitura (`/api/cursos`, `/api/areas`)
+- [ ] **Rate limiting** na API para endpoints públicos
+- [ ] **Documentação Swagger/OpenAPI** via SpringDoc
+- [ ] **Refresh token** para renovar JWT sem relogin
+- [ ] **Paginação** nas respostas do admin (usuários, regiões)
 
 ---
 
-### 6. Dashboard Completo (Admin e Aluno)
+## Histórico de versões
 
-**Dashboard Admin:**
-- Total de regiões, unidades, cursos, professores, alunos
-- Gráfico de matrículas por mês (Recharts no Angular)
-- Taxa de aprovação por curso
-- Ranking de cursos mais acessados
-- Alunos com presença crítica (< 75%)
-
-**Dashboard Aluno:**
-- Progresso geral de todos os cursos matriculados
-- Histórico de presença consolidado
-- Notas e status de aprovação por curso
-- Próximas aulas agendadas
-- Certificados disponíveis
-
----
-
-## Arquitetura futura (v2.0)
-
-```
-lms/
-├── backend/
-│   └── src/main/java/br/com/lms/
-│       └── domain/
-│           ├── regiao/          # Regiao, Unidade
-│           ├── professor/       # vínculo professor-curso
-│           ├── conteudo/        # ConteudoAula
-│           ├── presenca/        # PresencaAula
-│           └── avaliacao/       # Nota, Aprovação
-└── frontend/
-    └── src/app/features/
-        ├── professor/           # dashboard e ferramentas do professor
-        │   ├── meus-cursos/
-        │   ├── lancar-presenca/
-        │   └── lancar-nota/
-        ├── admin/
-        │   ├── regioes/         # CRUD de regiões
-        │   └── unidades/        # CRUD de unidades
-        └── aluno/
-            ├── conteudo-aula/   # visualização de conteúdo
-            └── meu-historico/   # presença + notas
-```
-
----
-
-## Ordem sugerida de implementação
-
-| Prioridade | Feature | Dependências |
-|------------|---------|-------------|
-| 1 | Regiões e Unidades | — |
-| 2 | Role Professor | Regiões e Unidades |
-| 3 | Vínculo Professor-Curso | Role Professor |
-| 4 | Conteúdo das Aulas | Vínculo Professor-Curso |
-| 5 | Presença nas Aulas | Vínculo Professor-Curso |
-| 6 | Nota Final | Presença + Conteúdo |
-| 7 | Dashboard completo | Todos os anteriores |
+| Versão | Data | Destaques |
+|--------|------|-----------|
+| v0.1 | 2026-05-24 | MVP: auth JWT, CRUD cursos, matrícula, progresso de aulas, visual Tailwind |
+| v0.2 | 2026-05-24 | Regiões, unidades, professores, conteúdo de aulas, presença, notas, CRUD usuários |
+| v0.3 | 2026-05-30 | Áreas/categorias/tipos, seed rico (64 unidades, 35 cursos), navbar pública mega-dropdown, páginas públicas, docs |
