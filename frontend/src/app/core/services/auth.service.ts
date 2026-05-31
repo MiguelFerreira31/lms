@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface LoginRequest { email: string; senha: string; }
-export interface AuthResponse { token: string; tipo: string; nome: string; email: string; role: string; }
+export interface AuthResponse { token: string; tipo: string; nome: string; email: string; role: string; avatarUrl?: string | null; }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -21,11 +21,11 @@ export class AuthService {
 
   refreshUser() {
     if (!this.getToken()) return;
-    this.http.get<{ id: number; nome: string; email: string; role: string }>(`${environment.apiUrl}/usuarios/me`).subscribe({
+    this.http.get<{ id: number; nome: string; email: string; role: string; avatarUrl?: string | null }>(`${environment.apiUrl}/usuarios/me`).subscribe({
       next: user => {
         const stored = this.getStoredUser();
         if (stored) {
-          const updated = { ...stored, nome: user.nome, email: user.email, role: user.role };
+          const updated = { ...stored, nome: user.nome, email: user.email, role: user.role, avatarUrl: user.avatarUrl };
           localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
           this.currentUser.set(updated);
         }

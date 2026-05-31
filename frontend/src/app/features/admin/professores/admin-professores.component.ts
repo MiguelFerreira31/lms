@@ -112,4 +112,6 @@ export class AdminProfessoresComponent implements OnInit {
     const vinculados = this.getCursosProfessor(professorId).map(c => c.id);
     return this.cursos().filter(c => !vinculados.includes(c.id));
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
 }

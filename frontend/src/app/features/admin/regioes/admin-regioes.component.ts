@@ -10,18 +10,21 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CursoService, Regiao, Unidade } from '../../../core/services/curso.service';
+import { UploadService } from '../../../core/services/upload.service';
+import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 
 @Component({
   selector: 'app-admin-regioes',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatSnackBarModule, MatProgressSpinnerModule,
-    MatTooltipModule, MatExpansionModule],
+    MatTooltipModule, MatExpansionModule, ImageUploadComponent],
   templateUrl: './admin-regioes.component.html',
   styleUrls: ['./admin-regioes.component.scss']
 })
 export class AdminRegioesComponent implements OnInit {
   private svc = inject(CursoService);
+  private uploadSvc = inject(UploadService);
   private fb = inject(FormBuilder);
   private snack = inject(MatSnackBar);
 
@@ -33,6 +36,8 @@ export class AdminRegioesComponent implements OnInit {
   editandoRegiao = signal<Regiao | null>(null);
   mostrarFormUnidade = signal<number | null>(null);
   editandoUnidade = signal<Unidade | null>(null);
+  imagemUnidadeSelecionada = signal<File | null>(null);
+  uploadandoImagem = signal(false);
 
   formRegiao = this.fb.group({ nome: ['', Validators.required] });
   formUnidade = this.fb.group({
@@ -118,7 +123,10 @@ export class AdminRegioesComponent implements OnInit {
     this.mostrarFormUnidade.set(null);
     this.editandoUnidade.set(null);
     this.formUnidade.reset();
+    this.imagemUnidadeSelecionada.set(null);
   }
+
+  onImagemUnidadeSelected(file: File) { this.imagemUnidadeSelecionada.set(file); }
 
   salvarUnidade(regiaoId: number) {
     if (this.formUnidade.invalid) return;
@@ -131,12 +139,21 @@ export class AdminRegioesComponent implements OnInit {
       : this.svc.criarUnidade(regiaoId, data);
 
     obs.subscribe({
-      next: () => {
-        this.snack.open(editando ? 'Unidade atualizada!' : 'Unidade criada!', 'OK', { duration: 3000 });
-        this.fecharFormUnidade();
-        this.carregarUnidades(regiaoId);
-        this.carregar();
+      next: (unidade: Unidade) => {
         this.salvando.set(false);
+        this.snack.open(editando ? 'Unidade atualizada!' : 'Unidade criada!', 'OK', { duration: 3000 });
+        const imagem = this.imagemUnidadeSelecionada();
+        if (imagem) {
+          this.uploadandoImagem.set(true);
+          this.uploadSvc.uploadUnidade(unidade.id, imagem).subscribe({
+            next: () => { this.uploadandoImagem.set(false); this.fecharFormUnidade(); this.carregarUnidades(regiaoId); this.carregar(); },
+            error: () => { this.uploadandoImagem.set(false); this.fecharFormUnidade(); this.carregarUnidades(regiaoId); this.carregar(); }
+          });
+        } else {
+          this.fecharFormUnidade();
+          this.carregarUnidades(regiaoId);
+          this.carregar();
+        }
       },
       error: (e: any) => {
         this.snack.open(e.error?.message || 'Erro ao salvar unidade', 'Fechar', { duration: 3000 });
@@ -160,4 +177,6 @@ export class AdminRegioesComponent implements OnInit {
   getUnidades(regiaoId: number): Unidade[] {
     return this.unidadesPorRegiao()[regiaoId] || [];
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
 }

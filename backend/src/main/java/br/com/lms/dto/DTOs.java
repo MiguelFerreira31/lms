@@ -27,7 +27,7 @@ public class DTOs {
 
     public record RegisterRequest(@NotBlank String nome, @NotBlank @Email String email, @NotBlank String senha) {}
 
-    public record AuthResponse(String token, String tipo, String nome, String email, String role) {}
+    public record AuthResponse(String token, String tipo, String nome, String email, String role, String avatarUrl) {}
 
     public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId) {}
 
@@ -57,12 +57,14 @@ public class DTOs {
 
     public record CursoResumoResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
+                                       String imagemUrl,
                                        List<CategoriaResponse> categorias, List<TipoResponse> tipos) {
         public static CursoResumoResponse from(Curso c) {
             return new CursoResumoResponse(
                 c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
                 c.getUnidade() != null ? c.getUnidade().getId() : null,
                 c.getUnidade() != null ? c.getUnidade().getNome() : null,
+                c.getImagemUrl(),
                 c.getCategorias().stream().map(CategoriaResponse::from).toList(),
                 c.getTipos().stream().map(TipoResponse::from).toList()
             );
@@ -84,6 +86,7 @@ public class DTOs {
 
     public record CursoDetalheResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
+                                       String imagemUrl,
                                        List<CategoriaResponse> categorias, List<TipoResponse> tipos,
                                        List<ModuloResponse> modulos) {
         public static CursoDetalheResponse from(Curso c) {
@@ -91,6 +94,7 @@ public class DTOs {
                 c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
                 c.getUnidade() != null ? c.getUnidade().getId() : null,
                 c.getUnidade() != null ? c.getUnidade().getNome() : null,
+                c.getImagemUrl(),
                 c.getCategorias().stream().map(CategoriaResponse::from).toList(),
                 c.getTipos().stream().map(TipoResponse::from).toList(),
                 c.getModulos().stream().map(ModuloResponse::from).toList()
@@ -112,11 +116,12 @@ public class DTOs {
 
     public record MarcarAulaRequest(@NotNull Long matriculaId, @NotNull Long aulaId) {}
 
-    public record UsuarioResponse(Long id, String nome, String email, Usuario.Role role, Long unidadeId, String unidadeNome) {
+    public record UsuarioResponse(Long id, String nome, String email, Usuario.Role role, Long unidadeId, String unidadeNome, String avatarUrl) {
         public static UsuarioResponse from(Usuario u) {
             return new UsuarioResponse(u.getId(), u.getNome(), u.getEmail(), u.getRole(),
                 u.getUnidade() != null ? u.getUnidade().getId() : null,
-                u.getUnidade() != null ? u.getUnidade().getNome() : null);
+                u.getUnidade() != null ? u.getUnidade().getNome() : null,
+                u.getAvatarUrl());
         }
     }
 
@@ -130,10 +135,20 @@ public class DTOs {
 
     public record UnidadeRequest(@NotBlank String nome, String endereco, @NotNull Long regiaoId) {}
 
-    public record UnidadeResponse(Long id, String nome, String endereco, Long regiaoId, String regiaoNome) {
+    public record UnidadeResponse(Long id, String nome, String slug, String endereco, Long regiaoId, String regiaoNome, String imagemUrl) {
         public static UnidadeResponse from(Unidade u) {
-            return new UnidadeResponse(u.getId(), u.getNome(), u.getEndereco(),
-                u.getRegiao().getId(), u.getRegiao().getNome());
+            return new UnidadeResponse(u.getId(), u.getNome(), u.getSlug(), u.getEndereco(),
+                u.getRegiao().getId(), u.getRegiao().getNome(), u.getImagemUrl());
+        }
+    }
+
+    public record UnidadeDetalheResponse(Long id, String nome, String slug, String regiaoNome,
+                                          List<AreaResponse> areas, List<TipoResponse> tipos) {
+        public static UnidadeDetalheResponse from(Unidade u, List<Area> areas, List<Tipo> tipos) {
+            return new UnidadeDetalheResponse(u.getId(), u.getNome(), u.getSlug(),
+                u.getRegiao().getNome(),
+                areas.stream().map(AreaResponse::from).toList(),
+                tipos.stream().map(TipoResponse::from).toList());
         }
     }
 

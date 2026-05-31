@@ -27,7 +27,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.email(), request.senha()));
         String token = tokenProvider.generate(auth);
         Usuario user = (Usuario) auth.getPrincipal();
-        return ResponseEntity.ok(new AuthResponse(token, "Bearer", user.getNome(), user.getEmail(), user.getRole().name()));
+        return ResponseEntity.ok(new AuthResponse(token, "Bearer", user.getNome(), user.getEmail(), user.getRole().name(), user.getAvatarUrl()));
     }
 
     @PostMapping("/register")

@@ -36,6 +36,9 @@ public class Curso {
     @Builder.Default
     private Boolean ativo = true;
 
+    @Column(name = "imagem_url", length = 500)
+    private String imagemUrl;
+
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 

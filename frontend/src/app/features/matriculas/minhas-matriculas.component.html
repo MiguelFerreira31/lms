@@ -23,7 +23,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" *ngIf="!loading() && matriculas().length > 0">
-      <div *ngFor="let m of matriculas()" class="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
+      <div *ngFor="let m of matriculas(); trackBy: trackById" class="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
         <div class="h-1.5 w-full bg-gray-100">
           <div class="h-1.5 bg-indigo-500 transition-all duration-700 rounded-full"
                [style.width.%]="m.progresso?.percentual || 0"></div>

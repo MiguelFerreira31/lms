@@ -6,7 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../core/services/auth.service';
-import { CursoService } from '../../../core/services/curso.service';
+import { CursoService, CursoDetalhe } from '../../../core/services/curso.service';
 
 @Component({
   selector: 'app-detalhe-curso',
@@ -22,7 +22,7 @@ export class DetalheCursoComponent implements OnInit {
   private snack = inject(MatSnackBar);
   auth = inject(AuthService);
 
-  curso = signal<any>(null);
+  curso = signal<CursoDetalhe | null>(null);
   loading = signal(true);
   matriculando = signal(false);
 
@@ -40,7 +40,7 @@ export class DetalheCursoComponent implements OnInit {
       return;
     }
     this.matriculando.set(true);
-    this.cursoService.matricular(this.curso().id).subscribe({
+    this.cursoService.matricular(this.curso()!.id).subscribe({
       next: () => {
         this.snack.open('Matrícula realizada com sucesso!', 'OK', { duration: 3000 });
         this.matriculando.set(false);
@@ -71,8 +71,9 @@ export class DetalheCursoComponent implements OnInit {
   }
 
   getTotalAulas(): number {
-    const modulos = this.curso()?.modulos;
-    if (!modulos) return 0;
-    return modulos.reduce((acc: number, m: any) => acc + (m.aulas?.length || 0), 0);
+    return this.curso()?.modulos.reduce((acc, m) => acc + m.aulas.length, 0) ?? 0;
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
+  trackBySlug = (_: number, item: { slug: string }) => item.slug;
 }

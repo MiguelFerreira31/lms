@@ -43,8 +43,14 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Auth — público
                 .requestMatchers("/api/auth/**").permitAll()
+                // Arquivos de upload — leitura pública
+                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                // Endpoints de upload — requerem autenticação (roles verificados via @PreAuthorize)
+                .requestMatchers("/api/upload/**").authenticated()
                 // Cursos — leitura pública, escrita ADMIN
                 .requestMatchers(HttpMethod.GET, "/api/cursos", "/api/cursos/{id}").permitAll()
+                // Unidades — leitura pública
+                .requestMatchers(HttpMethod.GET, "/api/unidades/**").permitAll()
                 // Áreas, Categorias e Tipos — totalmente públicos
                 .requestMatchers(HttpMethod.GET, "/api/areas/**", "/api/tipos/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/cursos").hasRole("ADMIN")
@@ -105,7 +111,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfig() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:4300"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

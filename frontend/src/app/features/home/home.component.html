@@ -95,7 +95,7 @@
     <div class="max-w-6xl mx-auto px-6">
       <div class="flex flex-wrap items-center gap-3">
         <span class="text-sm font-semibold text-gray-500 shrink-0">Conheça nossos cursos:</span>
-        <a *ngFor="let area of areas().slice(0, 7)"
+        <a *ngFor="let area of areas().slice(0, 7); trackBy: trackBySlug"
            [routerLink]="['/cursos/areas', area.slug]"
            class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#EBF4FF] text-[#0054A6] hover:bg-[#0054A6] hover:text-white transition-colors no-underline cursor-pointer flex-shrink-0">
           {{ area.nome }}
@@ -243,7 +243,7 @@
       </div>
 
       <div *ngIf="!loading()" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div *ngFor="let c of cursosDestaque().slice(0, 3)"
+        <div *ngFor="let c of cursosDestaque().slice(0, 3); trackBy: trackById"
              [routerLink]="['/cursos', c.id]"
              class="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1.5 transition-all cursor-pointer group">
           <!-- Gradient header (replaces photo) -->
@@ -286,7 +286,7 @@
 
       <!-- More courses row (3 more) -->
       <div *ngIf="!loading() && cursosDestaque().length > 3" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        <div *ngFor="let c of cursosDestaque().slice(3, 6)"
+        <div *ngFor="let c of cursosDestaque().slice(3, 6); trackBy: trackById"
              [routerLink]="['/cursos', c.id]"
              class="bg-white rounded-2xl border border-gray-100 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer overflow-hidden group flex">
           <div class="w-1.5 flex-shrink-0" [class]="'bg-gradient-to-b ' + getNivelBg(c.nivel)"></div>
@@ -321,7 +321,7 @@
       </div>
 
       <div *ngIf="!loading() && unidadesDestaque().length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-        <div *ngFor="let c of unidadesDestaque()"
+        <div *ngFor="let c of unidadesDestaque(); trackBy: trackById"
              class="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all group cursor-pointer border border-gray-100">
           <!-- Building image placeholder -->
           <div class="h-36 bg-gradient-to-br from-[#003087] to-[#0054A6] flex items-center justify-center relative overflow-hidden">

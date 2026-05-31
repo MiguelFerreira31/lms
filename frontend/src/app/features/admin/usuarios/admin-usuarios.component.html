@@ -71,7 +71,7 @@
         <p class="text-gray-600 font-medium">Nenhum usuário encontrado</p>
       </div>
 
-      <div *ngFor="let u of usuarios()"
+      <div *ngFor="let u of usuarios(); trackBy: trackById"
         class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         <!-- Linha do usuário -->
@@ -125,7 +125,7 @@
                 <mat-label>Unidade</mat-label>
                 <mat-select formControlName="unidadeId">
                   <mat-option [value]="null">Nenhuma</mat-option>
-                  <mat-option *ngFor="let un of unidades()" [value]="un.id">{{ un.nome }} — {{ un.regiaoNome }}</mat-option>
+                  <mat-option *ngFor="let un of unidades(); trackBy: trackById" [value]="un.id">{{ un.nome }} — {{ un.regiaoNome }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>

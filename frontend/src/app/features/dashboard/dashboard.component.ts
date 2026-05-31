@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ImageUploadComponent } from '../../shared/image-upload/image-upload.component';
 import { AuthService } from '../../core/services/auth.service';
 import { CursoService, Matricula, Progresso, Curso } from '../../core/services/curso.service';
+import { UploadService } from '../../core/services/upload.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -15,13 +17,14 @@ interface MatriculaComProgresso extends Matricula {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule, ImageUploadComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   auth = inject(AuthService);
   private cursoService = inject(CursoService);
+  private uploadService = inject(UploadService);
   private router = inject(Router);
 
   matriculas = signal<MatriculaComProgresso[]>([]);
@@ -29,6 +32,7 @@ export class DashboardComponent implements OnInit {
   totalCursos = signal(0);
   loading = signal(true);
   pesquisa = signal('');
+  uploadingAvatar = signal(false);
 
   emAndamento = computed(() => this.matriculas().filter(m => m.status === 'EM_ANDAMENTO'));
   concluidos = computed(() => this.matriculas().filter(m => m.status === 'CONCLUIDO'));
@@ -54,18 +58,28 @@ export class DashboardComponent implements OnInit {
         const progressos$ = matriculas.map(m =>
           this.cursoService.progresso(m.id).pipe(catchError(() => of(null)))
         );
-        forkJoin(progressos$).subscribe(progressos => {
-          this.matriculas.set(matriculas.map((m, i) => ({ ...m, progresso: progressos[i] as Progresso })));
-          this.loading.set(false);
+        forkJoin(progressos$).subscribe({
+          next: progressos => {
+            this.matriculas.set(matriculas.map((m, i) => ({ ...m, progresso: progressos[i] as Progresso })));
+            this.loading.set(false);
+          },
+          error: () => this.loading.set(false)
         });
       },
       error: () => this.loading.set(false)
     });
   }
 
-  irParaCursos(nivel?: string) {
-    const queryParams = nivel ? { nivel } : {};
-    this.router.navigate(['/cursos'], { queryParams });
+  onAvatarSelected(file: File) {
+    this.uploadingAvatar.set(true);
+    this.uploadService.uploadAvatar(file).subscribe({
+      next: () => { this.auth.refreshUser(); this.uploadingAvatar.set(false); },
+      error: () => this.uploadingAvatar.set(false)
+    });
+  }
+
+  irParaCursos(_nivel?: string) {
+    this.router.navigate(['/cursos/areas']);
   }
 
   getNivelClass(nivel: string): string {
@@ -85,4 +99,6 @@ export class DashboardComponent implements OnInit {
     };
     return map[nivel] || 'bg-gray-400';
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
 }

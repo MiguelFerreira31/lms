@@ -5,13 +5,18 @@ import { environment } from '../../../environments/environment';
 export interface CategoriaInfo { id: number; nome: string; slug: string; areaNome: string; areaSlug: string; }
 export interface TipoCurso { id: number; nome: string; slug: string; }
 export interface Area { id: number; nome: string; slug: string; categorias: CategoriaInfo[]; }
-export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; categorias: CategoriaInfo[]; tipos: TipoCurso[]; }
+export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; imagemUrl: string | null; categorias: CategoriaInfo[]; tipos: TipoCurso[]; }
+export interface AulaInfo { id: number; titulo: string; urlVideo: string | null; duracaoMin: number; ordem: number; }
+export interface ModuloInfo { id: number; titulo: string; ordem: number; aulas: AulaInfo[]; }
+export interface CursoDetalhe extends Curso { modulos: ModuloInfo[]; }
 export interface Page<T> { content: T[]; totalElements: number; totalPages: number; number: number; }
 export interface Matricula { id: number; cursoId: number; cursoTitulo: string; status: string; matriculadoEm: string; }
 export interface Progresso { matriculaId: number; aulasConcluidas: number; totalAulas: number; percentual: number; }
 export interface Regiao { id: number; nome: string; totalUnidades: number; }
-export interface Unidade { id: number; nome: string; endereco: string; regiaoId: number; regiaoNome: string; }
+export interface Unidade { id: number; nome: string; slug: string; endereco: string; regiaoId: number; regiaoNome: string; imagemUrl: string | null; }
+export interface UnidadeDetalhe { id: number; nome: string; slug: string; regiaoNome: string; areas: Area[]; tipos: TipoCurso[]; }
 export interface Professor { id: number; nome: string; email: string; role: string; unidadeId: number | null; unidadeNome: string | null; }
+export interface UsuarioResponse { id: number; nome: string; email: string; role: string; unidadeId: number | null; unidadeNome: string | null; }
 export interface ConteudoAula { id: number; titulo: string; tipo: string; conteudo: string; ordem: number; }
 export interface Presenca { id: number; matriculaId: number; aulaId: number; presente: boolean; dataAula: string; }
 export interface PresencaResumo { matriculaId: number; presencas: number; totalAulas: number; percentual: number; }
@@ -45,7 +50,33 @@ export class CursoService {
     return this.http.get<Page<Curso>>(`${environment.apiUrl}/tipos/${tipoSlug}/cursos`, { params });
   }
 
+  listarTodosCursosTipo(tipoSlug: string) {
+    const params = new HttpParams().set('size', 100);
+    return this.http.get<Page<Curso>>(`${environment.apiUrl}/tipos/${tipoSlug}/cursos`, { params });
+  }
+
+  listarCursosDaArea(areaSlug: string) {
+    const params = new HttpParams().set('areaSlug', areaSlug).set('size', 100);
+    return this.http.get<Page<Curso>>(`${environment.apiUrl}/cursos`, { params });
+  }
+
+  buscarUnidade(slug: string) {
+    return this.http.get<UnidadeDetalhe>(`${environment.apiUrl}/unidades/${slug}`);
+  }
+
+  listarCursosDaUnidade(slug: string, filtros?: { tipoSlug?: string; areaSlug?: string }) {
+    let params = new HttpParams().set('size', 100);
+    if (filtros?.tipoSlug) params = params.set('tipoSlug', filtros.tipoSlug);
+    if (filtros?.areaSlug) params = params.set('areaSlug', filtros.areaSlug);
+    return this.http.get<Page<Curso>>(`${environment.apiUrl}/unidades/${slug}/cursos`, { params });
+  }
+
   // --- Cursos ---
+  listarTodosCursos() {
+    const params = new HttpParams().set('page', 0).set('size', 200);
+    return this.http.get<Page<Curso>>(`${environment.apiUrl}/cursos`, { params });
+  }
+
   listarCursos(page = 0, nivel?: string, unidadeId?: number) {
     let params = new HttpParams().set('page', page).set('size', 10);
     if (nivel) params = params.set('nivel', nivel);
@@ -54,7 +85,7 @@ export class CursoService {
   }
 
   buscarCurso(id: number) {
-    return this.http.get<Curso>(`${environment.apiUrl}/cursos/${id}`);
+    return this.http.get<CursoDetalhe>(`${environment.apiUrl}/cursos/${id}`);
   }
 
   criarCurso(data: { titulo: string; descricao: string; nivel: string; unidadeId: number | null }) {
@@ -88,7 +119,7 @@ export class CursoService {
 
   // --- Usuários ---
   listarUsuarios() {
-    return this.http.get<any[]>(`${environment.apiUrl}/usuarios`);
+    return this.http.get<UsuarioResponse[]>(`${environment.apiUrl}/usuarios`);
   }
 
   criarUsuario(data: { nome: string; email: string; senha: string }) {

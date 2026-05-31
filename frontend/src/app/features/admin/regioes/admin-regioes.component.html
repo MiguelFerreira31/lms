@@ -49,7 +49,7 @@
       </div>
 
       <mat-accordion class="space-y-3">
-        <mat-expansion-panel *ngFor="let regiao of regioes()"
+        <mat-expansion-panel *ngFor="let regiao of regioes(); trackBy: trackById"
           class="rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
           (opened)="carregarUnidades(regiao.id)">
           <mat-expansion-panel-header class="bg-white hover:bg-gray-50">
@@ -106,6 +106,16 @@
                     <mat-label>Endereço</mat-label>
                     <input matInput formControlName="endereco" placeholder="Ex: Rua das Flores, 123">
                   </mat-form-field>
+                  <div class="md:col-span-2">
+                    <p class="text-xs font-medium text-gray-600 mb-1.5">Foto da Unidade</p>
+                    <app-image-upload
+                      [currentUrl]="editandoUnidade()?.imagemUrl ?? null"
+                      placeholder="Foto da unidade"
+                      shape="rect"
+                      [loading]="uploadandoImagem()"
+                      (fileSelected)="onImagemUnidadeSelected($event)">
+                    </app-image-upload>
+                  </div>
                 </div>
                 <div class="flex justify-end gap-2">
                   <button type="button" (click)="fecharFormUnidade()"
@@ -126,11 +136,20 @@
               class="text-center py-4 text-sm text-gray-400">
               Nenhuma unidade. Clique em "Nova Unidade" para adicionar.
             </div>
-            <div *ngFor="let unidade of getUnidades(regiao.id)"
-              class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center justify-between">
-              <div>
-                <p class="font-medium text-gray-800 text-sm">{{ unidade.nome }}</p>
-                <p *ngIf="unidade.endereco" class="text-xs text-gray-400">{{ unidade.endereco }}</p>
+            <div *ngFor="let unidade of getUnidades(regiao.id); trackBy: trackById"
+              class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center gap-3 justify-between">
+              <!-- Thumbnail -->
+              <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                <img *ngIf="unidade.imagemUrl" [src]="unidade.imagemUrl"
+                     [alt]="unidade.nome" class="w-full h-full object-cover" loading="lazy">
+                <div *ngIf="!unidade.imagemUrl"
+                     class="w-full h-full flex items-center justify-center">
+                  <mat-icon class="text-gray-300 text-sm">location_city</mat-icon>
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-800 text-sm truncate">{{ unidade.nome }}</p>
+                <p *ngIf="unidade.endereco" class="text-xs text-gray-400 truncate">{{ unidade.endereco }}</p>
               </div>
               <div class="flex gap-1">
                 <button (click)="abrirFormUnidade(regiao.id, unidade)" matTooltip="Editar"

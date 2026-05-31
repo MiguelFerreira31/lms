@@ -189,4 +189,6 @@ export class ProfessorCursosComponent implements OnInit {
     };
     return map[nivel] || 'bg-gray-100 text-gray-800';
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
 }

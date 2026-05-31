@@ -24,4 +24,12 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
     @Query(value = "SELECT DISTINCT c FROM Curso c JOIN c.tipos t WHERE c.ativo = true AND t.slug = :tipoSlug",
            countQuery = "SELECT COUNT(DISTINCT c) FROM Curso c JOIN c.tipos t WHERE c.ativo = true AND t.slug = :tipoSlug")
     Page<Curso> findByTipoSlug(@Param("tipoSlug") String tipoSlug, Pageable pageable);
+
+    @Query(value = "SELECT DISTINCT c FROM Curso c JOIN c.tipos t WHERE c.ativo = true AND c.unidade.id = :unidadeId AND t.slug = :tipoSlug",
+           countQuery = "SELECT COUNT(DISTINCT c) FROM Curso c JOIN c.tipos t WHERE c.ativo = true AND c.unidade.id = :unidadeId AND t.slug = :tipoSlug")
+    Page<Curso> findByUnidadeAndTipo(@Param("unidadeId") Long unidadeId, @Param("tipoSlug") String tipoSlug, Pageable pageable);
+
+    @Query(value = "SELECT DISTINCT c FROM Curso c JOIN c.categorias cat WHERE c.ativo = true AND c.unidade.id = :unidadeId AND cat.area.slug = :areaSlug",
+           countQuery = "SELECT COUNT(DISTINCT c) FROM Curso c JOIN c.categorias cat WHERE c.ativo = true AND c.unidade.id = :unidadeId AND cat.area.slug = :areaSlug")
+    Page<Curso> findByUnidadeAndArea(@Param("unidadeId") Long unidadeId, @Param("areaSlug") String areaSlug, Pageable pageable);
 }

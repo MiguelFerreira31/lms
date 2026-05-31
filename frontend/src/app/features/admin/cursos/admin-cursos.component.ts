@@ -12,18 +12,21 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CursoService, Curso, MatriculaDetalhe, Unidade } from '../../../core/services/curso.service';
+import { UploadService } from '../../../core/services/upload.service';
+import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 
 @Component({
   selector: 'app-admin-cursos',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSnackBarModule,
-    MatProgressSpinnerModule, MatTooltipModule, MatTabsModule],
+    MatProgressSpinnerModule, MatTooltipModule, MatTabsModule, ImageUploadComponent],
   templateUrl: './admin-cursos.component.html',
   styleUrls: ['./admin-cursos.component.scss']
 })
 export class AdminCursosComponent implements OnInit {
   private svc = inject(CursoService);
+  private uploadSvc = inject(UploadService);
   private fb = inject(FormBuilder);
   private snack = inject(MatSnackBar);
 
@@ -34,6 +37,8 @@ export class AdminCursosComponent implements OnInit {
   editando = signal<Curso | null>(null);
   mostrarForm = signal(false);
   cursoExpandido = signal<number | null>(null);
+  imagemSelecionada = signal<File | null>(null);
+  uploadandoCapa = signal(false);
   matriculasCurso = signal<Record<number, MatriculaDetalhe[]>>({});
   loadingAlunos = signal<number | null>(null);
   notasEditando = signal<Record<number, string>>({});
@@ -57,7 +62,8 @@ export class AdminCursosComponent implements OnInit {
       error: () => this.loading.set(false)
     });
     this.svc.listarTodasUnidades().subscribe({
-      next: data => this.unidades.set(data)
+      next: data => this.unidades.set(data),
+      error: err => console.error('Erro ao carregar unidades:', err)
     });
   }
 
@@ -73,22 +79,34 @@ export class AdminCursosComponent implements OnInit {
     this.cursoExpandido.set(null);
   }
 
-  fecharForm() { this.mostrarForm.set(false); this.editando.set(null); this.form.reset(); }
+  fecharForm() { this.mostrarForm.set(false); this.editando.set(null); this.form.reset(); this.imagemSelecionada.set(null); }
+
+  onCapaSelected(file: File) { this.imagemSelecionada.set(file); }
 
   salvar() {
     if (this.form.invalid) return;
     this.salvando.set(true);
     const v = this.form.value;
     const data = { titulo: v.titulo!, descricao: v.descricao || '', nivel: v.nivel!, unidadeId: v.unidadeId ?? null };
-    const op = this.editando()
+    const isEdicao = !!this.editando();
+    const op = isEdicao
       ? this.svc.atualizarCurso(this.editando()!.id, data)
       : this.svc.criarCurso(data);
     op.subscribe({
-      next: () => {
-        this.snack.open(this.editando() ? 'Curso atualizado!' : 'Curso criado!', 'OK', { duration: 3000 });
-        this.fecharForm();
-        this.carregar();
+      next: (curso: Curso) => {
         this.salvando.set(false);
+        const imagem = this.imagemSelecionada();
+        if (imagem) {
+          this.uploadandoCapa.set(true);
+          this.uploadSvc.uploadCurso(curso.id, imagem).subscribe({
+            next: () => { this.uploadandoCapa.set(false); this.fecharForm(); this.carregar(); },
+            error: () => { this.uploadandoCapa.set(false); this.fecharForm(); this.carregar(); }
+          });
+        } else {
+          this.fecharForm();
+          this.carregar();
+        }
+        this.snack.open(isEdicao ? 'Curso atualizado!' : 'Curso criado!', 'OK', { duration: 3000 });
       },
       error: () => { this.snack.open('Erro ao salvar curso', 'Fechar', { duration: 3000 }); this.salvando.set(false); }
     });
@@ -172,4 +190,6 @@ export class AdminCursosComponent implements OnInit {
   getStatusClass(status: string): string {
     return status === 'CONCLUIDO' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700';
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
 }

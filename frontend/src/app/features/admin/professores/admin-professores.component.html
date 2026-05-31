@@ -19,7 +19,7 @@
         <p class="text-gray-400 text-sm mt-1">Promova um usuário ao perfil PROFESSOR em "Gerenciar Usuários".</p>
       </div>
 
-      <div *ngFor="let prof of professores()"
+      <div *ngFor="let prof of professores(); trackBy: trackById"
         class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         <!-- Cabeçalho do professor -->
@@ -54,7 +54,7 @@
               <mat-label>Vincular novo curso</mat-label>
               <mat-select [value]="getCursoSelecionado(prof.id)"
                 (selectionChange)="setCursoSelecionado(prof.id, $event.value)">
-                <mat-option *ngFor="let curso of cursosDisponiveis(prof.id)" [value]="curso.id">
+                <mat-option *ngFor="let curso of cursosDisponiveis(prof.id); trackBy: trackById" [value]="curso.id">
                   {{ curso.titulo }}
                 </mat-option>
               </mat-select>
@@ -71,7 +71,7 @@
           <div *ngIf="getCursosProfessor(prof.id).length === 0" class="text-center py-4 text-sm text-gray-400">
             Nenhum curso vinculado.
           </div>
-          <div *ngFor="let curso of getCursosProfessor(prof.id)"
+          <div *ngFor="let curso of getCursosProfessor(prof.id); trackBy: trackById"
             class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
