@@ -2,10 +2,20 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+  // Públicas
   {
     path: 'home',
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+  },
+  {
+    path: 'sobre',
+    loadComponent: () => import('./features/sobre/sobre.component').then(m => m.SobreComponent)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent)
   },
   {
     path: 'unidades',
@@ -23,16 +33,9 @@ export const routes: Routes = [
     path: 'unidades/:unidadeSlug/:tipoSlug',
     loadComponent: () => import('./features/unidades/cursos-unidade-tipo/cursos-unidade-tipo.component').then(m => m.CursosUnidadeTipoComponent)
   },
-  {
-    path: 'sobre',
-    loadComponent: () => import('./features/sobre/sobre.component').then(m => m.SobreComponent)
-  },
-  {
-    path: 'login',
-    loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent)
-  },
-  // Public course catalog and detail (API is public)
-  { path: 'cursos', redirectTo: '/cursos/areas', pathMatch: 'full' },
+
+  // Catálogo de cursos (público) — estáticos antes de dinâmicos
+  { path: 'cursos', redirectTo: 'cursos/areas', pathMatch: 'full' },
   {
     path: 'cursos/areas',
     loadComponent: () => import('./features/areas/lista-areas/lista-areas.component').then(m => m.ListaAreasComponent)
@@ -53,54 +56,63 @@ export const routes: Routes = [
     path: 'cursos/:id',
     loadComponent: () => import('./features/cursos/detalhe-curso/detalhe-curso.component').then(m => m.DetalheCursoComponent)
   },
-  // Authenticated routes
+
+  // Autenticadas
   {
     path: 'dashboard',
-    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   {
     path: 'matriculas',
-    loadComponent: () => import('./features/matriculas/minhas-matriculas.component').then(m => m.MinhasMatriculasComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/matriculas/minhas-matriculas.component').then(m => m.MinhasMatriculasComponent)
   },
+
+  // Admin (rotas planas — sem parent componentless)
   {
     path: 'admin',
-    canActivate: [authGuard],
-    children: [
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./features/admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
-      },
-      {
-        path: 'cursos',
-        loadComponent: () => import('./features/admin/cursos/admin-cursos.component').then(m => m.AdminCursosComponent)
-      },
-      {
-        path: 'usuarios',
-        loadComponent: () => import('./features/admin/usuarios/admin-usuarios.component').then(m => m.AdminUsuariosComponent)
-      },
-      {
-        path: 'regioes',
-        loadComponent: () => import('./features/admin/regioes/admin-regioes.component').then(m => m.AdminRegioesComponent)
-      },
-      {
-        path: 'professores',
-        loadComponent: () => import('./features/admin/professores/admin-professores.component').then(m => m.AdminProfessoresComponent)
-      },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
+    redirectTo: 'admin/dashboard',
+    pathMatch: 'full'
   },
   {
-    path: 'professor',
+    path: 'admin/dashboard',
     canActivate: [authGuard],
-    children: [
-      {
-        path: 'cursos',
-        loadComponent: () => import('./features/professor/meus-cursos/professor-cursos.component').then(m => m.ProfessorCursosComponent)
-      },
-      { path: '', redirectTo: 'cursos', pathMatch: 'full' }
-    ]
+    loadComponent: () => import('./features/admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
   },
-  { path: '**', redirectTo: '/home' }
+  {
+    path: 'admin/cursos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/admin/cursos/admin-cursos.component').then(m => m.AdminCursosComponent)
+  },
+  {
+    path: 'admin/usuarios',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/admin/usuarios/admin-usuarios.component').then(m => m.AdminUsuariosComponent)
+  },
+  {
+    path: 'admin/regioes',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/admin/regioes/admin-regioes.component').then(m => m.AdminRegioesComponent)
+  },
+  {
+    path: 'admin/professores',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/admin/professores/admin-professores.component').then(m => m.AdminProfessoresComponent)
+  },
+
+  // Professor
+  {
+    path: 'professor',
+    redirectTo: 'professor/cursos',
+    pathMatch: 'full'
+  },
+  {
+    path: 'professor/cursos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/professor/meus-cursos/professor-cursos.component').then(m => m.ProfessorCursosComponent)
+  },
+
+  // Wildcard — sempre último
+  { path: '**', redirectTo: 'home' }
 ];
