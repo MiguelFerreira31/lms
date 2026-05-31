@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/usuarios/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole("ADMIN")
                 // Regiões e Unidades — lista e todas-unidades são públicas, detalhes exigem auth
                 .requestMatchers(HttpMethod.GET, "/api/regioes", "/api/regioes/unidades").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/regioes/**").authenticated()

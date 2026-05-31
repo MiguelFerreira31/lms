@@ -16,7 +16,7 @@ export interface Regiao { id: number; nome: string; totalUnidades: number; }
 export interface Unidade { id: number; nome: string; slug: string; endereco: string; regiaoId: number; regiaoNome: string; imagemUrl: string | null; }
 export interface UnidadeDetalhe { id: number; nome: string; slug: string; regiaoNome: string; areas: Area[]; tipos: TipoCurso[]; }
 export interface Professor { id: number; nome: string; email: string; role: string; unidadeId: number | null; unidadeNome: string | null; }
-export interface UsuarioResponse { id: number; nome: string; email: string; role: string; unidadeId: number | null; unidadeNome: string | null; }
+export interface UsuarioResponse { id: number; nome: string; email: string; role: string; unidadeId: number | null; unidadeNome: string | null; avatarUrl: string | null; }
 export interface ConteudoAula { id: number; titulo: string; tipo: string; conteudo: string; ordem: number; }
 export interface Presenca { id: number; matriculaId: number; aulaId: number; presente: boolean; dataAula: string; }
 export interface PresencaResumo { matriculaId: number; presencas: number; totalAulas: number; percentual: number; }
@@ -127,7 +127,13 @@ export class CursoService {
   }
 
   atualizarUsuario(id: number, data: { nome: string; email: string; role: string; unidadeId: number | null }) {
-    return this.http.put<any>(`${environment.apiUrl}/usuarios/${id}`, data);
+    return this.http.put<UsuarioResponse>(`${environment.apiUrl}/usuarios/${id}`, data);
+  }
+
+  uploadAvatar(usuarioId: number, file: File) {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<UsuarioResponse>(`${environment.apiUrl}/usuarios/${usuarioId}/foto`, form);
   }
 
   atualizarRole(id: number, role: string) {

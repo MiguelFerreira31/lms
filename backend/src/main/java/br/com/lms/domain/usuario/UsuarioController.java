@@ -6,9 +6,15 @@ import br.com.lms.dto.DTOs.*;
 import br.com.lms.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import java.util.List;
 
@@ -51,6 +57,36 @@ public class UsuarioController {
         }
 
         return ResponseEntity.ok(UsuarioResponse.from(usuarioRepository.save(usuario)));
+    }
+
+    @PostMapping(value = "/{id}/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UsuarioResponse> uploadFoto(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+
+        if (file.isEmpty()) throw new IllegalArgumentException("Arquivo vazio");
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/"))
+            throw new IllegalArgumentException("Apenas imagens são permitidas");
+        if (file.getSize() > 2 * 1024 * 1024)
+            throw new IllegalArgumentException("Imagem deve ter no máximo 2MB");
+
+        String uploadDir = System.getProperty("user.dir") + "/uploads/avatars/";
+        Files.createDirectories(Path.of(uploadDir));
+
+        String original = file.getOriginalFilename();
+        String ext = (original != null && original.contains("."))
+                ? original.substring(original.lastIndexOf('.'))
+                : ".jpg";
+        String filename = "user-" + id + "-" + System.currentTimeMillis() + ext;
+        file.transferTo(Path.of(uploadDir + filename));
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
+        usuario.setAvatarUrl("/uploads/avatars/" + filename);
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok(UsuarioResponse.from(usuario));
     }
 
     @PatchMapping("/{id}/role")
