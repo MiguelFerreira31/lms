@@ -31,8 +31,13 @@ import { AuthService } from '../../core/services/auth.service';
           <span class="text-sm font-semibold text-white">{{ auth.currentUser()?.nome }}</span>
           <span class="text-xs text-blue-200 font-medium">{{ auth.currentUser()?.role }}</span>
         </div>
-        <div class="w-9 h-9 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-white font-bold text-sm">
-          {{ auth.currentUser()?.nome?.charAt(0)?.toUpperCase() }}
+        <div class="w-9 h-9 rounded-full bg-white/20 border-2 border-white/30 overflow-hidden flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+          <img *ngIf="auth.currentUser()?.avatarUrl"
+               [src]="auth.currentUser()!.avatarUrl!"
+               class="w-full h-full object-cover">
+          <span *ngIf="!auth.currentUser()?.avatarUrl">
+            {{ auth.currentUser()?.nome?.charAt(0)?.toUpperCase() }}
+          </span>
         </div>
         <button (click)="auth.logout()" matTooltip="Sair"
           class="p-2 rounded-lg hover:bg-white/10 hover:text-red-200 transition-colors border-0 bg-transparent cursor-pointer text-white/80">
@@ -91,6 +96,12 @@ import { AuthService } from '../../core/services/auth.service';
         <!-- Admin section -->
         <div *ngIf="auth.isAdmin()" class="pt-4">
           <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">Administração</p>
+          <a routerLink="/admin/dashboard" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+             (click)="sidebarOpen.set(false)"
+             class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+            <mat-icon class="flex-shrink-0">dashboard</mat-icon>
+            Dashboard Admin
+          </a>
           <a routerLink="/admin/cursos" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
              (click)="sidebarOpen.set(false)"
              class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">

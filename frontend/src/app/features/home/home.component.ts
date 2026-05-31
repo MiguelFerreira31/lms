@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { CursoService, Curso, Area } from '../../core/services/curso.service';
 
@@ -35,17 +36,17 @@ export class HomeComponent implements OnInit {
       this.router.navigate(['/dashboard']);
       return;
     }
-    this.cursoService.listarCursos(0).subscribe({
-      next: data => {
-        this.cursosDestaque.set(data.content);
-        this.totalCursos.set(data.totalElements);
+    forkJoin({
+      cursos: this.cursoService.listarCursos(0),
+      areas: this.cursoService.listarAreas()
+    }).subscribe({
+      next: ({ cursos, areas }) => {
+        this.cursosDestaque.set(cursos.content);
+        this.totalCursos.set(cursos.totalElements);
+        this.areas.set(areas);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
-    });
-    this.cursoService.listarAreas().subscribe({
-      next: data => this.areas.set(data),
-      error: () => {}
     });
   }
 
@@ -73,4 +74,7 @@ export class HomeComponent implements OnInit {
   }
 
   year = new Date().getFullYear();
+
+  trackById = (_: number, item: { id: number }) => item.id;
+  trackBySlug = (_: number, item: { slug: string }) => item.slug;
 }

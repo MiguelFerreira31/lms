@@ -12,6 +12,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/unidades/unidades.component').then(m => m.UnidadesComponent)
   },
   {
+    path: 'unidades/:unidadeSlug',
+    loadComponent: () => import('./features/unidades/detalhe-unidade/detalhe-unidade.component').then(m => m.DetalheUnidadeComponent)
+  },
+  {
+    path: 'unidades/:unidadeSlug/areas/:areaSlug',
+    loadComponent: () => import('./features/unidades/cursos-unidade-area/cursos-unidade-area.component').then(m => m.CursosUnidadeAreaComponent)
+  },
+  {
+    path: 'unidades/:unidadeSlug/:tipoSlug',
+    loadComponent: () => import('./features/unidades/cursos-unidade-tipo/cursos-unidade-tipo.component').then(m => m.CursosUnidadeTipoComponent)
+  },
+  {
     path: 'sobre',
     loadComponent: () => import('./features/sobre/sobre.component').then(m => m.SobreComponent)
   },
@@ -20,10 +32,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent)
   },
   // Public course catalog and detail (API is public)
-  {
-    path: 'cursos',
-    loadComponent: () => import('./features/cursos/lista-cursos/lista-cursos.component').then(m => m.ListaCursosComponent)
-  },
+  { path: 'cursos', redirectTo: '/cursos/areas', pathMatch: 'full' },
   {
     path: 'cursos/areas',
     loadComponent: () => import('./features/areas/lista-areas/lista-areas.component').then(m => m.ListaAreasComponent)
@@ -60,6 +69,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'dashboard',
+        loadComponent: () => import('./features/admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+      },
+      {
         path: 'cursos',
         loadComponent: () => import('./features/admin/cursos/admin-cursos.component').then(m => m.AdminCursosComponent)
       },
@@ -75,7 +88,7 @@ export const routes: Routes = [
         path: 'professores',
         loadComponent: () => import('./features/admin/professores/admin-professores.component').then(m => m.AdminProfessoresComponent)
       },
-      { path: '', redirectTo: 'cursos', pathMatch: 'full' }
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
   {

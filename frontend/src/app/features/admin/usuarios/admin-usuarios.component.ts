@@ -60,7 +60,8 @@ export class AdminUsuariosComponent implements OnInit {
       error: () => this.loading.set(false)
     });
     this.svc.listarTodasUnidades().subscribe({
-      next: data => this.unidades.set(data)
+      next: data => this.unidades.set(data),
+      error: err => console.error('Erro ao carregar unidades:', err)
     });
   }
 
@@ -141,4 +142,6 @@ export class AdminUsuariosComponent implements OnInit {
     };
     return map[role] || 'bg-gray-600';
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
 }

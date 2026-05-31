@@ -18,8 +18,14 @@ public class Unidade {
     @Column(nullable = false, length = 200)
     private String nome;
 
+    @Column(nullable = false, unique = true, length = 200)
+    private String slug;
+
     @Column(columnDefinition = "TEXT")
     private String endereco;
+
+    @Column(name = "imagem_url", length = 500)
+    private String imagemUrl;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;

@@ -41,7 +41,7 @@
             <mat-label>Unidade</mat-label>
             <mat-select formControlName="unidadeId">
               <mat-option [value]="null">Nenhuma (curso geral)</mat-option>
-              <mat-option *ngFor="let u of unidades()" [value]="u.id">{{ u.nome }} — {{ u.regiaoNome }}</mat-option>
+              <mat-option *ngFor="let u of unidades(); trackBy: trackById" [value]="u.id">{{ u.nome }} — {{ u.regiaoNome }}</mat-option>
             </mat-select>
           </mat-form-field>
           <div class="md:col-span-3">
@@ -49,6 +49,16 @@
               <mat-label>Descrição</mat-label>
               <textarea matInput formControlName="descricao" rows="2" placeholder="Objetivos e conteúdo do curso"></textarea>
             </mat-form-field>
+          </div>
+          <div class="md:col-span-3">
+            <p class="text-sm font-medium text-gray-700 mb-2">Capa do Curso</p>
+            <app-image-upload
+              [currentUrl]="editando()?.imagemUrl ?? null"
+              placeholder="Capa do curso (1280×720 recomendado)"
+              shape="rect"
+              [loading]="uploadandoCapa()"
+              (fileSelected)="onCapaSelected($event)">
+            </app-image-upload>
           </div>
         </div>
         <div class="flex justify-end gap-3">
@@ -77,7 +87,7 @@
         <p class="text-gray-600 font-medium">Nenhum curso cadastrado</p>
       </div>
 
-      <div *ngFor="let c of cursos()" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div *ngFor="let c of cursos(); trackBy: trackById" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         <!-- Linha principal do curso -->
         <div class="flex items-center gap-4 p-5">
@@ -140,7 +150,7 @@
           </div>
 
           <!-- Lista de alunos -->
-          <div *ngFor="let mat of getAlunos(c.id)"
+          <div *ngFor="let mat of getAlunos(c.id); trackBy: trackById"
             class="bg-white rounded-xl border border-gray-100 p-4 mb-3">
             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
 

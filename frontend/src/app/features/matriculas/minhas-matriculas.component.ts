@@ -25,12 +25,17 @@ export class MinhasMatriculasComponent implements OnInit {
       next: lista => {
         if (!lista.length) { this.matriculas.set([]); this.loading.set(false); return; }
         const progressos$ = lista.map(m => this.cursoService.progresso(m.id).pipe(catchError(() => of(null))));
-        forkJoin(progressos$).subscribe(progressos => {
-          this.matriculas.set(lista.map((m, i) => ({ ...m, progresso: progressos[i] as Progresso })));
-          this.loading.set(false);
+        forkJoin(progressos$).subscribe({
+          next: progressos => {
+            this.matriculas.set(lista.map((m, i) => ({ ...m, progresso: progressos[i] as Progresso })));
+            this.loading.set(false);
+          },
+          error: () => this.loading.set(false)
         });
       },
       error: () => this.loading.set(false)
     });
   }
+
+  trackById = (_: number, item: { id: number }) => item.id;
 }

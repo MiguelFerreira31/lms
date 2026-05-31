@@ -28,7 +28,7 @@
 
     <!-- Lista de cursos -->
     <div *ngIf="!loading() && cursos().length > 0" class="space-y-4">
-      <div *ngFor="let curso of cursos()"
+      <div *ngFor="let curso of cursos(); trackBy: trackById"
         class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         <!-- Cabeçalho do curso (clicável) -->
@@ -66,7 +66,7 @@
 
           <!-- Módulos e Aulas -->
           <div *ngIf="loadingDetalhe() !== curso.id && getDetalhe(curso.id) as detalhe">
-            <div *ngFor="let modulo of detalhe.modulos" class="border-b border-gray-50 last:border-0">
+            <div *ngFor="let modulo of detalhe.modulos; trackBy: trackById" class="border-b border-gray-50 last:border-0">
 
               <!-- Cabeçalho do módulo -->
               <div class="flex items-center gap-3 px-5 py-3 bg-gray-50">
@@ -78,7 +78,7 @@
               </div>
 
               <!-- Aulas do módulo -->
-              <div *ngFor="let aula of modulo.aulas"
+              <div *ngFor="let aula of modulo.aulas; trackBy: trackById"
                 class="border-t border-gray-50">
 
                 <!-- Linha da aula -->
@@ -103,7 +103,7 @@
                 <div *ngIf="aulaAberta() === aula.id" class="bg-indigo-50 px-6 py-4">
 
                   <!-- Conteúdos existentes -->
-                  <div *ngFor="let c of getConteudos(aula.id)"
+                  <div *ngFor="let c of getConteudos(aula.id); trackBy: trackById"
                     class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <mat-icon [class]="getTipoColor(c.tipo)" class="text-sm">{{ getTipoIcon(c.tipo) }}</mat-icon>

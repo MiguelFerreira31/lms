@@ -160,7 +160,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
                 <p class="text-[#1a2e5a] font-bold text-xs uppercase tracking-widest mb-3">Capital</p>
                 <div class="grid grid-cols-2 gap-x-6 gap-y-1.5">
                   <a *ngFor="let u of capitalUnidades()"
-                     [routerLink]="['/unidades']" [queryParams]="{ unidadeId: u.id }"
+                     [routerLink]="['/unidades', u.slug]"
                      (click)="activeDropdown.set(null)"
                      class="text-[#0054A6] text-sm hover:underline no-underline truncate">
                     {{ u.nome }}
@@ -173,7 +173,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
                 <p class="text-[#1a2e5a] font-bold text-xs uppercase tracking-widest mb-3">Grande SP e Litoral</p>
                 <ul class="space-y-1.5">
                   <li *ngFor="let u of grandeSPUnidades()">
-                    <a [routerLink]="['/unidades']" [queryParams]="{ unidadeId: u.id }"
+                    <a [routerLink]="['/unidades', u.slug]"
                        (click)="activeDropdown.set(null)"
                        class="text-[#0054A6] text-sm hover:underline no-underline block">
                       {{ u.nome }}
@@ -187,7 +187,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
                 <p class="text-[#1a2e5a] font-bold text-xs uppercase tracking-widest mb-3">Interior</p>
                 <ul class="space-y-1.5 overflow-y-auto pr-1" style="max-height:260px">
                   <li *ngFor="let u of interiorUnidades()">
-                    <a [routerLink]="['/unidades']" [queryParams]="{ unidadeId: u.id }"
+                    <a [routerLink]="['/unidades', u.slug]"
                        (click)="activeDropdown.set(null)"
                        class="text-[#0054A6] text-sm hover:underline no-underline block">
                       {{ u.nome }}
@@ -204,7 +204,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
                 Centros Universitários
               </p>
               <a *ngFor="let u of centrosUnivUnidades()"
-                 [routerLink]="['/unidades']" [queryParams]="{ unidadeId: u.id }"
+                 [routerLink]="['/unidades', u.slug]"
                  (click)="activeDropdown.set(null)"
                  class="text-[#0054A6] text-sm hover:underline no-underline">
                 {{ u.nome }}
@@ -306,7 +306,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
               </p>
               <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-1">
                 <a *ngFor="let u of grupo.unidades"
-                   [routerLink]="['/unidades']" [queryParams]="{ unidadeId: u.id }"
+                   [routerLink]="['/unidades', u.slug]"
                    (click)="closeAll()"
                    class="text-[#0054A6] text-sm hover:underline no-underline truncate">
                   {{ u.nome }}

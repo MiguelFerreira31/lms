@@ -85,7 +85,7 @@ interface GrupoRegiao {
                   </div>
                 </div>
 
-                <a [routerLink]="['/cursos']" [queryParams]="{ unidadeId: u.id }"
+                <a [routerLink]="['/unidades', u.slug]"
                    class="self-start inline-flex items-center gap-1.5 text-[#0054A6] text-xs
                           font-semibold hover:underline no-underline mt-auto">
                   <mat-icon style="font-size:14px;height:14px;width:14px">school</mat-icon>
@@ -121,7 +121,7 @@ interface GrupoRegiao {
               <mat-icon style="font-size:20px;height:20px;width:20px">school</mat-icon>
               Matricule-se agora
             </a>
-            <a routerLink="/cursos"
+            <a routerLink="/cursos/areas"
                class="inline-flex items-center justify-center gap-2 border-2 border-white text-white
                       hover:bg-white hover:text-[#003087] font-bold px-8 py-3.5 rounded-xl
                       transition-all no-underline text-sm">

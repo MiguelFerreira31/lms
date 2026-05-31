@@ -42,6 +42,9 @@ public class Usuario implements UserDetails {
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unidade_id")
     private Unidade unidade;
