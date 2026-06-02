@@ -48,6 +48,32 @@ body.acc-cursor-grande * {
   border: 0;
 }
 
+// ─── VLibras — posicionamento: direita, abaixo do botão de acessibilidade ────
+div[vw] {
+  position: fixed  !important;
+  right:    0      !important;
+  left:     auto   !important;
+  bottom:   auto   !important;
+  // botão de acess. fica em top:50% centralizado; descer metade dele (36px) + 8px gap
+  top: calc(50% + 36px) !important;
+  z-index: 99990   !important;
+}
+
+div[vw] div[vw-access-button] {
+  right: 0    !important;
+  left:  auto !important;
+  margin: 0   !important;
+}
+
+@media (max-width: 480px) {
+  div[vw] {
+    top:    auto !important;
+    bottom: 5rem !important;
+    right:  0    !important;
+    left:   auto !important;
+  }
+}
+
 // ─── VLibras — isolamento de alto contraste ──────────────────────────────────
 body.acc-contraste-alto [vw],
 body.acc-contraste-alto [vw] *,
