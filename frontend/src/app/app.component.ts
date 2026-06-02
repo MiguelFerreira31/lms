@@ -5,11 +5,12 @@ import { filter } from 'rxjs/operators';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { PublicNavComponent } from './shared/public-nav/public-nav.component';
 import { AuthService } from './core/services/auth.service';
+import { AccessibilityComponent } from './accessibility/accessibility.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NavbarComponent, PublicNavComponent],
+  imports: [CommonModule, RouterOutlet, NavbarComponent, PublicNavComponent, AccessibilityComponent],
   template: `
     <ng-container *ngIf="auth.isLoggedIn(); else publicLayout">
       <app-navbar></app-navbar>
@@ -29,6 +30,8 @@ import { AuthService } from './core/services/auth.service';
         <router-outlet></router-outlet>
       </ng-container>
     </ng-template>
+
+    <app-accessibility></app-accessibility>
   `
 })
 export class AppComponent {

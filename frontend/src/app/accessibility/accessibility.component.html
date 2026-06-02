@@ -1,0 +1,182 @@
+<!-- Lupa bubble -->
+<div id="acc-lupa-bubble" aria-hidden="true" style="display:none"></div>
+
+<!-- Máscara de leitura -->
+<div id="acc-mascara-top"    aria-hidden="true"></div>
+<div id="acc-mascara-bottom" aria-hidden="true"></div>
+
+<!-- Guia de leitura -->
+<div id="acc-guia" aria-hidden="true"></div>
+
+<!-- Barra principal -->
+<nav class="acc-barra" role="complementary" aria-label="Ferramentas de acessibilidade">
+
+  <button id="acc-toggle"
+          class="acc-toggle-btn"
+          [attr.aria-expanded]="svc.panelOpen()"
+          aria-controls="acc-painel"
+          aria-label="Abrir painel de acessibilidade"
+          (click)="svc.togglePanel()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28"
+         fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="4" r="2"/>
+      <path d="M19 9H5a1 1 0 000 2h5v2l-2 7h2l1.5-5 1.5 5h2l-2-7v-2h5a1 1 0 000-2z"/>
+    </svg>
+  </button>
+
+  <section id="acc-painel"
+           role="dialog"
+           aria-modal="true"
+           aria-label="Painel de acessibilidade"
+           [class.painel-hidden]="!svc.panelOpen()">
+
+    <header class="acc-header">
+      <span class="acc-header-title">Acessibilidade</span>
+      <button id="acc-fechar" class="acc-fechar-btn" aria-label="Fechar painel" (click)="svc.closePanel()">✕</button>
+    </header>
+
+    <!-- Tamanho da fonte -->
+    <div class="acc-section">
+      <span class="acc-label">Tamanho da fonte</span>
+      <div class="acc-stepper">
+        <button (click)="svc.decreaseFont()"
+                [disabled]="svc.state().fontLevel === -1"
+                aria-label="Diminuir fonte"
+                class="acc-step-btn">A-</button>
+        <span class="acc-font-level">{{ svc.fontLevelLabel() }}</span>
+        <button (click)="svc.increaseFont()"
+                [disabled]="svc.state().fontLevel === 3"
+                aria-label="Aumentar fonte"
+                class="acc-step-btn">A+</button>
+      </div>
+    </div>
+
+    <!-- Contraste -->
+    <div class="acc-section">
+      <span class="acc-label">Contraste</span>
+      <div class="acc-btn-group">
+        <button (click)="svc.setContraste('normal')"
+                [attr.aria-pressed]="svc.state().contraste === 'normal'">Normal</button>
+        <button (click)="svc.setContraste('alto')"
+                [attr.aria-pressed]="svc.state().contraste === 'alto'">Alto</button>
+        <button (click)="svc.setContraste('invertido')"
+                [attr.aria-pressed]="svc.state().contraste === 'invertido'">Invertido</button>
+      </div>
+    </div>
+
+    <!-- Saturação -->
+    <div class="acc-section">
+      <span class="acc-label">Saturação</span>
+      <div class="acc-btn-group">
+        <button (click)="svc.setSaturacao('normal')"
+                [attr.aria-pressed]="svc.state().saturacao === 'normal'">Normal</button>
+        <button (click)="svc.setSaturacao('cinza')"
+                [attr.aria-pressed]="svc.state().saturacao === 'cinza'">Cinza</button>
+        <button (click)="svc.setSaturacao('sepia')"
+                [attr.aria-pressed]="svc.state().saturacao === 'sepia'">Sépia</button>
+      </div>
+    </div>
+
+    <!-- Daltonismo -->
+    <div class="acc-section acc-section--daltonismo">
+      <span class="acc-label">Daltonismo</span>
+      <div class="acc-btn-group">
+        <button (click)="svc.setDaltonismo('normal')"
+                [attr.aria-pressed]="svc.state().daltonismo === 'normal'">Nenhum</button>
+        <button (click)="svc.setDaltonismo('protan')"
+                [attr.aria-pressed]="svc.state().daltonismo === 'protan'">Protanopia</button>
+        <button (click)="svc.setDaltonismo('deuter')"
+                [attr.aria-pressed]="svc.state().daltonismo === 'deuter'">Deuteranopia</button>
+        <button (click)="svc.setDaltonismo('tritan')"
+                [attr.aria-pressed]="svc.state().daltonismo === 'tritan'">Tritanopia</button>
+      </div>
+    </div>
+
+    <!-- Espaço entre linhas -->
+    <div class="acc-section">
+      <span class="acc-label">Espaço entre linhas</span>
+      <div class="acc-btn-group">
+        <button (click)="svc.setLinha('normal')"
+                [attr.aria-pressed]="svc.state().linha === 'normal'">Normal</button>
+        <button (click)="svc.setLinha('media')"
+                [attr.aria-pressed]="svc.state().linha === 'media'">Médio</button>
+        <button (click)="svc.setLinha('ampla')"
+                [attr.aria-pressed]="svc.state().linha === 'ampla'">Amplo</button>
+      </div>
+    </div>
+
+    <!-- Espaço entre letras -->
+    <div class="acc-section">
+      <span class="acc-label">Espaço entre letras</span>
+      <div class="acc-btn-group">
+        <button (click)="svc.setLetra('normal')"
+                [attr.aria-pressed]="svc.state().letra === 'normal'">Normal</button>
+        <button (click)="svc.setLetra('media')"
+                [attr.aria-pressed]="svc.state().letra === 'media'">Médio</button>
+        <button (click)="svc.setLetra('ampla')"
+                [attr.aria-pressed]="svc.state().letra === 'ampla'">Amplo</button>
+      </div>
+    </div>
+
+    <!-- Toggles booleanos -->
+    <div class="acc-section acc-toggles">
+      <button role="switch"
+              [attr.aria-checked]="svc.state().dislexia"
+              (click)="svc.toggleDislexia()"
+              class="acc-switch">
+        <span class="acc-switch-track" aria-hidden="true"></span>
+        Fonte para dislexia
+      </button>
+      <button role="switch"
+              [attr.aria-checked]="svc.state().cursor === 'grande'"
+              (click)="svc.toggleCursor()"
+              class="acc-switch">
+        <span class="acc-switch-track" aria-hidden="true"></span>
+        Cursor grande
+      </button>
+      <button role="switch"
+              [attr.aria-checked]="svc.state().lupa"
+              (click)="svc.toggleLupa()"
+              class="acc-switch">
+        <span class="acc-switch-track" aria-hidden="true"></span>
+        Lupa de navegação
+      </button>
+      <button role="switch"
+              [attr.aria-checked]="svc.state().linksDestacados"
+              (click)="svc.toggleLinks()"
+              class="acc-switch">
+        <span class="acc-switch-track" aria-hidden="true"></span>
+        Destacar links
+      </button>
+      <button role="switch"
+              [attr.aria-checked]="svc.state().mascara"
+              (click)="svc.toggleMascara()"
+              class="acc-switch">
+        <span class="acc-switch-track" aria-hidden="true"></span>
+        Máscara de leitura
+      </button>
+      <button role="switch"
+              [attr.aria-checked]="svc.state().guia"
+              (click)="svc.toggleGuia()"
+              class="acc-switch">
+        <span class="acc-switch-track" aria-hidden="true"></span>
+        Guia de leitura
+      </button>
+    </div>
+
+    <!-- Reset -->
+    <div class="acc-footer">
+      <button class="acc-btn-reset" (click)="svc.resetAll()">
+        ↺ Restaurar padrões
+      </button>
+    </div>
+
+  </section>
+</nav>
+
+<!-- Live region ARIA -->
+<div id="acc-announcer"
+     role="status"
+     aria-live="assertive"
+     aria-atomic="true"
+     class="sr-only"></div>
