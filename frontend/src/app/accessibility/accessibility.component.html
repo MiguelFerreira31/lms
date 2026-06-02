@@ -162,6 +162,21 @@
         <span class="acc-switch-track" aria-hidden="true"></span>
         Guia de leitura
       </button>
+
+      <hr class="acc-divider" aria-hidden="true">
+
+      <button class="acc-vlibras-btn"
+              type="button"
+              (click)="openVLibras()"
+              aria-label="Abrir tradutor de Libras (VLibras)">
+        <span class="acc-vlibras-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               width="20" height="20" fill="currentColor" aria-hidden="true">
+            <path d="M7 5.5A1.5 1.5 0 0 1 8.5 4h.25A1.5 1.5 0 0 1 10.25 5.5v5.25h.5V4.5A1.5 1.5 0 0 1 12.25 3h.25A1.5 1.5 0 0 1 14 4.5v6.25h.5V5.5A1.5 1.5 0 0 1 16 4h.25A1.5 1.5 0 0 1 17.75 5.5V13a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6v-1.5A1.5 1.5 0 0 1 5.5 10H6A1.5 1.5 0 0 1 7.5 11.5V13h-.5V5.5H7z"/>
+          </svg>
+        </span>
+        <span>Libras (VLibras)</span>
+      </button>
     </div>
 
     <!-- Reset -->
@@ -173,6 +188,13 @@
 
   </section>
 </nav>
+
+<!-- VLibras — widget independente do gov.br (canto inferior esquerdo) -->
+<angular-vlibras
+  position="bottom-left"
+  avatar="random"
+  [opacity]="1">
+</angular-vlibras>
 
 <!-- Live region ARIA -->
 <div id="acc-announcer"

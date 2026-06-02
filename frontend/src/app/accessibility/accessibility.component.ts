@@ -2,12 +2,13 @@ import {
   Component, inject, OnInit, OnDestroy, HostListener
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AngularVlibras } from 'angular-vlibras';
 import { AccessibilityService } from './accessibility.service';
 
 @Component({
   selector: 'app-accessibility',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AngularVlibras],
   templateUrl: './accessibility.component.html',
   styleUrls: ['./accessibility.component.scss'],
 })
@@ -20,6 +21,20 @@ export class AccessibilityComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.svc.resetAll();
+  }
+
+  openVLibras(): void {
+    const btn = document.querySelector<HTMLElement>('[vw-access-button]');
+    if (btn) {
+      btn.click();
+    } else {
+      const interval = setInterval(() => {
+        const b = document.querySelector<HTMLElement>('[vw-access-button]');
+        if (b) { b.click(); clearInterval(interval); }
+      }, 300);
+      setTimeout(() => clearInterval(interval), 5000);
+    }
+    this.svc.closePanel();
   }
 
   // ─── Focus trap ─────────────────────────────────────────────────────────────
