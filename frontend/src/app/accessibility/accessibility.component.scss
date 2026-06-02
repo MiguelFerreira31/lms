@@ -217,13 +217,31 @@
   }
 }
 
-// Daltonismo (4 botões): grid 2×2 em telas pequenas, 4 em linha quando couber
+// Daltonismo (4 botões): 4 colunas com largura mínima garantida
 .acc-section--daltonismo .acc-btn-group {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, minmax(80px, 1fr));
+  gap: 0.375rem;
 
-  @media (min-width: 300px) {
-    grid-template-columns: repeat(4, 1fr);
+  button {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+}
+
+// Viewports muito estreitas: quebrar para 2×2
+@media (max-width: 360px) {
+  .acc-section--daltonismo .acc-btn-group {
+    grid-template-columns: repeat(2, 1fr);
+
+    button {
+      font-size: 0.8125rem;
+      white-space: normal;
+    }
   }
 }
 
