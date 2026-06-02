@@ -1,161 +1,145 @@
 # LMS Lite
 
-![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen?logo=springboot)
-![Angular](https://img.shields.io/badge/Angular-18-red?logo=angular)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)
+![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.14-6DB33F?logo=springboot)
+![Angular](https://img.shields.io/badge/Angular-18-DD0031?logo=angular)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss)
+![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss)
 
-> Sistema de gestão de cursos educacionais fullstack — projeto de portfólio para vaga de Programador Java Jr no **Senac SP**.
+> Sistema de gestão de cursos educacionais fullstack — projeto de portfólio
+
+---
 
 ## Funcionalidades
 
-### Público (sem login)
-- **Catálogo de cursos** com paginação e filtros por nível, região e unidade
-- **Exploração por área** (Tecnologia, Saúde, Gastronomia e mais 7) e **tipo de curso** (Técnico, EAD, Graduação e mais 8)
-- **Mapa de unidades** — 64 unidades reais do Senac SP organizadas por região com destaque por query param
-- **Navbar com mega-dropdown** — Cursos (áreas + tipos) e Unidades (Capital, Grande SP, Interior, Centros Universitários) com dados reais da API
-- Páginas institucionais: Home, Sobre, Unidades
+- **Autenticação JWT** com controle de roles: ADMIN / PROFESSOR / ALUNO
+- **Catálogo de cursos** organizado por área, categoria e tipo, com filtro por unidade/região
+- **CRUD completo** de cursos, áreas, categorias, tipos, regiões e unidades
+- **64 unidades Senac SP** distribuídas em 4 regiões (seed de dados realista)
+- **Matrículas** de alunos em cursos com rastreamento de progresso por aula
+- **Lançamento de notas** com aprovação automática (≥ 6,0)
+- **Controle de presença** por aula, com resumo percentual
+- **Conteúdo de aulas** com suporte a vídeo, PDF, texto e link externo
+- **Vínculo Professor ↔ Curso** gerenciado pelo ADMIN
+- **Upload de imagens** para avatar de usuário, capa de curso e foto de unidade
+- **Dashboard administrativo** com gráficos Chart.js (matrículas/mês, cursos por nível, unidades por região) e animações GSAP
+- **Widget de acessibilidade** completo (WCAG 2.1 AA/AAA):
+  - Controle de tamanho de fonte (5 níveis)
+  - Fonte para dislexia (OpenDyslexic)
+  - Espaçamento de linha e letras
+  - Alto contraste, contraste invertido
+  - Escala de cinza e sépia
+  - Suporte a daltonismo (protanopia, deuteranopia, tritanopia) via SVG feColorMatrix
+  - Cursor grande
+  - Lupa de navegação com texto real do elemento
+  - Links destacados
+  - Máscara e guia de leitura
+  - Integração com **VLibras** (tradução para Libras — gov.br)
 
-### Aluno (autenticado)
-- Cadastro e login com JWT
-- Matrícula em cursos e acompanhamento de progresso por aula
-- Dashboard com visão geral de matrículas e percentual de conclusão
-- Histórico de presenças por matrícula
-
-### Professor
-- Gerenciamento de conteúdo das aulas (vídeos, PDFs, textos, links) nos cursos vinculados
-- Lançamento de notas e registro de presença
-- Acesso à lista de alunos matriculados por curso
-
-### Administrador
-- CRUD completo de cursos, usuários, regiões e unidades
-- Gerenciamento de vínculos professor ↔ curso
-- Painel de alunos e notas por curso
-- Promoção/rebaixamento de roles (ALUNO → PROFESSOR → ADMIN)
+---
 
 ## Stack
 
 | Camada | Tecnologia | Versão |
 |--------|-----------|--------|
-| Backend | Java + Spring Boot | 17 + 3.5.14 |
-| Segurança | Spring Security + JJWT | 6.x + 0.12.5 |
-| ORM | Spring Data JPA / Hibernate | via Spring Boot |
+| Frontend | Angular | 18 |
+| UI | Tailwind CSS | 3.4 |
+| Componentes | Angular Material | 18.2 |
+| Gráficos | Chart.js | 4.5 |
+| Animações | GSAP | 3.15 |
+| Backend | Spring Boot | 3.5.14 |
+| Linguagem | Java | 17 |
 | Banco | PostgreSQL | 15 |
 | Migrations | Flyway | via Spring Boot |
-| Infraestrutura | Docker Compose | 3 |
-| Frontend | Angular | 18 |
-| UI | Angular Material + Tailwind CSS | 18.2 + 3.4 |
+| Auth | JWT (jjwt) | 0.12.5 |
+| Infra | Docker Compose | — |
+
+---
 
 ## Arquitetura
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     Browser                             │
-│  Angular 18 SPA (porta 4200)                           │
-│  ┌──────────────┐  ┌────────────────────────────────┐  │
-│  │  Public Nav  │  │  Auth Nav (sidebar + topbar)   │  │
-│  │  mega-drop   │  │  ADMIN / PROFESSOR / ALUNO     │  │
-│  └──────────────┘  └────────────────────────────────┘  │
-│  JWT Interceptor → Authorization: Bearer em toda req    │
-└──────────────────────┬──────────────────────────────────┘
-                       │ HTTP / REST JSON
-┌──────────────────────▼──────────────────────────────────┐
-│            Spring Boot API (porta 8080)                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌───────────────┐  │
-│  │SecurityConfig│  │ 10 domínios  │  │ JwtAuthFilter │  │
-│  │ CORS/regras  │  │ Controllers  │  │ email→DB→user │  │
-│  └──────────────┘  └──────┬───────┘  └───────────────┘  │
-│                     JPA/Hibernate + Flyway (V1–V12)      │
-└──────────────────────┬──────────────────────────────────┘
-                       │ JDBC porta 5433
-┌──────────────────────▼──────────────────────────────────┐
-│         PostgreSQL 15 — Docker container lms-postgres    │
-│  16 tabelas · 64 unidades · 35 cursos · 10 áreas        │
-└─────────────────────────────────────────────────────────┘
+Browser (Angular 18 SPA)
+    │
+    │ HTTP/REST — Bearer JWT
+    ▼
+Spring Boot 3.5.14 (:8080)
+    │ JPA/Hibernate + Flyway
+    ▼
+PostgreSQL 15 (:5433)
 ```
+
+O token JWT contém apenas o `sub=email`. A cada request, o backend carrega o usuário completo do banco, incluindo a role atual — isso permite alterar roles sem revogar tokens.
+
+---
 
 ## Como rodar localmente
 
-### Pré-requisitos
-- Java 17
-- Node.js 20+
-- Docker Desktop
+**Pré-requisitos:** Java 17, Node.js 18+, Docker Desktop
 
-### 1. Clone e banco
 ```bash
-git clone https://github.com/MiguelFerreira31/lms.git
-cd lms/backend
-docker compose up -d          # PostgreSQL na porta 5433
-```
+# 1. Clonar
+git clone https://github.com/MiguelFerreira31/lms
+cd lms
 
-### 2. Backend
-```powershell
-# Windows (PowerShell)
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-17"   # ajuste o path
-.\mvnw.cmd spring-boot:run
-# Flyway cria e popula o banco automaticamente na primeira execução
-# API disponível em http://localhost:8080
-```
+# 2. Subir banco (PostgreSQL no Docker)
+cd backend
+docker compose up -d
 
-### 3. Frontend
-```bash
-cd lms/frontend
+# 3. Backend (porta 8080)
+# Windows — definir JAVA_HOME se necessário:
+# $env:JAVA_HOME = "C:\Program Files\JetBrains\IntelliJ IDEA 2026.1.2\jbr"
+./mvnw spring-boot:run
+
+# 4. Frontend (porta 4200)
+cd ../frontend
 npm install
 npx ng serve
-# App disponível em http://localhost:4200
 ```
 
-### Credenciais de teste
-| Usuário | Email | Senha | Role |
-|---------|-------|-------|------|
-| Admin | `miguel@lms.com` | `123456` | ADMIN |
+Acesse: **http://localhost:4200**
+
+Conta admin padrão: `miguel@lms.com` / `123456`
+
+---
 
 ## Estrutura do projeto
 
 ```
 lms/
-├── backend/
-│   ├── src/main/java/br/com/lms/
-│   │   ├── config/            # SecurityConfig (CORS, JWT, regras de autorização)
-│   │   ├── domain/            # area/, conteudo/, curso/, matricula/,
-│   │   │                      # presenca/, professor/, regiao/, usuario/
-│   │   ├── dto/DTOs.java      # Todos os records de request/response
-│   │   ├── exception/         # GlobalExceptionHandler, ResourceNotFoundException
-│   │   └── security/          # JwtAuthFilter, JwtTokenProvider, UserDetailsServiceImpl
-│   ├── src/main/resources/
-│   │   └── db/migration/      # V1 até V12 (Flyway)
-│   └── docker-compose.yml
-└── frontend/
-    └── src/app/
-        ├── core/              # auth.service, curso.service, auth.guard, jwt.interceptor
-        ├── features/          # areas/, admin/, cursos/, dashboard/, home/,
-        │                      # login/, matriculas/, professor/, sobre/, unidades/
-        └── shared/            # navbar/ (autenticado), public-nav/ (público)
+├── backend/          # Spring Boot 3.5.14 — API REST
+│   └── src/main/java/br/com/lms/
+│       ├── config/       # Security, Upload, Web
+│       ├── domain/       # area, conteudo, curso, matricula, presenca,
+│       │                 # professor, regiao, upload, usuario
+│       ├── dto/          # DTOs centralizados (DTOs.java)
+│       ├── exception/    # GlobalExceptionHandler
+│       └── security/     # JWT filter, provider, UserDetails
+├── frontend/         # Angular 18 SPA
+│   └── src/app/
+│       ├── accessibility/  # Widget de acessibilidade standalone
+│       ├── core/           # Guards, interceptors, services
+│       ├── features/       # admin, areas, cursos, dashboard, home,
+│       │                   # login, matriculas, professor, sobre, unidades
+│       └── shared/         # Navbar, PublicNav, CursoCard, ImageUpload
+└── DOCUMENTACAO.md   # Referência técnica completa
 ```
 
-## API
+---
 
-Documentação completa dos endpoints em [DOCUMENTACAO.md](./DOCUMENTACAO.md).
+## Banco de dados
 
-Principais endpoints públicos:
+15 migrations Flyway (V1–V15) gerenciam o schema. Highlights:
+- **V12**: seed com 4 regiões, 64 unidades reais do Senac SP e 35 cursos
+- **V13/V14**: slugs únicos para unidades (com correção de transliteração)
+- **V15**: campos de imagem em usuários, cursos e unidades
 
-| Método | Path | Descrição |
-|--------|------|-----------|
-| `POST` | `/api/auth/login` | Login → JWT token |
-| `GET` | `/api/cursos` | Catálogo paginado (filtros: nivel, unidadeId, areaSlug, tipoSlug) |
-| `GET` | `/api/areas` | Áreas com categorias |
-| `GET` | `/api/tipos` | Tipos de curso |
-| `GET` | `/api/regioes` | Regiões com contagem de unidades |
-| `GET` | `/api/regioes/unidades` | Todas as unidades com região |
-
-## Demo
-
-🔗 Em breve — deploy planejado via Railway ou Render
+---
 
 ## Autor
 
-**Miguel Ferreira** — Desenvolvedor Java Jr
+**Miguel Ferreira** — Desenvolvedor Full Stack
 
 [![GitHub](https://img.shields.io/badge/GitHub-MiguelFerreira31-181717?logo=github)](https://github.com/MiguelFerreira31)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-miguelcezarferreira-0A66C2?logo=linkedin)](https://linkedin.com/in/miguelcezarferreira)
