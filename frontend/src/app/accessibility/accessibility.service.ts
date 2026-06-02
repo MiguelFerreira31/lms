@@ -20,9 +20,18 @@ export class AccessibilityService {
   private mutationObserver: MutationObserver | null = null;
   private colorManager = new ColorManager();
 
-  private lupaMoveHandler:   ((e: MouseEvent) => void) | null = null;
-  private mascaraMoveHandler: ((e: MouseEvent) => void) | null = null;
-  private guiaMoveHandler:   ((e: MouseEvent) => void) | null = null;
+  private lupaHandler:    ((e: MouseEvent) => void) | null = null;
+  private mascaraHandler: ((e: MouseEvent) => void) | null = null;
+  private guiaHandler:    ((e: MouseEvent) => void) | null = null;
+
+  private readonly SEMANTIC_TAGS = [
+    'H1','H2','H3','H4','H5','H6',
+    'P','A','BUTTON','LABEL','LI',
+    'SPAN','TD','TH','CAPTION',
+    'NAV','MAIN','SECTION','ARTICLE',
+    'ASIDE','HEADER','FOOTER',
+    'FIGCAPTION','BLOCKQUOTE','SUMMARY',
+  ];
 
   private suppressAnnounce = false;
   private dyslexicLoaded = false;
@@ -311,47 +320,69 @@ export class AccessibilityService {
 
   toggleLupa(): void {
     const next = !this.state().lupa;
+    if (next) { this.activateLupa(); } else { this.deactivateLupa(); }
     this.updateState({ lupa: next });
-
-    if (next) {
-      let last = 0;
-      this.lupaMoveHandler = (e: MouseEvent) => {
-        const now = Date.now();
-        if (now - last < 16) return;
-        last = now;
-        const bubble = document.getElementById('acc-lupa-bubble');
-        if (!bubble) return;
-        const target = document.elementFromPoint(e.clientX, e.clientY);
-        if (!target || target === bubble || bubble.contains(target)) return;
-
-        const SEMANTIC_TAGS = new Set([
-          'H1','H2','H3','H4','H5','H6','P','A','BUTTON','NAV','MAIN',
-          'SECTION','ARTICLE','ASIDE','HEADER','FOOTER','UL','OL','LI','TABLE',
-        ]);
-        let el: Element | null = target;
-        let tag = '';
-        while (el && el !== document.body) {
-          if (SEMANTIC_TAGS.has(el.tagName)) { tag = el.tagName.toLowerCase(); break; }
-          el = el.parentElement;
-        }
-
-        bubble.textContent = tag || '';
-        bubble.style.left = `${e.pageX + 16}px`;
-        bubble.style.top  = `${e.pageY + 16}px`;
-        bubble.style.display = tag ? 'block' : 'none';
-      };
-      document.addEventListener('mousemove', this.lupaMoveHandler);
-    } else {
-      if (this.lupaMoveHandler) {
-        document.removeEventListener('mousemove', this.lupaMoveHandler);
-        this.lupaMoveHandler = null;
-      }
-      const bubble = document.getElementById('acc-lupa-bubble');
-      if (bubble) bubble.style.display = 'none';
-    }
-
     this.announce(`Lupa: ${next ? 'ativada' : 'desativada'}`);
     this.savePreferences();
+  }
+
+  private activateLupa(): void {
+    const bubble = document.getElementById('acc-lupa-bubble');
+    if (bubble) bubble.style.display = 'block';
+    this.lupaHandler = (e: MouseEvent) => this.updateLupaBubble(e);
+    document.addEventListener('mousemove', this.lupaHandler);
+  }
+
+  private deactivateLupa(): void {
+    if (this.lupaHandler) {
+      document.removeEventListener('mousemove', this.lupaHandler);
+      this.lupaHandler = null;
+    }
+    const bubble = document.getElementById('acc-lupa-bubble');
+    if (bubble) bubble.style.display = 'none';
+  }
+
+  private updateLupaBubble(e: MouseEvent): void {
+    const bubble = document.getElementById('acc-lupa-bubble');
+    if (!bubble) return;
+
+    bubble.style.left = `${e.clientX + 20}px`;
+    bubble.style.top  = `${e.clientY + 20}px`;
+
+    const target = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    if (!target || target.closest('.acc-barra')) {
+      bubble.style.display = 'none';
+      return;
+    }
+
+    let el: HTMLElement | null = target;
+    let texto = '';
+
+    while (el && el !== document.body) {
+      if (el.closest('.acc-barra')) break;
+      if (this.SEMANTIC_TAGS.includes(el.tagName.toUpperCase())) {
+        texto = this.getDirectText(el);
+        if (!texto) texto = (el.textContent ?? '').trim();
+        if (texto.length > 80) texto = texto.substring(0, 80).trim() + '…';
+        if (texto) break;
+      }
+      el = el.parentElement;
+    }
+
+    if (texto) {
+      bubble.textContent = texto; // textContent — sem risco de XSS
+      bubble.style.display = 'block';
+    } else {
+      bubble.style.display = 'none';
+    }
+  }
+
+  private getDirectText(el: HTMLElement): string {
+    let text = '';
+    el.childNodes.forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE) text += node.textContent ?? '';
+    });
+    return text.trim();
   }
 
   // ─── Links ─────────────────────────────────────────────────────────────────
@@ -368,51 +399,70 @@ export class AccessibilityService {
 
   toggleMascara(): void {
     const next = !this.state().mascara;
+    if (next) { this.activateMascara(); } else { this.deactivateMascara(); }
     this.updateState({ mascara: next });
-
-    if (next) {
-      this.mascaraMoveHandler = (e: MouseEvent) => {
-        const top    = document.getElementById('acc-mascara-top');
-        const bottom = document.getElementById('acc-mascara-bottom');
-        if (!top || !bottom) return;
-        const y = e.clientY;
-        top.style.height    = `${Math.max(0, y - 45)}px`;
-        bottom.style.top    = `${y + 45}px`;
-        bottom.style.height = `${Math.max(0, window.innerHeight - y - 45)}px`;
-      };
-      document.addEventListener('mousemove', this.mascaraMoveHandler);
-    } else {
-      if (this.mascaraMoveHandler) {
-        document.removeEventListener('mousemove', this.mascaraMoveHandler);
-        this.mascaraMoveHandler = null;
-      }
-    }
-
     this.announce(`Máscara: ${next ? 'ativada' : 'desativada'}`);
     this.savePreferences();
+  }
+
+  private activateMascara(): void {
+    const top    = document.getElementById('acc-mascara-top');
+    const bottom = document.getElementById('acc-mascara-bottom');
+    if (top)    top.style.display    = 'block';
+    if (bottom) bottom.style.display = 'block';
+
+    this.mascaraHandler = (e: MouseEvent) => {
+      const t = document.getElementById('acc-mascara-top');
+      const b = document.getElementById('acc-mascara-bottom');
+      if (!t || !b) return;
+      const y = e.clientY;
+      const banda = 90;
+      t.style.height = `${Math.max(0, y - banda)}px`;
+      b.style.top    = `${y + banda}px`;
+      b.style.height = `${Math.max(0, window.innerHeight - (y + banda))}px`;
+    };
+    document.addEventListener('mousemove', this.mascaraHandler);
+  }
+
+  private deactivateMascara(): void {
+    if (this.mascaraHandler) {
+      document.removeEventListener('mousemove', this.mascaraHandler);
+      this.mascaraHandler = null;
+    }
+    const top    = document.getElementById('acc-mascara-top');
+    const bottom = document.getElementById('acc-mascara-bottom');
+    if (top)    top.style.display    = 'none';
+    if (bottom) bottom.style.display = 'none';
   }
 
   // ─── Guia ──────────────────────────────────────────────────────────────────
 
   toggleGuia(): void {
     const next = !this.state().guia;
+    if (next) { this.activateGuia(); } else { this.deactivateGuia(); }
     this.updateState({ guia: next });
-
-    if (next) {
-      this.guiaMoveHandler = (e: MouseEvent) => {
-        const guia = document.getElementById('acc-guia');
-        if (guia) guia.style.top = `${e.clientY}px`;
-      };
-      document.addEventListener('mousemove', this.guiaMoveHandler);
-    } else {
-      if (this.guiaMoveHandler) {
-        document.removeEventListener('mousemove', this.guiaMoveHandler);
-        this.guiaMoveHandler = null;
-      }
-    }
-
     this.announce(`Guia: ${next ? 'ativada' : 'desativada'}`);
     this.savePreferences();
+  }
+
+  private activateGuia(): void {
+    const guia = document.getElementById('acc-guia');
+    if (guia) guia.style.display = 'block';
+
+    this.guiaHandler = (e: MouseEvent) => {
+      const g = document.getElementById('acc-guia');
+      if (g) g.style.top = `${e.clientY}px`;
+    };
+    document.addEventListener('mousemove', this.guiaHandler);
+  }
+
+  private deactivateGuia(): void {
+    if (this.guiaHandler) {
+      document.removeEventListener('mousemove', this.guiaHandler);
+      this.guiaHandler = null;
+    }
+    const guia = document.getElementById('acc-guia');
+    if (guia) guia.style.display = 'none';
   }
 
   // ─── Reset ─────────────────────────────────────────────────────────────────
@@ -435,16 +485,10 @@ export class AccessibilityService {
     // 4. Resetar fontes via querySelectorAll (pega tudo, incluindo dinâmicos)
     this.resetFonts();
 
-    // 5. Remover todos os handlers de mousemove
-    if (this.lupaMoveHandler)    { document.removeEventListener('mousemove', this.lupaMoveHandler);    this.lupaMoveHandler    = null; }
-    if (this.mascaraMoveHandler) { document.removeEventListener('mousemove', this.mascaraMoveHandler); this.mascaraMoveHandler = null; }
-    if (this.guiaMoveHandler)    { document.removeEventListener('mousemove', this.guiaMoveHandler);    this.guiaMoveHandler    = null; }
-
-    // 6. Esconder overlays
-    ['acc-lupa-bubble', 'acc-mascara-top', 'acc-mascara-bottom', 'acc-guia'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.cssText = '';
-    });
+    // 5. Desativar overlays (remove handlers + esconde elementos)
+    this.deactivateLupa();
+    this.deactivateMascara();
+    this.deactivateGuia();
 
     // 7. Resetar estado e localStorage
     localStorage.removeItem(this.STORAGE_KEY);
