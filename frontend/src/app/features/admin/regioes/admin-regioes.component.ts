@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -17,8 +15,8 @@ import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.
   selector: 'app-admin-regioes',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
-    MatFormFieldModule, MatInputModule, MatSnackBarModule, MatProgressSpinnerModule,
-    MatTooltipModule, MatExpansionModule, ImageUploadComponent],
+    MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule,
+    ImageUploadComponent],
   templateUrl: './admin-regioes.component.html',
   styleUrls: ['./admin-regioes.component.scss']
 })
