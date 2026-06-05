@@ -6,8 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { CursoService, Curso, Professor } from '../../../core/services/curso.service';
 
@@ -15,7 +13,7 @@ import { CursoService, Curso, Professor } from '../../../core/services/curso.ser
   selector: 'app-admin-professores',
   standalone: true,
   imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatSelectModule, MatFormFieldModule],
+    MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './admin-professores.component.html',
   styleUrls: ['./admin-professores.component.scss']
 })

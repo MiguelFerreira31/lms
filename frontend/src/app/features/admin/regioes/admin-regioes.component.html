@@ -22,12 +22,11 @@
           <mat-icon>close</mat-icon>
         </button>
       </div>
-      <form [formGroup]="formRegiao" (ngSubmit)="salvarRegiao()" class="flex gap-4 items-start">
-        <mat-form-field appearance="outline" class="flex-1">
-          <mat-label>Nome da Região</mat-label>
-          <input matInput formControlName="nome" placeholder="Ex: Região Centro">
-          <mat-error>Nome obrigatório</mat-error>
-        </mat-form-field>
+      <form [formGroup]="formRegiao" (ngSubmit)="salvarRegiao()" class="flex gap-4 items-end">
+        <div class="flex-1 lms-field">
+          <label class="lms-label">Nome da Região <span class="required">*</span></label>
+          <input type="text" class="lms-input" formControlName="nome" placeholder="Ex: Região Centro" />
+        </div>
         <button type="submit" [disabled]="salvando() || formRegiao.invalid"
           class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 border-0 cursor-pointer mt-1">
           <mat-icon class="text-sm">save</mat-icon>
@@ -97,15 +96,14 @@
               </div>
               <form [formGroup]="formUnidade" (ngSubmit)="salvarUnidade(regiao.id)">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                  <mat-form-field appearance="outline" class="w-full">
-                    <mat-label>Nome da Unidade</mat-label>
-                    <input matInput formControlName="nome" placeholder="Ex: Unidade Centro">
-                    <mat-error>Nome obrigatório</mat-error>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="w-full">
-                    <mat-label>Endereço</mat-label>
-                    <input matInput formControlName="endereco" placeholder="Ex: Rua das Flores, 123">
-                  </mat-form-field>
+                  <div class="lms-field">
+                    <label class="lms-label">Nome da Unidade <span class="required">*</span></label>
+                    <input type="text" class="lms-input" formControlName="nome" placeholder="Ex: Unidade Centro" />
+                  </div>
+                  <div class="lms-field">
+                    <label class="lms-label">Endereço</label>
+                    <input type="text" class="lms-input" formControlName="endereco" placeholder="Ex: Rua das Flores, 123" />
+                  </div>
                   <div class="md:col-span-2">
                     <p class="text-xs font-medium text-gray-600 mb-1.5">Foto da Unidade</p>
                     <app-image-upload

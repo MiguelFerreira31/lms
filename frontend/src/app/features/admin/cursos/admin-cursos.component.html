@@ -24,31 +24,26 @@
       </div>
       <form [formGroup]="form" (ngSubmit)="salvar()">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div class="md:col-span-2">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Título do Curso</mat-label>
-              <input matInput formControlName="titulo" placeholder="Ex: Java para Iniciantes">
-              <mat-error>Título obrigatório (mín. 3 caracteres)</mat-error>
-            </mat-form-field>
+          <div class="md:col-span-2 lms-field">
+            <label class="lms-label">Título do Curso <span class="required">*</span></label>
+            <input type="text" class="lms-input" formControlName="titulo" placeholder="Ex: Java para Iniciantes" />
           </div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Nível</mat-label>
-            <mat-select formControlName="nivel">
-              <mat-option *ngFor="let n of niveis" [value]="n">{{ n }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Unidade</mat-label>
-            <mat-select formControlName="unidadeId">
-              <mat-option [value]="null">Nenhuma (curso geral)</mat-option>
-              <mat-option *ngFor="let u of unidades(); trackBy: trackById" [value]="u.id">{{ u.nome }} — {{ u.regiaoNome }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div class="md:col-span-3">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Descrição</mat-label>
-              <textarea matInput formControlName="descricao" rows="2" placeholder="Objetivos e conteúdo do curso"></textarea>
-            </mat-form-field>
+          <div class="lms-field">
+            <label class="lms-label">Nível <span class="required">*</span></label>
+            <select class="lms-select" formControlName="nivel">
+              <option *ngFor="let n of niveis" [value]="n">{{ n }}</option>
+            </select>
+          </div>
+          <div class="lms-field">
+            <label class="lms-label">Unidade</label>
+            <select class="lms-select" formControlName="unidadeId">
+              <option [ngValue]="null">Nenhuma (curso geral)</option>
+              <option *ngFor="let u of unidades(); trackBy: trackById" [ngValue]="u.id">{{ u.nome }} — {{ u.regiaoNome }}</option>
+            </select>
+          </div>
+          <div class="md:col-span-3 lms-field">
+            <label class="lms-label">Descrição</label>
+            <textarea class="lms-textarea" formControlName="descricao" rows="2" placeholder="Objetivos e conteúdo do curso"></textarea>
           </div>
           <div class="md:col-span-3">
             <p class="text-sm font-medium text-gray-700 mb-2">Capa do Curso</p>

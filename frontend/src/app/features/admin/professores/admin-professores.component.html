@@ -50,15 +50,17 @@
 
           <!-- Vincular curso -->
           <div class="flex gap-3 items-end mb-4">
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Vincular novo curso</mat-label>
-              <mat-select [value]="getCursoSelecionado(prof.id)"
-                (selectionChange)="setCursoSelecionado(prof.id, $event.value)">
-                <mat-option *ngFor="let curso of cursosDisponiveis(prof.id); trackBy: trackById" [value]="curso.id">
+            <div class="flex-1 lms-field">
+              <label class="lms-label">Vincular novo curso</label>
+              <select class="lms-select"
+                [ngModel]="getCursoSelecionado(prof.id)"
+                (ngModelChange)="setCursoSelecionado(prof.id, $event)">
+                <option [ngValue]="null" disabled>Selecione um curso...</option>
+                <option *ngFor="let curso of cursosDisponiveis(prof.id); trackBy: trackById" [ngValue]="curso.id">
                   {{ curso.titulo }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+                </option>
+              </select>
+            </div>
             <button (click)="vincular(prof.id)"
               [disabled]="!getCursoSelecionado(prof.id) || vinculandoProfessor() === prof.id"
               class="flex items-center gap-1 bg-emerald-600 text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 border-0 cursor-pointer mb-5">
