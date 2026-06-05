@@ -25,3 +25,12 @@ frontend/.env
 .DS_Store
 Thumbs.db
 *.log
+
+# Scripts e screenshots de sessão de testes (somente raiz)
+/ss_*.js
+/ss_*.png
+/[0-9][0-9]_*.png
+
+# IDE / runtime
+/.idea/
+/backend/uploads/
