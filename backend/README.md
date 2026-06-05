@@ -1,85 +1,63 @@
 # LMS Lite — Backend
 
-API REST para sistema de gestão de cursos educacionais, desenvolvida como projeto de portfólio para demonstrar proficiência em Java/Spring Boot.
+API REST para sistema de gestão de cursos educacionais, desenvolvida como projeto de portfólio.
 
 ## Stack
 
-- **Java 17** + **Spring Boot 3.2**
-- **Spring Security** com autenticação **JWT** (JJWT 0.12)
-- **Spring Data JPA** + **Hibernate**
-- **PostgreSQL** com migrações via **Flyway**
-- **Lombok** para redução de boilerplate
-- **Docker** + **Docker Compose**
+| Tecnologia | Versão |
+|-----------|--------|
+| Java | 17 |
+| Spring Boot | 3.5.14 |
+| Spring Security + JJWT | 6.x + 0.12.5 |
+| Spring Data JPA + Hibernate | via Spring Boot |
+| Flyway | via Spring Boot |
+| Lombok | via Spring Boot |
+| PostgreSQL | 15 (Docker, porta 5433) |
 
-## Arquitetura
+## Estrutura de domínios
 
 ```
 src/main/java/br/com/lms/
-├── config/          # SecurityConfig (JWT, CORS, BCrypt)
+├── config/       # SecurityConfig (CORS, JWT, autorização), UploadConfig, WebConfig
 ├── domain/
-│   ├── usuario/     # Entidade, Repository, AuthController, UsuarioController
-│   ├── curso/       # Curso, Modulo, Aula — CRUD completo
-│   └── matricula/   # Matrícula + progresso por aula
-├── dto/             # Records Java para request/response
-├── security/        # JwtTokenProvider, JwtAuthFilter, UserDetailsServiceImpl
-└── exception/       # GlobalExceptionHandler, ResourceNotFoundException
+│   ├── area/         # Area, Categoria, Tipo — catálogo de cursos
+│   ├── conteudo/     # ConteudoAula (VIDEO | PDF | TEXTO | LINK)
+│   ├── curso/        # Curso (soft delete), Modulo, Aula
+│   ├── matricula/    # Matricula, ProgressoAula
+│   ├── presenca/     # PresencaAula (upsert por matricula+aula+data)
+│   ├── professor/    # ProfessorCurso (@EmbeddedId)
+│   ├── regiao/       # Regiao, Unidade (com slug único)
+│   ├── upload/       # UploadService — JPEG/PNG/WebP, max 5 MB
+│   └── usuario/      # Usuario (ADMIN | PROFESSOR | ALUNO), AuthController
+├── dto/          # Todos os records request/response em DTOs.java
+├── exception/    # GlobalExceptionHandler, ResourceNotFoundException
+└── security/     # JwtAuthFilter, JwtTokenProvider (HMAC-SHA512, 24h), UserDetailsServiceImpl
 ```
-
-## Endpoints
-
-| Método | Rota | Auth | Descrição |
-|--------|------|------|-----------|
-| POST | /api/auth/register | ❌ | Criar conta |
-| POST | /api/auth/login | ❌ | Login, retorna JWT |
-| GET | /api/cursos | ❌ | Listar cursos paginado |
-| GET | /api/cursos/{id} | ❌ | Detalhe do curso |
-| POST | /api/cursos | ADMIN | Criar curso |
-| PUT | /api/cursos/{id} | ADMIN | Atualizar curso |
-| DELETE | /api/cursos/{id} | ADMIN | Desativar curso |
-| POST | /api/matriculas | ALUNO | Matricular-se |
-| GET | /api/matriculas/minhas | ALUNO | Minhas matrículas |
-| GET | /api/matriculas/{id}/progresso | ALUNO | Percentual de conclusão |
-| POST | /api/matriculas/progresso | ALUNO | Marcar aula concluída |
-| GET | /api/usuarios/me | ALUNO | Perfil do usuário |
-| GET | /api/usuarios | ADMIN | Listar usuários |
 
 ## Como rodar
 
-### Pré-requisitos
-- Java 17+
-- Docker Desktop
+**Pré-requisitos:** Java 17, Docker Desktop
 
-### 1. Subir o banco
-```bash
+```powershell
+# 1. Banco de dados (PostgreSQL 15 em container)
 docker compose up -d
+
+# 2. Backend (porta 8080)
+# Windows — definir JAVA_HOME se necessário:
+$env:JAVA_HOME = "C:\Program Files\JetBrains\IntelliJ IDEA 2026.1.2\jbr"
+.\mvnw.cmd spring-boot:run
 ```
 
-### 2. Rodar a aplicação
-```bash
-./mvnw spring-boot:run
-```
+A API estará disponível em `http://localhost:8080`.
 
-A API estará disponível em `http://localhost:8080`
+Credenciais do banco: `user=lms / pass=lms123 / db=lmsdb / host-port=5433`.
 
-### Variáveis de ambiente
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5433/lmsdb
-spring.datasource.username=lms
-spring.datasource.password=lms123
-jwt.secret=<chave-256bits>
-jwt.expiration-ms=86400000
-```
+## Migrations Flyway
 
-## Modelo de dados
+15 migrations (V1–V15) — **nunca alterar existentes**. Nova feature = `V16__descricao.sql`.
+Schema gerenciado com `spring.jpa.hibernate.ddl-auto=validate`.
 
-```
-usuarios
-└── matriculas ──── progresso_aulas
-└── cursos
-    └── modulos
-        └── aulas
-```
+## Referência completa
 
-## Tecnologias da vaga cobertas
-
-✅ Java 11+ (usando 17) · ✅ Spring Boot · ✅ Spring Security · ✅ JPA/Hibernate · ✅ REST API · ✅ SQL/PostgreSQL · ✅ Docker · ✅ Flyway · ✅ Lombok
+Endpoints (40+), schema completo, decisões de arquitectura e troubleshooting:
+→ [`../DOCUMENTACAO.md`](../DOCUMENTACAO.md)
