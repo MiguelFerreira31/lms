@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormsModule, FormArray } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,11 +43,13 @@ export class AdminCursosComponent implements OnInit {
   niveis = ['BASICO', 'INTERMEDIARIO', 'AVANCADO'];
   colunas = ['titulo', 'nivel', 'criado', 'acoes'];
 
+  // Formulário estendido com a lista de módulos (FormArray)
   form = this.fb.group({
     titulo: ['', [Validators.required, Validators.minLength(3)]],
     descricao: [''],
     nivel: ['BASICO', Validators.required],
-    unidadeId: [null as number | null]
+    unidadeId: [null as number | null],
+    modulos: this.fb.array([])
   });
 
   ngOnInit() { this.carregar(); }
@@ -64,19 +66,78 @@ export class AdminCursosComponent implements OnInit {
     });
   }
 
+  // Getter tipado para ler o array de módulos no template HTML
+  get modulosFormArray(): FormArray {
+    return this.form.get('modulos') as FormArray;
+  }
+
+  adicionarModulo() {
+    const novaOrdem = this.modulosFormArray.length + 1;
+    const moduloGroup = this.fb.group({
+      id: [null],
+      titulo: ['', [Validators.required]],
+      ordem: [novaOrdem, [Validators.required]]
+    });
+    this.modulosFormArray.push(moduloGroup);
+  }
+
+  // Método para remover um módulo e recalcular a ordenação sequencial
+  removerModulo(index: number) {
+    this.modulosFormArray.removeAt(index);
+    this.modulosFormArray.controls.forEach((control, idx) => {
+      control.get('ordem')?.setValue(idx + 1);
+    });
+  }
+
+  // Método abrirForm reconfigurado para limpar e popular o FormArray corretamente
   abrirForm(curso?: Curso) {
     this.editando.set(curso || null);
-    this.form.reset({
+
+    // 1. Limpa completamente qualquer resquício do array anterior
+    while (this.modulosFormArray.length !== 0) {
+      this.modulosFormArray.removeAt(0);
+    }
+
+    // 2. Reseta os valores básicos do formulário
+    this.form.patchValue({
       titulo: curso?.titulo || '',
       descricao: curso?.descricao || '',
       nivel: curso?.nivel || 'BASICO',
       unidadeId: curso?.unidadeId ?? null
     });
+
+    // 3. Se for edição, popula o FormArray dinamicamente buscando os módulos
+    if (curso && curso.id) {
+      this.svc.buscarCurso(curso.id).subscribe({
+        next: (cursoCompleto) => {
+          if (cursoCompleto && cursoCompleto.modulos) {
+            cursoCompleto.modulos.forEach((mod: any) => {
+              this.modulosFormArray.push(this.fb.group({
+                id: [mod.id],
+                titulo: [mod.titulo || '', [Validators.required]],
+                ordem: [mod.ordem, [Validators.required]]
+              }));
+            });
+          }
+        },
+        error: (err) => console.error('Erro ao buscar detalhes do curso:', err)
+      });
+    }
+
     this.mostrarForm.set(true);
     this.cursoExpandido.set(null);
   }
 
-  fecharForm() { this.mostrarForm.set(false); this.editando.set(null); this.form.reset(); this.imagemSelecionada.set(null); }
+  // Método fecharForm garantindo a limpeza completa
+  fecharForm() {
+    this.mostrarForm.set(false);
+    this.editando.set(null);
+    while (this.modulosFormArray.length !== 0) {
+      this.modulosFormArray.removeAt(0);
+    }
+    this.form.reset();
+    this.imagemSelecionada.set(null);
+  }
 
   onCapaSelected(file: File) { this.imagemSelecionada.set(file); }
 
@@ -84,11 +145,20 @@ export class AdminCursosComponent implements OnInit {
     if (this.form.invalid) return;
     this.salvando.set(true);
     const v = this.form.value;
-    const data = { titulo: v.titulo!, descricao: v.descricao || '', nivel: v.nivel!, unidadeId: v.unidadeId ?? null };
+
+    const data = {
+      titulo: v.titulo!,
+      descricao: v.descricao || '',
+      nivel: v.nivel!,
+      unidadeId: v.unidadeId ?? null,
+      modulos: v.modulos && v.modulos.length > 0 ? v.modulos : []
+    };
+
     const isEdicao = !!this.editando();
     const op = isEdicao
       ? this.svc.atualizarCurso(this.editando()!.id, data)
       : this.svc.criarCurso(data);
+
     op.subscribe({
       next: (curso: Curso) => {
         this.salvando.set(false);
@@ -117,7 +187,6 @@ export class AdminCursosComponent implements OnInit {
     });
   }
 
-  // --- Alunos e notas ---
   toggleAlunos(cursoId: number) {
     if (this.cursoExpandido() === cursoId) {
       this.cursoExpandido.set(null);

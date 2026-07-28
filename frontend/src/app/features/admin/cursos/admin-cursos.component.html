@@ -15,56 +15,110 @@
     </div>
 
     <!-- Formulário criar/editar -->
-    <div *ngIf="mostrarForm()" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div *ngIf="mostrarForm()" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 block w-full">
       <div class="flex items-center justify-between mb-5">
         <h2 class="text-lg font-semibold text-gray-900">{{ editando() ? 'Editar Curso' : 'Novo Curso' }}</h2>
-        <button (click)="fecharForm()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100">
+        <button (click)="fecharForm()" type="button"
+          class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100 flex items-center justify-center">
           <mat-icon>close</mat-icon>
         </button>
       </div>
-      <form [formGroup]="form" (ngSubmit)="salvar()">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="block w-full">
+        <!-- Grid de campos principais -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div class="md:col-span-2 lms-field">
             <label class="lms-label">Título do Curso <span class="required">*</span></label>
-            <input type="text" class="lms-input" formControlName="titulo" placeholder="Ex: Java para Iniciantes" />
+            <input type="text" class="lms-input w-full" formControlName="titulo"
+              placeholder="Ex: Java para Iniciantes" />
           </div>
           <div class="lms-field">
             <label class="lms-label">Nível <span class="required">*</span></label>
-            <select class="lms-select" formControlName="nivel">
+            <select class="lms-select w-full" formControlName="nivel">
               <option *ngFor="let n of niveis" [value]="n">{{ n }}</option>
             </select>
           </div>
           <div class="lms-field">
             <label class="lms-label">Unidade</label>
-            <select class="lms-select" formControlName="unidadeId">
+            <select class="lms-select w-full" formControlName="unidadeId">
               <option [ngValue]="null">Nenhuma (curso geral)</option>
-              <option *ngFor="let u of unidades(); trackBy: trackById" [ngValue]="u.id">{{ u.nome }} — {{ u.regiaoNome }}</option>
+              <option *ngFor="let u of unidades(); trackBy: trackById" [ngValue]="u.id">{{ u.nome }} — {{ u.regiaoNome
+                }}</option>
             </select>
           </div>
           <div class="md:col-span-3 lms-field">
             <label class="lms-label">Descrição</label>
-            <textarea class="lms-textarea" formControlName="descricao" rows="2" placeholder="Objetivos e conteúdo do curso"></textarea>
+            <textarea class="lms-textarea w-full" formControlName="descricao" rows="2"
+              placeholder="Objetivos e conteúdo do curso"></textarea>
           </div>
-          <div class="md:col-span-3">
+          <div class="md:col-span-3 block w-full">
             <p class="text-sm font-medium text-gray-700 mb-2">Capa do Curso</p>
-            <app-image-upload
-              [currentUrl]="editando()?.imagemUrl ?? null"
-              placeholder="Capa do curso (1280×720 recomendado)"
-              shape="rect"
-              [loading]="uploadandoCapa()"
+            <app-image-upload [currentUrl]="editando()?.imagemUrl ?? null"
+              placeholder="Capa do curso (1280×720 recomendado)" shape="rect" [loading]="uploadandoCapa()"
               (fileSelected)="onCapaSelected($event)">
             </app-image-upload>
           </div>
         </div>
-        <div class="flex justify-end gap-3">
+
+        <!-- Modulos -->
+
+        <div class="pt-6 border-t border-gray-100 mt-6 block w-full clear-both">
+          <div class="flex items-center justify-between mb-4 w-full">
+            <div class="block">
+              <h3 class="text-base font-bold text-gray-900 notranslate" translate="no">Módulos do Curso</h3>
+              <p class="text-xs text-gray-400 mt-0.5">Gerencie as divisões de ensino deste curso</p>
+            </div>
+            <!-- Botão com classes de tamanho fixo para impedir esmagamento -->
+            <button type="button" (click)="adicionarModulo()"
+              class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors shadow-sm h-9 min-w-[150px]">
+              <mat-icon style="font-size:16px;height:16px;width:16px;line-height:16px;">add</mat-icon>
+              <span>Adicionar Módulo</span>
+            </button>
+          </div>
+
+          <!-- Estado de Lista Vazia -->
+          <div *ngIf="modulosFormArray.length === 0"
+            class="p-6 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200 mb-4 block w-full">
+            <mat-icon class="text-gray-300" style="font-size:32px;height:32px;width:32px;">view_module</mat-icon>
+            <p class="text-xs text-gray-500 mt-1">Nenhum módulo adicionado. Clique em "Adicionar Módulo" para começar.
+            </p>
+          </div>
+
+          <!-- Inputs Dinâmicos dos Módulos -->
+          <div [formArrayName]="'modulos'" class="space-y-3 mb-6 block w-full">
+            <div *ngFor="let moduloGroup of modulosFormArray.controls; let idx = index" [formGroupName]="idx"
+              class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 block w-full">
+
+              <span
+                class="w-7 h-7 bg-white text-gray-500 rounded-lg text-xs font-bold flex items-center justify-center border border-gray-100 flex-shrink-0">
+                {{ idx + 1 }}
+              </span>
+
+              <div class="flex-1 min-w-0">
+                <input type="text" formControlName="titulo" placeholder="Ex: Fundamentos da Linguagem"
+                  class="w-full px-4 py-2 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-indigo-500 text-sm text-gray-900 block" />
+              </div>
+
+              <button type="button" (click)="removerModulo(idx)"
+                class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl border-0 cursor-pointer bg-transparent transition-colors flex-shrink-0 flex items-center justify-center">
+                <mat-icon style="font-size:20px;height:20px;width:20px;">delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!--  -->
+
+        <!-- Botões inferiores de envio -->
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
           <button type="button" (click)="fecharForm()"
-            class="px-5 py-2.5 rounded-xl text-gray-700 font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer">
+            class="px-5 py-2.5 rounded-xl text-gray-700 font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer transition-colors text-sm">
             Cancelar
           </button>
           <button type="submit" [disabled]="salvando() || form.invalid"
-            class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer">
-            <mat-icon class="text-sm">{{ salvando() ? 'hourglass_empty' : 'save' }}</mat-icon>
-            {{ salvando() ? 'Salvando...' : 'Salvar Curso' }}
+            class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer transition-colors text-sm shadow-sm">
+            <mat-icon class="text-sm" style="font-size:18px;height:18px;width:18px;line-height:18px;">{{ salvando() ?
+              'hourglass_empty' : 'save' }}</mat-icon>
+            <span>{{ salvando() ? 'Salvando...' : 'Salvar Curso' }}</span>
           </button>
         </div>
       </form>
@@ -82,7 +136,8 @@
         <p class="text-gray-600 font-medium">Nenhum curso cadastrado</p>
       </div>
 
-      <div *ngFor="let c of cursos(); trackBy: trackById" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div *ngFor="let c of cursos(); trackBy: trackById"
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         <!-- Linha principal do curso -->
         <div class="flex items-center gap-4 p-5">
@@ -92,7 +147,8 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
               <p class="font-semibold text-gray-900">{{ c.titulo }}</p>
-              <span [class]="getNivelClass(c.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ c.nivel }}</span>
+              <span [class]="getNivelClass(c.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ c.nivel
+                }}</span>
             </div>
             <p class="text-sm text-gray-400 truncate mt-0.5">{{ c.descricao || 'Sem descrição' }}</p>
             <p *ngIf="c.unidadeNome" class="text-xs text-indigo-500 mt-0.5 flex items-center gap-1">
@@ -101,8 +157,7 @@
             </p>
           </div>
           <div class="flex items-center gap-2 flex-shrink-0">
-            <button (click)="toggleAlunos(c.id)"
-              [class]="cursoExpandido() === c.id
+            <button (click)="toggleAlunos(c.id)" [class]="cursoExpandido() === c.id
                 ? 'bg-emerald-600 text-white border-emerald-600'
                 : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'"
               class="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border transition-colors cursor-pointer">
@@ -121,6 +176,8 @@
             </button>
           </div>
         </div>
+
+
 
         <!-- Painel de alunos e notas -->
         <div *ngIf="cursoExpandido() === c.id" class="border-t border-gray-100 bg-gray-50 p-5">
@@ -151,42 +208,38 @@
 
               <!-- Info do aluno -->
               <div class="flex items-center gap-3 flex-1">
-                <div class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                <div
+                  class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                   {{ mat.usuarioNome.charAt(0).toUpperCase() }}
                 </div>
                 <div>
                   <p class="font-medium text-gray-800 text-sm">{{ mat.usuarioNome }}</p>
                   <p class="text-xs text-gray-400">{{ mat.usuarioEmail }}</p>
                 </div>
-                <span [class]="getStatusClass(mat.status)"
-                  class="px-2 py-0.5 rounded-full text-xs font-medium ml-2">{{ mat.status }}</span>
+                <span [class]="getStatusClass(mat.status)" class="px-2 py-0.5 rounded-full text-xs font-medium ml-2">{{
+                  mat.status }}</span>
               </div>
 
               <!-- Nota atual -->
               <div class="flex items-center gap-2 sm:gap-4">
                 <div *ngIf="mat.nota != null" class="text-center">
-                  <span [class]="mat.aprovado ? 'text-green-600' : 'text-red-500'"
-                    class="text-lg font-bold">{{ mat.nota }}</span>
+                  <span [class]="mat.aprovado ? 'text-green-600' : 'text-red-500'" class="text-lg font-bold">{{ mat.nota
+                    }}</span>
                   <p class="text-xs" [class]="mat.aprovado ? 'text-green-500' : 'text-red-400'">
                     {{ mat.aprovado ? 'Aprovado' : 'Reprovado' }}
                   </p>
                 </div>
-                <div *ngIf="mat.nota == null"
-                  class="text-center text-gray-300">
+                <div *ngIf="mat.nota == null" class="text-center text-gray-300">
                   <span class="text-lg font-bold">—</span>
                   <p class="text-xs text-gray-400">Sem nota</p>
                 </div>
 
                 <!-- Input de nota -->
                 <div class="flex items-center gap-2">
-                  <input
-                    type="number" min="0" max="10" step="0.1"
-                    [value]="getNota(mat.id)"
-                    (input)="setNota(mat.id, $any($event.target).value)"
-                    placeholder="0–10"
+                  <input type="number" min="0" max="10" step="0.1" [value]="getNota(mat.id)"
+                    (input)="setNota(mat.id, $any($event.target).value)" placeholder="0–10"
                     class="w-20 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center">
-                  <button (click)="lancarNota(mat, c.id)"
-                    [disabled]="salvandoNota() === mat.id || !getNota(mat.id)"
+                  <button (click)="lancarNota(mat, c.id)" [disabled]="salvandoNota() === mat.id || !getNota(mat.id)"
                     class="flex items-center gap-1 bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer whitespace-nowrap">
                     <mat-icon class="text-sm">{{ salvandoNota() === mat.id ? 'hourglass_empty' : 'grade' }}</mat-icon>
                     {{ mat.nota != null ? 'Alterar' : 'Lançar' }}

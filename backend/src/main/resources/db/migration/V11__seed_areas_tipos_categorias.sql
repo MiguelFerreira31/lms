@@ -102,17 +102,17 @@ INSERT INTO tipos (nome, slug) VALUES
 -- Associar cursos existentes
 -- Curso 1 (Engenharia de Software) → desenvolvimento-web + tecnico
 -- ============================================================
-INSERT INTO curso_categorias (curso_id, categoria_id)
-VALUES (1, (SELECT c.id FROM categorias c JOIN areas a ON c.area_id = a.id
-            WHERE a.slug='tecnologia-da-informacao' AND c.slug='desenvolvimento-web'));
+-- INSERT INTO curso_categorias (curso_id, categoria_id)
+-- VALUES (1, (SELECT c.id FROM categorias c JOIN areas a ON c.area_id = a.id
+--             WHERE a.slug='tecnologia-da-informacao' AND c.slug='desenvolvimento-web'));
 
-INSERT INTO curso_tipos (curso_id, tipo_id)
-VALUES (1, (SELECT id FROM tipos WHERE slug='tecnico'));
+-- INSERT INTO curso_tipos (curso_id, tipo_id)
+-- VALUES (1, (SELECT id FROM tipos WHERE slug='tecnico'));
 
--- Curso 2 (Java para Iniciantes) → banco-de-dados + livre
-INSERT INTO curso_categorias (curso_id, categoria_id)
-VALUES (2, (SELECT c.id FROM categorias c JOIN areas a ON c.area_id = a.id
-            WHERE a.slug='tecnologia-da-informacao' AND c.slug='banco-de-dados'));
+-- -- Curso 2 (Java para Iniciantes) → banco-de-dados + livre
+-- INSERT INTO curso_categorias (curso_id, categoria_id)
+-- VALUES (2, (SELECT c.id FROM categorias c JOIN areas a ON c.area_id = a.id
+--             WHERE a.slug='tecnologia-da-informacao' AND c.slug='banco-de-dados'));
 
-INSERT INTO curso_tipos (curso_id, tipo_id)
-VALUES (2, (SELECT id FROM tipos WHERE slug='livre'));
+-- INSERT INTO curso_tipos (curso_id, tipo_id)
+-- VALUES (2, (SELECT id FROM tipos WHERE slug='livre'));

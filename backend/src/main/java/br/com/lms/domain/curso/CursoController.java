@@ -63,18 +63,43 @@ public class CursoController {
                 .nivel(request.nivel())
                 .unidade(unidade)
                 .build();
+
+        if (request.modulos() != null) {
+            for (ModuloRequest modReq : request.modulos()) {
+                Modulo modulo = Modulo.builder()
+                        .titulo(modReq.titulo())
+                        .ordem(modReq.ordem())
+                        .curso(curso)
+                        .build();
+                curso.getModulos().add(modulo);
+            }
+        }
         return ResponseEntity.status(201).body(CursoResumoResponse.from(cursoRepository.save(curso)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CursoResumoResponse> atualizar(@PathVariable Long id,
-                                                          @Valid @RequestBody CursoRequest request) {
+            @Valid @RequestBody CursoRequest request) {
         Curso curso = cursoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Curso", id));
         curso.setTitulo(request.titulo());
         curso.setDescricao(request.descricao());
         curso.setNivel(request.nivel());
         curso.setUnidade(resolverUnidade(request.unidadeId()));
+        curso.getModulos().clear();
+
+        if (request.modulos() != null) {
+            for (ModuloRequest modReq : request.modulos()) {
+                Modulo modulo = Modulo.builder()
+                        .id(modReq.id())
+                        .titulo(modReq.titulo())
+                        .ordem(modReq.ordem())
+                        .curso(curso)
+                        .build();
+                curso.getModulos().add(modulo);
+            }
+        }
+
         return ResponseEntity.ok(CursoResumoResponse.from(cursoRepository.save(curso)));
     }
 
@@ -88,7 +113,8 @@ public class CursoController {
     }
 
     private Unidade resolverUnidade(Long unidadeId) {
-        if (unidadeId == null) return null;
+        if (unidadeId == null)
+            return null;
         return unidadeRepository.findById(unidadeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade", unidadeId));
     }

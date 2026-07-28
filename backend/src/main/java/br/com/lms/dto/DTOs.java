@@ -29,7 +29,7 @@ public class DTOs {
 
     public record AuthResponse(String token, String tipo, String nome, String email, String role, String avatarUrl) {}
 
-    public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId) {}
+    public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId, List<ModuloRequest> modulos) {}
 
     // ---- Áreas, Categorias e Tipos ----
 
@@ -83,6 +83,8 @@ public class DTOs {
                     m.getAulas().stream().map(AulaResponse::from).toList());
         }
     }
+
+    public record ModuloRequest(Long id, @NotBlank String titulo, @NotNull Integer ordem) {}
 
     public record CursoDetalheResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
