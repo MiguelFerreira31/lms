@@ -8,7 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
-import { CursoService, Curso, MatriculaDetalhe, Unidade } from '../../../core/services/curso.service';
+import { CursoService, Curso, MatriculaDetalhe, Unidade, Area, TipoCurso } from '../../../core/services/curso.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 
@@ -29,6 +29,10 @@ export class AdminCursosComponent implements OnInit {
 
   cursos = signal<Curso[]>([]);
   unidades = signal<Unidade[]>([]);
+  areas = signal<Area[]>([]);
+  tiposDisponiveis = signal<TipoCurso[]>([]);
+  categoriasSelecionadas = signal<Set<number>>(new Set());
+  tiposSelecionados = signal<Set<number>>(new Set());
   loading = signal(true);
   salvando = signal(false);
   editando = signal<Curso | null>(null);
@@ -49,6 +53,7 @@ export class AdminCursosComponent implements OnInit {
     descricao: [''],
     nivel: ['BASICO', Validators.required],
     unidadeId: [null as number | null],
+    areaId: [null as number | null, Validators.required],
     modulos: this.fb.array([])
   });
 
@@ -56,7 +61,7 @@ export class AdminCursosComponent implements OnInit {
 
   carregar() {
     this.loading.set(true);
-    this.svc.listarCursos(0).subscribe({
+    this.svc.listarTodosCursos().subscribe({
       next: page => { this.cursos.set(page.content); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
@@ -64,6 +69,26 @@ export class AdminCursosComponent implements OnInit {
       next: data => this.unidades.set(data),
       error: err => console.error('Erro ao carregar unidades:', err)
     });
+    this.svc.listarAreas().subscribe({
+      next: data => this.areas.set(data),
+      error: err => console.error('Erro ao carregar áreas:', err)
+    });
+    this.svc.listarTipos().subscribe({
+      next: data => this.tiposDisponiveis.set(data),
+      error: err => console.error('Erro ao carregar tipos:', err)
+    });
+  }
+
+  toggleCategoria(id: number) {
+    const set = new Set(this.categoriasSelecionadas());
+    if (set.has(id)) set.delete(id); else set.add(id);
+    this.categoriasSelecionadas.set(set);
+  }
+
+  toggleTipo(id: number) {
+    const set = new Set(this.tiposSelecionados());
+    if (set.has(id)) set.delete(id); else set.add(id);
+    this.tiposSelecionados.set(set);
   }
 
   // Getter tipado para ler o array de módulos no template HTML
@@ -103,8 +128,13 @@ export class AdminCursosComponent implements OnInit {
       titulo: curso?.titulo || '',
       descricao: curso?.descricao || '',
       nivel: curso?.nivel || 'BASICO',
-      unidadeId: curso?.unidadeId ?? null
+      unidadeId: curso?.unidadeId ?? null,
+      areaId: curso?.areaId ?? null
     });
+
+    // 2b. Popula a área/categoria e o tipo de ensino selecionados
+    this.categoriasSelecionadas.set(new Set(curso?.categorias?.map(c => c.id) ?? []));
+    this.tiposSelecionados.set(new Set(curso?.tipos?.map(t => t.id) ?? []));
 
     // 3. Se for edição, popula o FormArray dinamicamente buscando os módulos
     if (curso && curso.id) {
@@ -137,6 +167,8 @@ export class AdminCursosComponent implements OnInit {
     }
     this.form.reset();
     this.imagemSelecionada.set(null);
+    this.categoriasSelecionadas.set(new Set());
+    this.tiposSelecionados.set(new Set());
   }
 
   onCapaSelected(file: File) { this.imagemSelecionada.set(file); }
@@ -151,7 +183,10 @@ export class AdminCursosComponent implements OnInit {
       descricao: v.descricao || '',
       nivel: v.nivel!,
       unidadeId: v.unidadeId ?? null,
-      modulos: v.modulos && v.modulos.length > 0 ? v.modulos : []
+      areaId: v.areaId!,
+      modulos: v.modulos && v.modulos.length > 0 ? v.modulos : [],
+      categoriaIds: Array.from(this.categoriasSelecionadas()),
+      tipoIds: Array.from(this.tiposSelecionados())
     };
 
     const isEdicao = !!this.editando();

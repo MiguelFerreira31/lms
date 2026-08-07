@@ -13,8 +13,8 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
     Page<Curso> findByAtivoTrueAndUnidade_Id(Long unidadeId, Pageable pageable);
     Page<Curso> findByAtivoTrueAndNivelAndUnidade_Id(Curso.Nivel nivel, Long unidadeId, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT c FROM Curso c JOIN c.categorias cat WHERE c.ativo = true AND cat.area.slug = :areaSlug",
-           countQuery = "SELECT COUNT(DISTINCT c) FROM Curso c JOIN c.categorias cat WHERE c.ativo = true AND cat.area.slug = :areaSlug")
+    @Query(value = "SELECT c FROM Curso c WHERE c.ativo = true AND c.area.slug = :areaSlug",
+           countQuery = "SELECT COUNT(c) FROM Curso c WHERE c.ativo = true AND c.area.slug = :areaSlug")
     Page<Curso> findByAreaSlug(@Param("areaSlug") String areaSlug, Pageable pageable);
 
     @Query(value = "SELECT DISTINCT c FROM Curso c JOIN c.categorias cat WHERE c.ativo = true AND cat.area.slug = :areaSlug AND cat.slug = :categoriaSlug",
@@ -29,7 +29,7 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
            countQuery = "SELECT COUNT(DISTINCT c) FROM Curso c JOIN c.tipos t WHERE c.ativo = true AND c.unidade.id = :unidadeId AND t.slug = :tipoSlug")
     Page<Curso> findByUnidadeAndTipo(@Param("unidadeId") Long unidadeId, @Param("tipoSlug") String tipoSlug, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT c FROM Curso c JOIN c.categorias cat WHERE c.ativo = true AND c.unidade.id = :unidadeId AND cat.area.slug = :areaSlug",
-           countQuery = "SELECT COUNT(DISTINCT c) FROM Curso c JOIN c.categorias cat WHERE c.ativo = true AND c.unidade.id = :unidadeId AND cat.area.slug = :areaSlug")
+    @Query(value = "SELECT c FROM Curso c WHERE c.ativo = true AND c.unidade.id = :unidadeId AND c.area.slug = :areaSlug",
+           countQuery = "SELECT COUNT(c) FROM Curso c WHERE c.ativo = true AND c.unidade.id = :unidadeId AND c.area.slug = :areaSlug")
     Page<Curso> findByUnidadeAndArea(@Param("unidadeId") Long unidadeId, @Param("areaSlug") String areaSlug, Pageable pageable);
 }

@@ -1,5 +1,11 @@
 package br.com.lms.domain.curso;
 
+import br.com.lms.domain.area.Area;
+import br.com.lms.domain.area.AreaRepository;
+import br.com.lms.domain.area.Categoria;
+import br.com.lms.domain.area.CategoriaRepository;
+import br.com.lms.domain.area.Tipo;
+import br.com.lms.domain.area.TipoRepository;
 import br.com.lms.domain.regiao.Unidade;
 import br.com.lms.domain.regiao.UnidadeRepository;
 import br.com.lms.dto.DTOs.*;
@@ -12,6 +18,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/cursos")
 @RequiredArgsConstructor
@@ -19,6 +27,9 @@ public class CursoController {
 
     private final CursoRepository cursoRepository;
     private final UnidadeRepository unidadeRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final TipoRepository tipoRepository;
+    private final AreaRepository areaRepository;
 
     @GetMapping
     public ResponseEntity<Page<CursoResumoResponse>> listar(
@@ -57,11 +68,13 @@ public class CursoController {
     @PostMapping
     public ResponseEntity<CursoResumoResponse> criar(@Valid @RequestBody CursoRequest request) {
         Unidade unidade = resolverUnidade(request.unidadeId());
+        Area area = resolverArea(request.areaId());
         Curso curso = Curso.builder()
                 .titulo(request.titulo())
                 .descricao(request.descricao())
                 .nivel(request.nivel())
                 .unidade(unidade)
+                .area(area)
                 .build();
 
         if (request.modulos() != null) {
@@ -74,7 +87,12 @@ public class CursoController {
                 curso.getModulos().add(modulo);
             }
         }
-        return ResponseEntity.status(201).body(CursoResumoResponse.from(cursoRepository.save(curso)));
+        curso = cursoRepository.save(curso);
+        sincronizarCategorias(curso, request.categoriaIds());
+        sincronizarTipos(curso, request.tipoIds());
+        curso.setCategorias(categoriaRepository.findByCursos_Id(curso.getId()));
+        curso.setTipos(tipoRepository.findByCursos_Id(curso.getId()));
+        return ResponseEntity.status(201).body(CursoResumoResponse.from(curso));
     }
 
     @PutMapping("/{id}")
@@ -86,6 +104,7 @@ public class CursoController {
         curso.setDescricao(request.descricao());
         curso.setNivel(request.nivel());
         curso.setUnidade(resolverUnidade(request.unidadeId()));
+        curso.setArea(resolverArea(request.areaId()));
         curso.getModulos().clear();
 
         if (request.modulos() != null) {
@@ -100,7 +119,12 @@ public class CursoController {
             }
         }
 
-        return ResponseEntity.ok(CursoResumoResponse.from(cursoRepository.save(curso)));
+        curso = cursoRepository.save(curso);
+        sincronizarCategorias(curso, request.categoriaIds());
+        sincronizarTipos(curso, request.tipoIds());
+        curso.setCategorias(categoriaRepository.findByCursos_Id(curso.getId()));
+        curso.setTipos(tipoRepository.findByCursos_Id(curso.getId()));
+        return ResponseEntity.ok(CursoResumoResponse.from(curso));
     }
 
     @DeleteMapping("/{id}")
@@ -117,5 +141,50 @@ public class CursoController {
             return null;
         return unidadeRepository.findById(unidadeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade", unidadeId));
+    }
+
+    private Area resolverArea(Long areaId) {
+        return areaRepository.findById(areaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Área", areaId));
+    }
+
+    private void sincronizarCategorias(Curso curso, List<Long> categoriaIds) {
+        List<Long> ids = categoriaIds != null ? categoriaIds : List.of();
+        List<Categoria> atuais = categoriaRepository.findByCursos_Id(curso.getId());
+        for (Categoria categoria : atuais) {
+            if (!ids.contains(categoria.getId())) {
+                categoria.getCursos().removeIf(c -> c.getId().equals(curso.getId()));
+                categoriaRepository.save(categoria);
+            }
+        }
+        for (Long id : ids) {
+            boolean jaAssociada = atuais.stream().anyMatch(c -> c.getId().equals(id));
+            if (!jaAssociada) {
+                Categoria categoria = categoriaRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoria", id));
+                categoria.getCursos().add(curso);
+                categoriaRepository.save(categoria);
+            }
+        }
+    }
+
+    private void sincronizarTipos(Curso curso, List<Long> tipoIds) {
+        List<Long> ids = tipoIds != null ? tipoIds : List.of();
+        List<Tipo> atuais = tipoRepository.findByCursos_Id(curso.getId());
+        for (Tipo tipo : atuais) {
+            if (!ids.contains(tipo.getId())) {
+                tipo.getCursos().removeIf(c -> c.getId().equals(curso.getId()));
+                tipoRepository.save(tipo);
+            }
+        }
+        for (Long id : ids) {
+            boolean jaAssociado = atuais.stream().anyMatch(t -> t.getId().equals(id));
+            if (!jaAssociado) {
+                Tipo tipo = tipoRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Tipo", id));
+                tipo.getCursos().add(curso);
+                tipoRepository.save(tipo);
+            }
+        }
     }
 }

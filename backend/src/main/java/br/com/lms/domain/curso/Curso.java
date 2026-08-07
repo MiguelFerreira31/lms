@@ -1,5 +1,6 @@
 package br.com.lms.domain.curso;
 
+import br.com.lms.domain.area.Area;
 import br.com.lms.domain.area.Categoria;
 import br.com.lms.domain.area.Tipo;
 import br.com.lms.domain.regiao.Unidade;
@@ -45,6 +46,10 @@ public class Curso {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "unidade_id")
     private Unidade unidade;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "area_id", nullable = false)
+    private Area area;
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("ordem ASC")

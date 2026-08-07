@@ -10,4 +10,6 @@ public interface TipoRepository extends JpaRepository<Tipo, Long> {
     List<Tipo> findAllByOrderByNomeAsc();
 
     Optional<Tipo> findBySlug(String slug);
+
+    List<Tipo> findByCursos_Id(Long cursoId);
 }

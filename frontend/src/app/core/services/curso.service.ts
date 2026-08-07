@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 export interface CategoriaInfo { id: number; nome: string; slug: string; areaNome: string; areaSlug: string; }
 export interface TipoCurso { id: number; nome: string; slug: string; }
 export interface Area { id: number; nome: string; slug: string; categorias: CategoriaInfo[]; }
-export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; imagemUrl: string | null; categorias: CategoriaInfo[]; tipos: TipoCurso[]; }
+export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; areaId: number | null; areaNome: string | null; imagemUrl: string | null; categorias: CategoriaInfo[]; tipos: TipoCurso[]; }
 export interface AulaInfo { id: number; titulo: string; urlVideo: string | null; duracaoMin: number; ordem: number; }
 export interface ModuloInfo { id: number; titulo: string; ordem: number; aulas: AulaInfo[]; }
 export interface CursoDetalhe extends Curso { modulos: ModuloInfo[]; }
@@ -88,11 +88,11 @@ export class CursoService {
     return this.http.get<CursoDetalhe>(`${environment.apiUrl}/cursos/${id}`);
   }
 
-  criarCurso(data: { titulo: string; descricao: string; nivel: string; unidadeId: number | null }) {
+  criarCurso(data: { titulo: string; descricao: string; nivel: string; unidadeId: number | null; areaId: number; categoriaIds?: number[]; tipoIds?: number[] }) {
     return this.http.post<Curso>(`${environment.apiUrl}/cursos`, data);
   }
 
-  atualizarCurso(id: number, data: { titulo: string; descricao: string; nivel: string; unidadeId: number | null }) {
+  atualizarCurso(id: number, data: { titulo: string; descricao: string; nivel: string; unidadeId: number | null; areaId: number; categoriaIds?: number[]; tipoIds?: number[] }) {
     return this.http.put<Curso>(`${environment.apiUrl}/cursos/${id}`, data);
   }
 

@@ -29,7 +29,9 @@ public class DTOs {
 
     public record AuthResponse(String token, String tipo, String nome, String email, String role, String avatarUrl) {}
 
-    public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId, List<ModuloRequest> modulos) {}
+    public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId,
+                                @NotNull Long areaId,
+                                List<ModuloRequest> modulos, List<Long> categoriaIds, List<Long> tipoIds) {}
 
     // ---- Áreas, Categorias e Tipos ----
 
@@ -57,6 +59,7 @@ public class DTOs {
 
     public record CursoResumoResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
+                                       Long areaId, String areaNome,
                                        String imagemUrl,
                                        List<CategoriaResponse> categorias, List<TipoResponse> tipos) {
         public static CursoResumoResponse from(Curso c) {
@@ -64,6 +67,8 @@ public class DTOs {
                 c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
                 c.getUnidade() != null ? c.getUnidade().getId() : null,
                 c.getUnidade() != null ? c.getUnidade().getNome() : null,
+                c.getArea() != null ? c.getArea().getId() : null,
+                c.getArea() != null ? c.getArea().getNome() : null,
                 c.getImagemUrl(),
                 c.getCategorias().stream().map(CategoriaResponse::from).toList(),
                 c.getTipos().stream().map(TipoResponse::from).toList()
@@ -88,6 +93,7 @@ public class DTOs {
 
     public record CursoDetalheResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
+                                       Long areaId, String areaNome,
                                        String imagemUrl,
                                        List<CategoriaResponse> categorias, List<TipoResponse> tipos,
                                        List<ModuloResponse> modulos) {
@@ -96,6 +102,8 @@ public class DTOs {
                 c.getId(), c.getTitulo(), c.getDescricao(), c.getNivel(), c.getCriadoEm(),
                 c.getUnidade() != null ? c.getUnidade().getId() : null,
                 c.getUnidade() != null ? c.getUnidade().getNome() : null,
+                c.getArea() != null ? c.getArea().getId() : null,
+                c.getArea() != null ? c.getArea().getNome() : null,
                 c.getImagemUrl(),
                 c.getCategorias().stream().map(CategoriaResponse::from).toList(),
                 c.getTipos().stream().map(TipoResponse::from).toList(),
