@@ -40,4 +40,5 @@ build/
 
 ### Secrets & local config ###
 application-local.yml
+.env
 .claude/
