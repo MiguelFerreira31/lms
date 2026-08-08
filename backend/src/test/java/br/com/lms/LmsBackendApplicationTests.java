@@ -1,10 +1,8 @@
 package br.com.lms;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class LmsBackendApplicationTests {
+class LmsBackendApplicationTests extends IntegrationTestBase {
 
 	@Test
 	void contextLoads() {
