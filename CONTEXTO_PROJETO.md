@@ -31,13 +31,13 @@ Backend e frontend rodam e buildam de forma totalmente independente (CI/CD via G
 | Linguagem | Java 25 LTS (Temurin 25.0.4) |
 | Framework | Spring Boot **4.1.0** (Spring Framework 7.0, Security 7.1, Hibernate 7.4, Flyway 12.4, Jackson 3) |
 | Persistência | Spring Data JPA / Hibernate (`ddl-auto=validate` — schema só via Flyway) |
-| Banco | PostgreSQL 15 (Docker, porta host 5433) |
-| Migrations | Flyway (`flyway-core` + `flyway-database-postgresql`), V1→V15 |
+| Banco | PostgreSQL 18 (Docker, porta host 5433) |
+| Migrations | Flyway 12.4 (`spring-boot-starter-flyway` + `flyway-database-postgresql`), V1→V17 |
 | Segurança | Spring Security 7 (stateless) + JWT (`jjwt` 0.13.0 com `jjwt-gson`, HMAC-SHA512) |
 | Validação | Bean Validation (`spring-boot-starter-validation`) |
 | Outros | Lombok |
 | Build | Maven (`./mvnw`) |
-| Testes | 14 testes de integração (`@SpringBootTest` + MockMvc + Testcontainers 2.0.5/Postgres real + Flyway) cobrindo Auth, Matrícula, Presença e Curso, além do context-load. Rodam no **failsafe** (`*IT.java`, fase `integration-test`); o surefire ficou só para unitários, então `mvnw test` não exige Docker |
+| Testes | 19 testes de integração (`@SpringBootTest` + MockMvc + Testcontainers 2.0.5/Postgres real + Flyway) cobrindo Auth, Matrícula, Presença, Curso, contagem de queries e contrato de erro, além do context-load. Rodam no **failsafe** (`*IT.java`, fase `integration-test`); o surefire ficou só para unitários, então `mvnw test` não exige Docker |
 
 ### 2.2 Arquitetura de pacotes
 
@@ -80,17 +80,19 @@ Tabelas principais e relacionamentos:
 
 Relação hierárquica de conteúdo: `Curso 1:N Modulo 1:N Aula 1:N (ConteudoAula, ProgressoAula, PresencaAula)`.
 
-Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de regiões/unidades/cursos reais; V13/V14 tratam slugs; V15 adiciona campos de imagem. Próxima migration livre: **V16**.
+Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de regiões/unidades/cursos reais; V13/V14 tratam slugs; V15 adiciona campos de imagem; V16 vincula curso a área; V17 cria os índices de FK. Próxima migration livre: **V18**.
 
 ### 2.4 Autenticação e autorização
 
 - JWT stateless, token carrega **apenas o email** (`sub`) — nenhuma role/claim. A cada request, `JwtAuthFilter` recarrega o `Usuario` do banco via `UserDetailsServiceImpl`, então mudanças de role têm efeito imediato sem precisar revogar tokens.
-- `BCryptPasswordEncoder`, `DaoAuthenticationProvider`, `@EnableMethodSecurity`, CSRF desabilitado.
+- `BCryptPasswordEncoder`, `DaoAuthenticationProvider` (construído já com o `UserDetailsService` — exigência do Security 7), `AuthenticationManager` via `ProviderManager`, `@EnableMethodSecurity`, CSRF desabilitado.
 - CORS liberado para `localhost:4200`/`4300` (dev do frontend).
 - Regras de autorização por rota (`SecurityConfig`):
   - **Público**: `/api/auth/**`, GET `/uploads/**`, GET `/api/cursos`, `/api/unidades/**`, `/api/areas/**`, `/api/tipos/**`, `/api/regioes`
   - **Somente ADMIN**: escrita em cursos, usuários, regiões/unidades, vínculo professor↔curso
   - **ADMIN + PROFESSOR**: conteúdo de aulas, presença, lançamento de nota, matrículas por curso
+  - **Público também**: , , , 
+  - **Público também**: `/actuator/health`, `/actuator/info`, `/swagger-ui.html`, `/v3/api-docs/**`
   - **Autenticado**: demais rotas
 
 ### 2.5 Principais módulos de API (REST)
@@ -113,7 +115,7 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 
 - `application.properties`: Postgres em `jdbc:postgresql://localhost:5433/lmsdb`, Hikari `max-lifetime=1800000` (fix recente para falha de boot do Flyway por conexão obsoleta), `jwt.expiration-ms=86400000` (24h), uploads salvos em `${user.home}/lms-uploads/`.
 - Credenciais de banco e JWT secret saíram do código-fonte: profiles `application-dev.properties` (fallback local via env var) e `application-prod.properties` (exige env var, sem fallback), documentados em `backend/.env.example`. Os valores originalmente hardcoded — expostos no histórico do git desde o commit inicial — já foram rotacionados; o secret antigo não é mais válido.
-- `docker-compose.yml` (só backend) sobe apenas o Postgres 15 — app roda local via `./mvnw spring-boot:run`. A senha do banco também é lida de variável de ambiente (`.env`), sem hardcode.
+- `docker-compose.yml` (só backend) sobe apenas o Postgres 18 — app roda local via `./mvnw spring-boot:run`. A senha do banco também é lida de variável de ambiente (`.env`), sem hardcode.
 - CI/CD via GitHub Actions: `backend-ci.yml` e `frontend-ci.yml` validam build+test a cada push/PR na `master` (sem deploy automático).
 
 ---

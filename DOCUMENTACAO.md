@@ -67,7 +67,7 @@ LMS Lite é um sistema fullstack de gestão de cursos educacionais desenvolvido 
                    │ JDBC (PostgreSQL driver)
                    ▼
 ┌─────────────────────────────────────────────┐
-│  PostgreSQL 15 — container lms-postgres      │
+│  PostgreSQL 18 — container lms-postgres     │
 │  host :5433 → container :5432                │
 └─────────────────────────────────────────────┘
 ```

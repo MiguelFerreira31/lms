@@ -1,6 +1,6 @@
 ﻿services:
   db:
-    image: postgres:15
+    image: postgres:18
     container_name: lms-postgres
     environment:
       POSTGRES_DB: lmsdb
@@ -9,7 +9,11 @@
     ports:
       - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # A imagem do Postgres 18 mudou o ponto de montagem recomendado:
+      # /var/lib/postgresql (e não mais /var/lib/postgresql/data). Ele coloca os
+      # dados num subdiretório, o que permite usar `pg_upgrade --link` em upgrades
+      # futuros sem esbarrar no limite do mount point.
+      - pgdata:/var/lib/postgresql
 
 volumes:
   pgdata:

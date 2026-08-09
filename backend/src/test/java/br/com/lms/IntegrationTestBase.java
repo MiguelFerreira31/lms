@@ -45,7 +45,7 @@ public abstract class IntegrationTestBase {
     // Testcontainers 2.x: os módulos mudaram de pacote (org.testcontainers.postgresql),
     // o self-type genérico foi removido e o construtor com String crua saiu em favor
     // de DockerImageName.
-    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(DockerImageName.parse("postgres:15"))
+    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(DockerImageName.parse("postgres:18"))
             .withDatabaseName("lmsdb_test")
             .withUsername("lms_test")
             .withPassword("lms_test");

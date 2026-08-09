@@ -3,7 +3,7 @@
 ![Java](https://img.shields.io/badge/Java-25%20LTS-ED8B00?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?logo=springboot)
 ![Angular](https://img.shields.io/badge/Angular-18-DD0031?logo=angular)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss)
 
@@ -50,7 +50,7 @@
 | Animações | GSAP | 3.15 |
 | Backend | Spring Boot | 4.1.0 |
 | Linguagem | Java | 25 LTS |
-| Banco | PostgreSQL | 15 |
+| Banco | PostgreSQL | 18 |
 | Migrations | Flyway | via Spring Boot |
 | Auth | JWT (jjwt) | 0.13.0 |
 | Infra | Docker Compose | — |
@@ -67,7 +67,7 @@ Browser (Angular 18 SPA)
 Spring Boot 4.1.0 (:8080)
     │ JPA/Hibernate + Flyway
     ▼
-PostgreSQL 15 (:5433)
+PostgreSQL 18 (:5433)
 ```
 
 O token JWT contém apenas o `sub=email`. A cada request, o backend carrega o usuário completo do banco, incluindo a role atual — isso permite alterar roles sem revogar tokens.
