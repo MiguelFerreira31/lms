@@ -32,6 +32,9 @@ public class CacheConfig {
         CaffeineCacheManager manager = new CaffeineCacheManager(AREAS, TIPOS, REGIOES);
         manager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(500)
+                // Sem isto o Micrometer só consegue expor 'cache.size'; com as
+                // estatísticas ligadas, hit ratio e evictions aparecem no Actuator.
+                .recordStats()
                 // TTL curto: mesmo com o evict explícito nas escritas, o teto de
                 // 10 min limita a janela de inconsistência de qualquer caminho
                 // que altere esses dados por fora (ex.: migration, SQL manual).
