@@ -56,7 +56,9 @@ test.describe('navegação pública', () => {
 });
 
 test.describe('autenticação pela interface', () => {
-  test('login com credenciais válidas leva ao dashboard', async ({ page }) => {
+  test('login com credenciais válidas leva ao dashboard, sem erro de console', async ({ page }) => {
+    const erros = coletarErrosDeConsole(page);
+
     await page.goto('/login');
 
     await page.getByRole('textbox').first().fill('miguel@lms.com');
@@ -64,6 +66,11 @@ test.describe('autenticação pela interface', () => {
     await page.locator('form').first().locator('button[type="submit"]').click();
 
     await expect(page).toHaveURL(/\/(dashboard|admin\/dashboard)/, { timeout: 15_000 });
+
+    // A troca de layout da raiz (público -> logado) já disparou NG0100:
+    // isLoggedIn() lia o localStorage direto, e o token era gravado num
+    // microtask entre a verificação e o checkNoChanges. Agora deriva do signal.
+    expect(erros.filter(e => e.includes('NG0100'))).toEqual([]);
   });
 
   test('credenciais inválidas mostram a mensagem vinda do ProblemDetail', async ({ page }) => {

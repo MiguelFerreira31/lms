@@ -4,7 +4,7 @@
 
 ## Validação pós-migração — 2026-08-09
 
-Cobertura ampliada de 19 → **52** testes de integração no backend, 12 → **33** unitários no frontend, e **19** cenários end-to-end novos (Playwright). Os 5 controllers que a migração refatorou sem nenhuma rede de proteção — ConteudoAula, Professor, Regiao, Unidade e Upload — passaram a ter teste.
+Cobertura ampliada de 19 → **52** testes de integração no backend, 12 → **35** unitários no frontend, e **19** cenários end-to-end novos (Playwright). Os 5 controllers que a migração refatorou sem nenhuma rede de proteção — ConteudoAula, Professor, Regiao, Unidade e Upload — passaram a ter teste.
 
 **Bug de produção encontrado pelos testes novos:** `POST /api/regioes/{id}/unidades` **nunca funcionou**. A coluna `unidades.slug` é NOT NULL UNIQUE desde a V13, mas nada preenchia esse campo — nem o controller original, nem um `@PrePersist`. Toda criação de unidade pelo painel admin morria na constraint e voltava 409. As unidades existentes só têm slug porque ele foi calculado em SQL dentro da própria migration. Corrigido com `SlugGenerator`, que reproduz aquela normalização em Java (minúsculas, sem acentos, não-alfanumérico vira hífen) e resolve colisão com sufixo numérico. Renomear a unidade agora também atualiza o slug.
 
@@ -15,7 +15,13 @@ Cobertura ampliada de 19 → **52** testes de integração no backend, 12 → **
 
 **Diferença de comportamento do zoneless em testes:** `fixture.detectChanges()` refaz a verificação de *todos* os fixtures anexados, e não só do que recebeu a chamada. Um fixture criado em `beforeEach` com `@Input` ainda não preenchido quebra os testes seguintes — por isso os specs de componente criam o fixture dentro de cada teste.
 
-**Pendência conhecida (só em dev):** `AppComponent` emite NG0100 na transição de layout do login (`Previous value: '1'. Current value: '0'`), porque `isLoggedIn()` e `currentUrl` mudam dentro do mesmo ciclo disparado pela navegação. Verificado contra o build de **produção**: zero erro de console e os 3 gráficos montando normalmente. O `checkNoChanges` que reporta isso só roda em dev.
+**Terceiro defeito, este de reatividade — corrigido:** `AuthService.isLoggedIn()` lia o `localStorage` **direto**, sem passar por signal. O template raiz decide o layout inteiro por essa expressão, então o valor podia mudar no meio de um ciclo: a resposta do login gravava o token num microtask entre o `refreshViews()` e o `checkNoChanges()`, e o Angular acusava NG0100 no `AppComponent` (`Previous value: '1'. Current value: '0'`).
+
+O aviso era o sintoma menor. O problema de fundo é que, sob zoneless, **uma leitura não reativa não agenda verificação nenhuma** — se o `localStorage` mudasse sem uma escrita de signal ao lado, o layout simplesmente não atualizaria. Funcionava por acidente, porque o `currentUser.set()` acontecia junto.
+
+`isLoggedIn`, `isAdmin` e `isProfessor` viraram `computed()` sobre `currentUser`. `getToken()` continua lendo o storage direto, de propósito: é o que os interceptors usam a cada requisição, e eles não participam de ciclo de detecção de mudança. A leitura inicial passou a exigir token **e** usuário presentes — storage pela metade agora é tratado como deslogado, em vez de deixar a UI num estado híbrido.
+
+Travado por dois testes unitários (token no storage sem signal não loga a UI; sessão pela metade é deslogado) e por uma asserção de ausência de NG0100 no cenário E2E de login.
 
 ---
 

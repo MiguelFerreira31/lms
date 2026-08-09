@@ -55,7 +55,7 @@
 | Migrations | Flyway | 12.4 (V1–V17) |
 | Auth | JWT (jjwt) | 0.13.0 |
 | Testes (back) | JUnit 6 + Testcontainers | 52 testes de integração |
-| Testes (front) | Vitest · Playwright | 33 specs · 19 cenários E2E |
+| Testes (front) | Vitest · Playwright | 35 specs · 19 cenários E2E |
 | Infra | Docker Compose | — |
 
 ---
@@ -155,7 +155,7 @@ lms/
 # Backend — 52 testes de integração contra Postgres real (Testcontainers)
 cd backend && ./mvnw verify
 
-# Frontend — 33 testes unitários (Vitest, jsdom)
+# Frontend — 35 testes unitários (Vitest, jsdom)
 cd frontend && npm test
 
 # Frontend — 19 cenários end-to-end (Playwright)

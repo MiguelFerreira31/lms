@@ -135,7 +135,7 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 | Acessibilidade | Widget próprio WCAG 2.1 AA/AAA + `VlibrasWidgetComponent` local (script oficial do gov.br) |
 | HTTP | `HttpClient` + interceptors funcionais |
 | Build | Angular CLI 22 · TypeScript 6.0 |
-| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, jsdom) — 33 specs em 8 arquivos · **Playwright** — 19 cenários end-to-end |
+| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, jsdom) — 35 specs em 8 arquivos · **Playwright** — 19 cenários end-to-end |
 
 ### 3.2 Estrutura (`src/app/`)
 
