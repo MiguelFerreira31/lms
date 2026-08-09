@@ -195,7 +195,7 @@
                         [style.width.%]="m.progresso?.percentual || 0"></div>
                       </div>
                       <span class="text-xs font-bold text-[#0054A6] flex-shrink-0">
-                        {{ m.progresso?.percentual | number:'1.0-0' }}%
+                        {{ $safeNavigationMigration(m.progresso?.percentual) | number:'1.0-0' }}%
                       </span>
                     </div>
                     <p class="text-xs text-gray-400">

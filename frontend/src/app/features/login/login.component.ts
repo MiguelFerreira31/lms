@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { AuthService } from '../../core/services/auth.service';
     selector: 'app-login',
     imports: [ReactiveFormsModule, MatButtonModule, MatSnackBarModule, MatTabsModule],
     templateUrl: './login.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {

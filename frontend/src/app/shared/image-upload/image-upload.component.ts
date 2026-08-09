@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
     selector: 'app-image-upload',
     imports: [MatIconModule, MatProgressSpinnerModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <div>
       <div class="relative group cursor-pointer"

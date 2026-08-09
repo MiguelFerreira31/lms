@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -20,6 +20,7 @@ interface CursoDetalhe {
     selector: 'app-professor-cursos',
     imports: [RouterModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule],
     templateUrl: './professor-cursos.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./professor-cursos.component.scss']
 })
 export class ProfessorCursosComponent implements OnInit {

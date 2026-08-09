@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, HostListener, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -387,6 +387,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
       </div>
     }
     `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: [`:host { display: block; }`]
 })
 export class PublicNavComponent implements OnInit {

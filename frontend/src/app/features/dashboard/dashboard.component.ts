@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +18,7 @@ interface MatriculaComProgresso extends Matricula {
     selector: 'app-dashboard',
     imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule, ImageUploadComponent],
     templateUrl: './dashboard.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {

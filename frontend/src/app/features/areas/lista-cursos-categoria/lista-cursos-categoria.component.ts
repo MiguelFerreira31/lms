@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
 @Component({
     selector: 'app-lista-cursos-categoria',
     imports: [CommonModule, RouterLink, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <div class="min-h-screen bg-gray-50">
     

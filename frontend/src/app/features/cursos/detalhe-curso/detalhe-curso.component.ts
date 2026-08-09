@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -12,6 +12,7 @@ import { CursoService, CursoDetalhe } from '../../../core/services/curso.service
     selector: 'app-detalhe-curso',
     imports: [CommonModule, NgClass, RouterModule, MatSnackBarModule, MatProgressSpinnerModule, MatExpansionModule, MatIconModule],
     templateUrl: './detalhe-curso.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./detalhe-curso.component.scss']
 })
 export class DetalheCursoComponent implements OnInit {

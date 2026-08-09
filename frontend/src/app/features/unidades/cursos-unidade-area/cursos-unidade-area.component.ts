@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,7 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
 @Component({
     selector: 'app-cursos-unidade-area',
     imports: [RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <div class="min-h-screen bg-gray-50">
     

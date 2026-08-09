@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { ReactiveFormsModule, FormBuilder, Validators, FormsModule, FormArray } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -16,6 +16,7 @@ import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.
     selector: 'app-admin-cursos',
     imports: [FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatTabsModule, ImageUploadComponent],
     templateUrl: './admin-cursos.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./admin-cursos.component.scss']
 })
 export class AdminCursosComponent implements OnInit {

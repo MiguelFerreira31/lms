@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { CursoService, Curso, Area } from '../../core/services/curso.service';
 @Component({
     selector: 'app-home',
     imports: [RouterModule, MatIconModule, MatProgressSpinnerModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {

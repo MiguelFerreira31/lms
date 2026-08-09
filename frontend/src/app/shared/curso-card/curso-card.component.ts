@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { Curso } from '../../core/services/curso.service';
 @Component({
     selector: 'app-curso-card',
     imports: [RouterLink, MatIconModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <a [routerLink]="['/cursos', curso.id]"
        class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1

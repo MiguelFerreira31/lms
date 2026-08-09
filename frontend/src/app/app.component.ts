@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
@@ -11,6 +11,7 @@ import { AccessibilityComponent } from './accessibility/accessibility.component'
 @Component({
     selector: 'app-root',
     imports: [RouterOutlet, NavbarComponent, PublicNavComponent, AccessibilityComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     @if (auth.isLoggedIn()) {
       <app-navbar></app-navbar>

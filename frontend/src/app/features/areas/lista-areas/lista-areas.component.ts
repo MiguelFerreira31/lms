@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,7 @@ const AREA_CONFIG: Record<string, { icon: string; color: string; bg: string; bor
 @Component({
     selector: 'app-lista-areas',
     imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <div class="min-h-screen bg-gray-50">
     

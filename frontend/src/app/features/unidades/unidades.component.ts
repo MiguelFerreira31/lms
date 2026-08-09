@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,7 @@ interface GrupoRegiao {
 @Component({
     selector: 'app-unidades',
     imports: [RouterLink, MatIconModule, MatProgressSpinnerModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <div class="min-h-screen bg-white">
     

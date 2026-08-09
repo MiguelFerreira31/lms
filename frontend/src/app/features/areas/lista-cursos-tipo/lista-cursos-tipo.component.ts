@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,7 @@ const PER_PAGE = 4;
 @Component({
     selector: 'app-lista-cursos-tipo',
     imports: [RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <div class="min-h-screen bg-gray-50">
     

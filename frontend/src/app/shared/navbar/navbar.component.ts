@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -158,6 +158,7 @@ import { AuthService } from '../../core/services/auth.service';
       </div>
     </aside>
     `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: [`:host { display: block; }`]
 })
 export class NavbarComponent {

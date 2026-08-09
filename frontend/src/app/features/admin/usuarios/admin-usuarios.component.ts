@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { CursoService, Unidade, UsuarioResponse } from '../../../core/services/c
     selector: 'app-admin-usuarios',
     imports: [CommonModule, FormsModule, MatIconModule, MatSnackBarModule],
     templateUrl: './admin-usuarios.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: []
 })
 export class AdminUsuariosComponent implements OnInit {

@@ -1,5 +1,6 @@
 import {
-  Component, ElementRef, inject, Input, OnDestroy, afterNextRender
+  Component, ElementRef, inject, Input, OnDestroy, afterNextRender,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 /**
@@ -24,6 +25,7 @@ import {
       </div>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [':host { display: contents; }']
 })
 export class VlibrasWidgetComponent implements OnDestroy {

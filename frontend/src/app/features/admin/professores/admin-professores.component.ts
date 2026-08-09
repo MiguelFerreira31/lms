@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +13,7 @@ import { CursoService, Curso, Professor } from '../../../core/services/curso.ser
     selector: 'app-admin-professores',
     imports: [FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
     templateUrl: './admin-professores.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./admin-professores.component.scss']
 })
 export class AdminProfessoresComponent implements OnInit {

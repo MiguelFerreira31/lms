@@ -47,7 +47,7 @@
               <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
                   <span class="text-sm text-gray-500">Progresso</span>
-                  <span class="text-sm font-bold text-indigo-600">{{ m.progresso?.percentual | number:'1.0-0' }}%</span>
+                  <span class="text-sm font-bold text-indigo-600">{{ $safeNavigationMigration(m.progresso?.percentual) | number:'1.0-0' }}%</span>
                 </div>
                 <mat-progress-bar mode="determinate" [value]="m.progresso?.percentual || 0" class="rounded-full"></mat-progress-bar>
                 <p class="text-xs text-gray-400 mt-1.5">

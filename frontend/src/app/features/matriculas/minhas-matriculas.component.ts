@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -12,6 +12,7 @@ import { catchError } from 'rxjs/operators';
     selector: 'app-minhas-matriculas',
     imports: [CommonModule, RouterModule, MatProgressBarModule, MatProgressSpinnerModule, MatIconModule],
     templateUrl: './minhas-matriculas.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./minhas-matriculas.component.scss']
 })
 export class MinhasMatriculasComponent implements OnInit {

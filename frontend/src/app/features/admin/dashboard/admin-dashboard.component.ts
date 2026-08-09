@@ -10,6 +10,7 @@ import {
   inject,
   PLATFORM_ID,
   WritableSignal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -36,6 +37,7 @@ interface MatriculaComCurso extends MatriculaDetalhe {
 @Component({
     selector: 'app-admin-dashboard',
     imports: [CommonModule, RouterModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './admin-dashboard.component.html'
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {

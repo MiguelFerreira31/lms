@@ -1,5 +1,6 @@
 import {
-  Component, inject, OnInit, OnDestroy, HostListener
+  Component, inject, OnInit, OnDestroy, HostListener,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { VlibrasWidgetComponent } from '../shared/vlibras/vlibras-widget.component';
@@ -9,6 +10,7 @@ import { AccessibilityService } from './accessibility.service';
     selector: 'app-accessibility',
     imports: [VlibrasWidgetComponent],
     templateUrl: './accessibility.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./accessibility.component.scss']
 })
 export class AccessibilityComponent implements OnInit, OnDestroy {
