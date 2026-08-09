@@ -3,21 +3,23 @@ import { provideHttpClient, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { AuthService, AuthResponse } from './auth.service';
+import { vi } from 'vitest';
+import { criarMock, Mocked } from '../../../testing/mock';
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let routerSpy: Mocked<Router>;
 
   beforeEach(() => {
     // O construtor do AuthService dispara um setTimeout(..., 100) que chama
     // refreshUser(). Usamos o relógio falso do Jasmine para que esse timer
     // nunca dispare de verdade durante os testes (evita requisições HTTP
     // inesperadas vazando para testes seguintes).
-    jasmine.clock().install();
+    vi.useFakeTimers();
     localStorage.clear();
 
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    routerSpy = criarMock<Router>(['navigate']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -33,7 +35,7 @@ describe('AuthService', () => {
 
   afterEach(() => {
     httpMock.verify();
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
     localStorage.clear();
   });
 
@@ -69,19 +71,19 @@ describe('AuthService', () => {
   });
 
   it('isAdmin() e isProfessor() retornam corretamente conforme o role no signal', () => {
-    expect(service.isAdmin()).toBeFalse();
-    expect(service.isProfessor()).toBeFalse();
+    expect(service.isAdmin()).toBe(false);
+    expect(service.isProfessor()).toBe(false);
 
     service.currentUser.set({ token: 't', tipo: 'Bearer', nome: 'Admin', email: 'admin@teste.com', role: 'ADMIN' });
-    expect(service.isAdmin()).toBeTrue();
-    expect(service.isProfessor()).toBeTrue(); // ADMIN também é considerado professor
+    expect(service.isAdmin()).toBe(true);
+    expect(service.isProfessor()).toBe(true); // ADMIN também é considerado professor
 
     service.currentUser.set({ token: 't', tipo: 'Bearer', nome: 'Prof', email: 'prof@teste.com', role: 'PROFESSOR' });
-    expect(service.isAdmin()).toBeFalse();
-    expect(service.isProfessor()).toBeTrue();
+    expect(service.isAdmin()).toBe(false);
+    expect(service.isProfessor()).toBe(true);
 
     service.currentUser.set({ token: 't', tipo: 'Bearer', nome: 'Aluno', email: 'aluno@teste.com', role: 'ALUNO' });
-    expect(service.isAdmin()).toBeFalse();
-    expect(service.isProfessor()).toBeFalse();
+    expect(service.isAdmin()).toBe(false);
+    expect(service.isProfessor()).toBe(false);
   });
 });

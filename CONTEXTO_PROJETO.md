@@ -135,7 +135,7 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 | Acessibilidade | angular-vlibras 1.1.0 (Libras) |
 | HTTP | `HttpClient` + interceptors funcionais |
 | Build | Angular CLI 22 · TypeScript 6.0 |
-| Testes | Karma/Jasmine — 12 specs cobrindo AuthService, authGuard, jwtInterceptor, errorInterceptor e CursoService |
+| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, roda em jsdom) — 12 specs cobrindo AuthService, authGuard, jwtInterceptor, errorInterceptor e CursoService |
 
 ### 3.2 Estrutura (`src/app/`)
 
@@ -322,6 +322,7 @@ Cadeia percorrida um major por vez (18→19→20→21→22), com build e testes 
 - **Guards por role** (`adminGuard`, `professorGuard`): `AuthService` já expunha `isAdmin()`/`isProfessor()`, mas nenhuma rota usava — um ALUNO autenticado renderizava a UI de `/admin/*`.
 - **Acompanhamento do contrato do backend**: `Page<T>` refeito para o shape `PagedModel`; `errorInterceptor` com o tipo `ProblemDetail` e o helper `mensagemDeErro()`.
 - Vazamentos pré-existentes corrigidos: `MutationObserver` sem `disconnect()` e `router.events` sem `takeUntilDestroyed()`.
+- **Karma/Jasmine → Vitest**: builder `@angular/build:unit-test`, 7 devDependencies removidas. Como o Vitest roda em jsdom, o CI não precisa mais de um Chrome instalado. O `jasmine.createSpyObj` não tem equivalente e virou o helper `criarMock<T>()` em `src/testing/mock.ts`; `.and.returnValue` → `.mockReturnValue`, `toBeTrue()/toBeFalse()` → `toBe(true/false)`, `jasmine.clock()` → `vi.useFakeTimers()`.
 
 ### 7.3 Tailwind 3 → 4
 

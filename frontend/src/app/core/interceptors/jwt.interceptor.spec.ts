@@ -3,14 +3,15 @@ import { HttpClient, provideHttpClient, withInterceptors, withXhr } from '@angul
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { jwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
+import { criarMock, Mocked } from '../../../testing/mock';
 
 describe('jwtInterceptor', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let authServiceSpy: Mocked<AuthService>;
 
   beforeEach(() => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['getToken']);
+    authServiceSpy = criarMock<AuthService>(['getToken']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -27,7 +28,7 @@ describe('jwtInterceptor', () => {
   afterEach(() => httpMock.verify());
 
   it('injeta header Authorization: Bearer <token> quando há token salvo', () => {
-    authServiceSpy.getToken.and.returnValue('meu-token');
+    authServiceSpy.getToken.mockReturnValue('meu-token');
 
     http.get('/api/teste').subscribe();
 
@@ -37,12 +38,12 @@ describe('jwtInterceptor', () => {
   });
 
   it('não injeta header Authorization quando não há token', () => {
-    authServiceSpy.getToken.and.returnValue(null);
+    authServiceSpy.getToken.mockReturnValue(null);
 
     http.get('/api/teste').subscribe();
 
     const req = httpMock.expectOne('/api/teste');
-    expect(req.request.headers.has('Authorization')).toBeFalse();
+    expect(req.request.headers.has('Authorization')).toBe(false);
     req.flush({});
   });
 });

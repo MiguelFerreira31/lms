@@ -2,14 +2,15 @@ import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
 import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
+import { criarMock, Mocked } from '../../../testing/mock';
 
 describe('authGuard', () => {
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let authServiceSpy: Mocked<AuthService>;
+  let routerSpy: Mocked<Router>;
 
   beforeEach(() => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['isLoggedIn']);
-    routerSpy = jasmine.createSpyObj('Router', ['createUrlTree']);
+    authServiceSpy = criarMock<AuthService>(['isLoggedIn']);
+    routerSpy = criarMock<Router>(['createUrlTree']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -26,9 +27,9 @@ describe('authGuard', () => {
   }
 
   it('bloqueia acesso não autenticado e redireciona para /login com returnUrl', () => {
-    authServiceSpy.isLoggedIn.and.returnValue(false);
+    authServiceSpy.isLoggedIn.mockReturnValue(false);
     const fakeTree = {} as UrlTree;
-    routerSpy.createUrlTree.and.returnValue(fakeTree);
+    routerSpy.createUrlTree.mockReturnValue(fakeTree);
 
     const result = runGuard('/admin/cursos');
 
@@ -40,11 +41,11 @@ describe('authGuard', () => {
   });
 
   it('permite acesso quando o usuário está autenticado', () => {
-    authServiceSpy.isLoggedIn.and.returnValue(true);
+    authServiceSpy.isLoggedIn.mockReturnValue(true);
 
     const result = runGuard('/admin/cursos');
 
-    expect(result).toBeTrue();
+    expect(result).toBe(true);
     expect(routerSpy.createUrlTree).not.toHaveBeenCalled();
   });
 });

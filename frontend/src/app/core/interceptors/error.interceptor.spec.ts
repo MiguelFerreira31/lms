@@ -4,16 +4,17 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { Router } from '@angular/router';
 import { errorInterceptor } from './error.interceptor';
 import { AuthService } from '../services/auth.service';
+import { criarMock, Mocked } from '../../../testing/mock';
 
 describe('errorInterceptor', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let authServiceSpy: Mocked<AuthService>;
+  let routerSpy: Mocked<Router>;
 
   beforeEach(() => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['getToken', 'logout']);
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    authServiceSpy = criarMock<AuthService>(['getToken', 'logout']);
+    routerSpy = criarMock<Router>(['navigate']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -31,7 +32,7 @@ describe('errorInterceptor', () => {
   afterEach(() => httpMock.verify());
 
   it('dispara logout automático em resposta 401 quando havia sessão ativa', () => {
-    authServiceSpy.getToken.and.returnValue('token-expirado');
+    authServiceSpy.getToken.mockReturnValue('token-expirado');
 
     http.get('/api/protegido').subscribe({ error: () => {} });
 
@@ -43,7 +44,7 @@ describe('errorInterceptor', () => {
   });
 
   it('não chama logout em 401 quando não havia token (usuário já deslogado)', () => {
-    authServiceSpy.getToken.and.returnValue(null);
+    authServiceSpy.getToken.mockReturnValue(null);
 
     http.get('/api/publico').subscribe({ error: () => {} });
 
