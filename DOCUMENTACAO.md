@@ -1,7 +1,7 @@
 # Documentação Técnica — LMS Lite
 
 > Referência técnica para desenvolvedores e mantenedores.
-> Atualizada em: 2026-08-09 | Backend: Spring Boot 4.1.0 (Java 25 LTS) / Frontend: Angular 18
+> Atualizada em: 2026-08-09 | Backend: Spring Boot 4.1.0 (Java 25 LTS) / Frontend: Angular 22 (zoneless)
 
 ---
 

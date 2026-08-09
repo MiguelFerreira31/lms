@@ -15,7 +15,7 @@ lms/
 ├── README.md, DOCUMENTACAO.md, ROADMAP.md, AUDITORIA.md   # docs originais do projeto
 ├── CONTEXTO_PROJETO.md                                     # este arquivo
 ├── backend/     # API Java 25 LTS + Spring Boot 4.1
-└── frontend/    # SPA Angular 18 standalone
+└── frontend/    # SPA Angular 22 standalone (zoneless)
 ```
 
 Backend e frontend rodam e buildam de forma totalmente independente (CI/CD via GitHub Actions valida build+test a cada push/PR; sem Docker orquestrando a app em si — só o Postgres é containerizado).
@@ -126,15 +126,15 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 
 | Item | Valor |
 |---|---|
-| Framework | Angular **18** (standalone components, sem NgModules — roteamento via `loadComponent()`) |
-| UI Kit | Angular Material 18.2.14 + CDK (tabelas, botões, ícones, snackbar, tabs, expansion panel) |
-| Estilos | Tailwind CSS 3.4.19 + design system próprio `.lms-*` |
+| Framework | Angular **22** (standalone, zoneless, control flow `@if`/`@for`) |
+| UI Kit | Angular Material 22.1.1 + CDK, tema **M3** (ícones, spinner, snackbar, tooltip, tabs, expansion, paginator) |
+| Estilos | Tailwind CSS 3.4.19 + design system próprio `.lms-*` (migração para o v4 pendente, ver §7.3) |
 | Estado | **Angular Signals** nativos (sem NgRx/Redux) |
 | Gráficos | Chart.js 4.5.1 |
 | Animações | GSAP 3.15.0 |
 | Acessibilidade | angular-vlibras 1.1.0 (Libras) |
 | HTTP | `HttpClient` + interceptors funcionais |
-| Build | Angular CLI 18 |
+| Build | Angular CLI 22 · TypeScript 6.0 |
 | Testes | Karma/Jasmine — 12 specs cobrindo AuthService, authGuard, jwtInterceptor, errorInterceptor e CursoService |
 
 ### 3.2 Estrutura (`src/app/`)
@@ -295,7 +295,49 @@ Escolha de versão do Java: o Temurin 26 já existe, mas é *feature release* n�
 
 ---
 
-## 7. Documentação original do projeto
+## 7. Migração do frontend — Angular 18 → 22 (2026-08-09)
+
+Cadeia percorrida um major por vez (18→19→20→21→22), com build e testes verdes em cada degrau.
+
+### 7.1 Efeito no bundle de produção
+
+| Etapa | Initial total | Transferido |
+|---|---|---|
+| Angular 18 (ponto de partida) | 767.47 kB | 176.47 kB |
+| Angular 22 (ainda com zone.js) | 543.12 kB | 104.81 kB |
+| Angular 22 + zoneless | 361.95 kB | 57.71 kB |
+| + tema M3 e imports mortos removidos | **265.08 kB** | **51.02 kB** |
+
+**−65% no bundle e −71% no transferido.**
+
+### 7.2 O que mudou
+
+- **Zoneless**: `provideZonelessChangeDetection()`, `zone.js` fora dos polyfills e das dependências, `provideAnimationsAsync()`. Ganho concreto: o widget de acessibilidade registra handlers de `mousemove` (lupa, máscara, guia de leitura) — com zone.js cada movimento do mouse disparava um ciclo de verificação da aplicação inteira.
+- **`admin-dashboard`** dependia de `effect()` → `setTimeout(50)` → `@ViewChild.nativeElement` para criar os 3 gráficos, e de `setTimeout(300)` antes de consultar `.top-curso-bar` para o GSAP. Eram apostas no timing de render do zone.js; trocado por `afterNextRender`.
+- **Control flow**: 251 usos de `*ngIf`/`*ngFor` em 31 arquivos viraram `@if`/`@for`. A schematic converte `trackBy` para `track f(i, item)`, o que **não compila** — no `@for`, `track` é expressão de identidade. As 33 ocorrências foram reescritas (`track x.id`, `track $index`).
+- **`standalone: true`** removido de 26 componentes (padrão desde o v19).
+- **Material M3**: `indigo-pink` (M2) → `azure-blue` (M3). As 4 regras `::ng-deep` do login alcançavam classes internas do MDC e quebraram; reescritas com tokens `--mat-tab-header-*`. `MatButtonModule` (5 arquivos) e `MatTableModule` (2) removidos — importados e nunca usados.
+- **`angular-vlibras` substituído** por `VlibrasWidgetComponent` local: o pacote travava no peer `^21` e estava sem manutenção.
+- **`@angular/platform-browser-dynamic` removido** — não era usado e parou de publicar no 20.0.7.
+- **Guards por role** (`adminGuard`, `professorGuard`): `AuthService` já expunha `isAdmin()`/`isProfessor()`, mas nenhuma rota usava — um ALUNO autenticado renderizava a UI de `/admin/*`.
+- **Acompanhamento do contrato do backend**: `Page<T>` refeito para o shape `PagedModel`; `errorInterceptor` com o tipo `ProblemDetail` e o helper `mensagemDeErro()`.
+- Vazamentos pré-existentes corrigidos: `MutationObserver` sem `disconnect()` e `router.events` sem `takeUntilDestroyed()`.
+
+### 7.3 Pendência conhecida — Tailwind 4
+
+**O frontend segue no Tailwind 3.4.19.** A migração para o v4 foi tentada e revertida.
+
+Sintoma: o `@import "tailwindcss"` é processado (o `@apply` das classes `.lms-*` expande normalmente), mas a varredura de conteúdo não encontra nenhum template. O CSS gerado cai de **75 KB para 32 KB** e sai **sem nenhuma utility usada no HTML** — a aplicação renderiza praticamente sem estilo. A falha é silenciosa: o build passa, sem warning.
+
+Combinações testadas, todas com cache limpo: entrada em `.scss` e em `.css` puro; com e sem `postcss.config.js`; `@source` relativo ao CSS, relativo à raiz do projeto e absoluto; `source()` no próprio `@import`.
+
+O **Tailwind CLI standalone, sobre o mesmo arquivo de entrada, gera 92 KB com as classes corretas** — ou seja, o CSS está certo e o problema é a integração com o pipeline do `@angular/build` 22.
+
+Reverter foi a decisão consciente: o v3 funciona e a alternativa seria entregar a aplicação sem estilo.
+
+---
+
+## 8. Documentação original do projeto
 
 O repositório já contém documentação própria mais extensa (datada de 2026-06-02/05, um pouco defasada em relação aos últimos 3 commits, já incorporados aqui):
 

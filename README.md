@@ -2,7 +2,7 @@
 
 ![Java](https://img.shields.io/badge/Java-25%20LTS-ED8B00?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?logo=springboot)
-![Angular](https://img.shields.io/badge/Angular-18-DD0031?logo=angular)
+![Angular](https://img.shields.io/badge/Angular-22-DD0031?logo=angular)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss)
@@ -43,9 +43,9 @@
 
 | Camada | Tecnologia | Versão |
 |--------|-----------|--------|
-| Frontend | Angular | 18 |
+| Frontend | Angular | 22 |
 | UI | Tailwind CSS | 3.4 |
-| Componentes | Angular Material | 18.2 |
+| Componentes | Angular Material | 22.1 (tema M3) |
 | Gráficos | Chart.js | 4.5 |
 | Animações | GSAP | 3.15 |
 | Backend | Spring Boot | 4.1.0 |
@@ -60,7 +60,7 @@
 ## Arquitetura
 
 ```
-Browser (Angular 18 SPA)
+Browser (Angular 22 SPA, zoneless)
     │
     │ HTTP/REST — Bearer JWT
     ▼
@@ -119,7 +119,7 @@ lms/
 │       ├── dto/          # DTOs centralizados (DTOs.java)
 │       ├── exception/    # GlobalExceptionHandler
 │       └── security/     # JWT filter, provider, UserDetails
-├── frontend/         # Angular 18 SPA
+├── frontend/         # Angular 22 SPA (zoneless)
 │   └── src/app/
 │       ├── accessibility/  # Widget de acessibilidade standalone
 │       ├── core/           # Guards, interceptors, services
