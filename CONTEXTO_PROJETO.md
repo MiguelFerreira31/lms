@@ -14,7 +14,7 @@
 lms/
 ├── README.md, DOCUMENTACAO.md, ROADMAP.md, AUDITORIA.md   # docs originais do projeto
 ├── CONTEXTO_PROJETO.md                                     # este arquivo
-├── backend/     # API Java 17 + Spring Boot 3.5
+├── backend/     # API Java 25 LTS + Spring Boot 4.1
 └── frontend/    # SPA Angular 18 standalone
 ```
 
@@ -28,16 +28,16 @@ Backend e frontend rodam e buildam de forma totalmente independente (CI/CD via G
 
 | Item | Valor |
 |---|---|
-| Linguagem | Java 17 |
-| Framework | Spring Boot **3.5.14** |
+| Linguagem | Java 25 LTS (Temurin 25.0.4) |
+| Framework | Spring Boot **4.1.0** (Spring Framework 7.0, Security 7.1, Hibernate 7.4, Flyway 12.4, Jackson 3) |
 | Persistência | Spring Data JPA / Hibernate (`ddl-auto=validate` — schema só via Flyway) |
 | Banco | PostgreSQL 15 (Docker, porta host 5433) |
 | Migrations | Flyway (`flyway-core` + `flyway-database-postgresql`), V1→V15 |
-| Segurança | Spring Security (stateless) + JWT (`jjwt` 0.12.5, HMAC-SHA512) |
+| Segurança | Spring Security 7 (stateless) + JWT (`jjwt` 0.13.0 com `jjwt-gson`, HMAC-SHA512) |
 | Validação | Bean Validation (`spring-boot-starter-validation`) |
 | Outros | Lombok |
 | Build | Maven (`./mvnw`) |
-| Testes | 14 testes de integração (`@SpringBootTest` + MockMvc + Testcontainers/Postgres real + Flyway) cobrindo Auth, Matrícula, Presença e Curso, além do teste de context-load original |
+| Testes | 14 testes de integração (`@SpringBootTest` + MockMvc + Testcontainers 2.0.5/Postgres real + Flyway) cobrindo Auth, Matrícula, Presença e Curso, além do context-load. Rodam no **failsafe** (`*IT.java`, fase `integration-test`); o surefire ficou só para unitários, então `mvnw test` não exige Docker |
 
 ### 2.2 Arquitetura de pacotes
 
@@ -217,7 +217,29 @@ Widget global standalone (WCAG 2.1 AA/AAA), persistido em `localStorage`: 5 nív
 
 ---
 
-## 6. Documentação original do projeto
+## 6. Migração Spring Boot 3.5 → 4.1 / Java 17 → 25 (2026-08-09)
+
+Breaking changes efetivamente encontrados, com a correção aplicada. Os três últimos **não constam das release notes** — só apareceram compilando/rodando.
+
+| # | Breaking change | Correção |
+|---|---|---|
+| 1 | `spring-boot-starter-web` renomeado | → `spring-boot-starter-webmvc` |
+| 2 | Security 7 removeu o construtor sem-args de `DaoAuthenticationProvider` e o `setUserDetailsService` | `new DaoAuthenticationProvider(userDetailsService)` |
+| 3 | Security 7: `AuthenticationConfiguration` deprecated-for-removal | bean `AuthenticationManager` via `new ProviderManager(provider)` |
+| 4 | `AbstractHttpConfigurer::disable` deprecated | `CsrfConfigurer::disable` |
+| 5 | Jackson 2 → Jackson 3 | `com.fasterxml.jackson.databind.ObjectMapper` → `tools.jackson.databind.ObjectMapper` |
+| 6 | Hibernate 7 desencoraja dialeto fixo | removido `spring.jpa.properties.hibernate.dialect` |
+| 7 | **Auto-configuração dividida em módulos por tecnologia**: declarar `org.flywaydb:flyway-core` cru não liga mais o Flyway — o schema não migrava e o `ddl-auto=validate` falhava com `missing table [areas]` | trocar por `spring-boot-starter-flyway` (traz `spring-boot-flyway`) |
+| 8 | **Test slices divididas por tecnologia**: `AutoConfigureMockMvc` saiu de `org.springframework.boot.test.autoconfigure.web.servlet` | → `org.springframework.boot.webmvc.test.autoconfigure`, via `spring-boot-starter-webmvc-test` |
+| 9 | **Testcontainers 2.x** renomeou os artefatos (`postgresql` → `testcontainers-postgresql`) e os pacotes (`org.testcontainers.postgresql`), removeu o self-type genérico (`PostgreSQLContainer<?>`) e o construtor com `String` crua | `new PostgreSQLContainer(DockerImageName.parse(...))` |
+
+Nota sobre dependências: `jjwt-jackson` foi trocado por **`jjwt-gson`** porque o `jjwt-jackson` 0.13 ainda depende do Jackson 2, o que reintroduziria essa árvore só para serializar claims. O Jackson 2 ainda entra transitivamente pelo `springdoc` (swagger-core), mas isso é upstream.
+
+Escolha de versão do Java: o Temurin 26 já existe, mas é *feature release* não-LTS. O alvo é o **25 LTS**.
+
+---
+
+## 7. Documentação original do projeto
 
 O repositório já contém documentação própria mais extensa (datada de 2026-06-02/05, um pouco defasada em relação aos últimos 3 commits, já incorporados aqui):
 

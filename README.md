@@ -1,7 +1,7 @@
 # LMS Lite
 
-![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.14-6DB33F?logo=springboot)
+![Java](https://img.shields.io/badge/Java-25%20LTS-ED8B00?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?logo=springboot)
 ![Angular](https://img.shields.io/badge/Angular-18-DD0031?logo=angular)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
@@ -48,11 +48,11 @@
 | Componentes | Angular Material | 18.2 |
 | Gráficos | Chart.js | 4.5 |
 | Animações | GSAP | 3.15 |
-| Backend | Spring Boot | 3.5.14 |
-| Linguagem | Java | 17 |
+| Backend | Spring Boot | 4.1.0 |
+| Linguagem | Java | 25 LTS |
 | Banco | PostgreSQL | 15 |
 | Migrations | Flyway | via Spring Boot |
-| Auth | JWT (jjwt) | 0.12.5 |
+| Auth | JWT (jjwt) | 0.13.0 |
 | Infra | Docker Compose | — |
 
 ---
@@ -64,7 +64,7 @@ Browser (Angular 18 SPA)
     │
     │ HTTP/REST — Bearer JWT
     ▼
-Spring Boot 3.5.14 (:8080)
+Spring Boot 4.1.0 (:8080)
     │ JPA/Hibernate + Flyway
     ▼
 PostgreSQL 15 (:5433)
@@ -76,7 +76,7 @@ O token JWT contém apenas o `sub=email`. A cada request, o backend carrega o us
 
 ## Como rodar localmente
 
-**Pré-requisitos:** Java 17, Node.js 18+, Docker Desktop
+**Pré-requisitos:** Java 25 (Temurin), Node.js 22+, Docker Desktop
 
 ```bash
 # 1. Clonar
@@ -108,7 +108,7 @@ Conta admin padrão: `miguel@lms.com` / `123456`
 
 ```
 lms/
-├── backend/          # Spring Boot 3.5.14 — API REST
+├── backend/          # Spring Boot 4.1.0 — API REST
 │   └── src/main/java/br/com/lms/
 │       ├── config/       # Security, Upload, Web
 │       ├── domain/       # area, conteudo, curso, matricula, presenca,

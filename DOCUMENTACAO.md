@@ -1,7 +1,7 @@
 # Documentação Técnica — LMS Lite
 
 > Referência técnica para desenvolvedores e mantenedores.
-> Atualizada em: 2026-06-02 | Backend: Spring Boot 3.5.14 / Frontend: Angular 18
+> Atualizada em: 2026-08-09 | Backend: Spring Boot 4.1.0 (Java 25 LTS) / Frontend: Angular 18
 
 ---
 
@@ -60,7 +60,7 @@ LMS Lite é um sistema fullstack de gestão de cursos educacionais desenvolvido 
                    │ HTTP/REST — Bearer JWT
                    ▼
 ┌─────────────────────────────────────────────┐
-│  Spring Boot 3.5.14 (:8080)                 │
+│  Spring Boot 4.1.0 (:8080)                  │
 │  Spring Security · JPA/Hibernate · Flyway   │
 │  JJWT 0.12.5 · Lombok                       │
 └──────────────────┬──────────────────────────┘
@@ -582,7 +582,7 @@ A URL armazenada é absoluta (`http://localhost:8080/uploads/...`). Ao fazer nov
 
 ## 11. Como Rodar Localmente
 
-**Pré-requisitos:** Java 17, Node.js 18+, Docker Desktop
+**Pré-requisitos:** Java 25 (Temurin), Node.js 22+, Docker Desktop
 
 ```powershell
 # 1. Banco de dados

@@ -11,10 +11,9 @@ import br.com.lms.domain.presenca.PresencaAulaRepository;
 import br.com.lms.domain.usuario.Usuario;
 import br.com.lms.domain.usuario.UsuarioRepository;
 import br.com.lms.security.JwtTokenProvider;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +21,9 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Base de testes de integração: sobe um Postgres real via Testcontainers e roda
@@ -38,11 +39,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @Transactional
 public abstract class IntegrationTestBase {
 
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:15")
+    // Testcontainers 2.x: os módulos mudaram de pacote (org.testcontainers.postgresql),
+    // o self-type genérico foi removido e o construtor com String crua saiu em favor
+    // de DockerImageName.
+    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(DockerImageName.parse("postgres:15"))
             .withDatabaseName("lmsdb_test")
             .withUsername("lms_test")
-            .withPassword("lms_test")
-            .withReuse(false);
+            .withPassword("lms_test");
 
     static {
         POSTGRES.start();
