@@ -119,4 +119,4 @@ Funcionalidades avançadas para evoluir o projeto além do portfólio:
 
 ## Decisões de escopo
 
-O LMS Lite é intencionalmente um **sistema de portfólio** — demonstra competência técnica fullstack sem escopo de produto completo. Funcionalidades são priorizadas pelo que melhor demonstra a stack (Java 17, Spring Boot 3.5, Angular 18, JWT, PostgreSQL) e diferenciais de qualidade (acessibilidade WCAG, admin dashboard com gráficos) para recrutadores e avaliadores técnicos.
+O LMS Lite é intencionalmente um **sistema de portfólio** — demonstra competência técnica fullstack sem escopo de produto completo. Funcionalidades são priorizadas pelo que melhor demonstra a stack (Java 25 LTS, Spring Boot 4.1, Angular 22 zoneless, JWT, PostgreSQL 18) e diferenciais de qualidade (acessibilidade WCAG, admin dashboard com gráficos) para recrutadores e avaliadores técnicos.

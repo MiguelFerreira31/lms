@@ -2,6 +2,39 @@
 
 ---
 
+## Migração de stack — 2026-08-09
+
+Java 17 → 25 LTS · Spring Boot 3.5.14 → 4.1.0 · PostgreSQL 15 → 18 · Angular 18 → 22 · Tailwind 3 → 4 · Karma → Vitest.
+
+**Bugs estruturais corrigidos no caminho** (nenhum deles causado pela migração):
+
+| Achado | Impacto |
+|---|---|
+| Zero `@Transactional` em `src/main`; `CursoController.criar/atualizar` gravava curso, categorias e tipos em transações separadas | Falha no meio deixava curso salvo com metade dos vínculos |
+| `Curso.categorias` e `.tipos` EAGER sobre bags `List` | 36 queries por página de 10 cursos → **4** |
+| 13 FKs sem índice (o Postgres não indexa FK automaticamente); havia 1 `CREATE INDEX` em 16 migrations | Seq scan em todo join e `ON DELETE CASCADE` |
+| `WebConfig` e `UploadConfig` registravam `/uploads/**` para diretórios diferentes; `UsuarioController.uploadFoto` gravava num terceiro | Avatar gravado por uma rota não era servido |
+| Upload apagava a imagem antiga antes de gravar a nova | Falha na gravação deixava a entidade apontando para arquivo inexistente |
+| `PATCH /api/usuarios/{id}/role` com `Map<String,String>` | Role inválida devolvia 200 com o usuário inalterado |
+| `POST /api/professores/{id}/cursos` com `Map<String,Long>` | NPE quando `cursoId` vinha ausente |
+| Rotas `/admin/*` e `/professor/*` protegidas só por `authGuard` | ALUNO autenticado renderizava a UI de admin (a API barrava, a tela não) |
+| `@Data` do Lombok em 15 entidades, com `equals`/`hashCode` sobre associações | `List.contains()` forçava a carga do grafo inteiro |
+| `@ExceptionHandler(Exception.class)` sem nenhum `Logger` no projeto | Erro 500 invisível em produção |
+| `MutationObserver` sobre `document.body` nunca desconectado | Seguia vivo após o componente ser destruído |
+| `.gitattributes` não fixava `*.sql` com `core.autocrlf=true` | Windows e o runner Linux do CI geravam checksums de Flyway diferentes para o mesmo repositório |
+
+**Bug introduzido e pego pelos testes novos**: o `@EntityGraph` adicionado para matar o N+1 incluía `modulos` e `modulos.aulas` juntos, o que dispara `MultipleBagFetchException` e quebrava `GET /api/cursos/{id}`. Os testes existentes não pegaram porque só exercitam POST/PUT — o teste de contrato de erro é que expôs.
+
+**Armadilhas de migração que falham em silêncio** (build passa, sem warning):
+
+- O builder esbuild do Angular lê `.postcssrc.json`, **não** `postcss.config.js`. Com o arquivo errado, o Tailwind 4 expandia `@apply` mas não varria os templates: CSS de 75 KB → 32 KB, sem nenhuma utility usada no HTML.
+- No Boot 4 a auto-configuração foi dividida por tecnologia: declarar `flyway-core` cru não liga mais o Flyway. O schema não migrava e o `ddl-auto=validate` falhava com `missing table [areas]`.
+- A schematic de control flow converte `trackBy` para `track f(i, item)`, que não compila — no `@for`, `track` é expressão de identidade.
+
+**Verificação final**: 19/19 testes de integração no backend (Postgres 18 via Testcontainers), 12/12 no frontend (Vitest), 12 rotas renderizadas em Chrome headless com zero erro de console, os 3 gráficos Chart.js montando sob zoneless e o guard de role bloqueando ALUNO em `/admin/*`.
+
+---
+
 ## Auditoria anterior — 2026-05-31
 
 Dead code `ListaCursosComponent`, tipagem `any`, `error.interceptor`, `GlobalExceptionHandler` (8 handlers), `trackBy` em 20 `*ngFor`, `forkJoin` em 6 componentes — todos resolvidos. Detalhes preservados abaixo na secção histórica.

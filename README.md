@@ -51,8 +51,10 @@
 | Backend | Spring Boot | 4.1.0 |
 | Linguagem | Java | 25 LTS |
 | Banco | PostgreSQL | 18 |
-| Migrations | Flyway | via Spring Boot |
+| Migrations | Flyway | 12.4 (V1–V17) |
 | Auth | JWT (jjwt) | 0.13.0 |
+| Testes (back) | JUnit 6 + Testcontainers | 19 testes de integração |
+| Testes (front) | Vitest | 12 specs |
 | Infra | Docker Compose | — |
 
 ---

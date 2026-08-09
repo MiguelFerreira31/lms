@@ -53,7 +53,7 @@ LMS Lite é um sistema fullstack de gestão de cursos educacionais desenvolvido 
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Browser — Angular 18 SPA (:4200 / :4300)   │
+│  Browser — Angular 22 SPA zoneless (:4200)  │
 │  Tailwind CSS · Angular Material · Chart.js  │
 │  GSAP · angular-vlibras                      │
 └──────────────────┬──────────────────────────┘
@@ -280,6 +280,72 @@ categorias   }o--|| areas           : "pertence a"
 ---
 
 ## 5. Backend — API REST
+
+### Convenções transversais
+
+**Erros — RFC 7807 (`application/problem+json`)**
+
+Todas as rotas respondem erro no mesmo formato, inclusive os que nascem na cadeia
+de filtros do Spring Security. Antes da migração de 2026-08-09 havia quatro
+formatos diferentes convivendo.
+
+```json
+{
+  "type": "https://lms.local/erros/recurso-nao-encontrado",
+  "title": "Recurso não encontrado",
+  "status": 404,
+  "detail": "Curso não encontrado(a) com id: 999999",
+  "instance": "/api/cursos/999999",
+  "timestamp": "2026-08-09T06:25:45.466Z"
+}
+```
+
+Falhas de validação trazem os campos na extensão `errors`:
+
+```json
+{
+  "type": "https://lms.local/erros/validacao",
+  "title": "Falha de validação",
+  "status": 400,
+  "detail": "2 campos inválidos",
+  "instance": "/api/auth/register",
+  "errors": {
+    "email": "deve ser um endereço de e-mail bem formado",
+    "senha": "tamanho deve ser entre 8 e 100"
+  }
+}
+```
+
+| `type` | Status | Quando |
+|---|---|---|
+| `recurso-nao-encontrado` | 404 | id/slug inexistente |
+| `rota-nao-encontrada` | 404 | nenhum endpoint mapeado |
+| `validacao` | 400 | Bean Validation (traz `errors`) |
+| `json-invalido` | 400 | corpo mal formado |
+| `parametro-invalido` | 400 | tipo incompatível no path/query |
+| `requisicao-invalida` | 400 | argumento rejeitado pela regra |
+| `nao-autenticado` | 401 | sem token, token inválido ou credenciais erradas |
+| `acesso-negado` | 403 | autenticado sem a role necessária |
+| `conflito` | 409 | regra de negócio (ex.: matrícula duplicada) |
+| `integridade` | 409 | violação de constraint no banco |
+| `arquivo-grande` | 413 | upload acima do limite |
+| `erro-interno` | 500 | não tratado (registrado em log) |
+
+**Paginação — `PagedModel`**
+
+Endpoints paginados devolvem os metadados dentro de `page`, e não na raiz:
+
+```json
+{
+  "content": [ { "id": 1, "titulo": "..." } ],
+  "page": { "size": 10, "number": 0, "totalElements": 35, "totalPages": 12 }
+}
+```
+
+Teto de `size` = 100 (`spring.data.web.pageable.max-page-size`); padrão = 20.
+
+**Documentação interativa**: `/swagger-ui.html` (39 rotas, com Authorize para o JWT).
+**Health check**: `/actuator/health`.
 
 ### Auth (`/api/auth`)
 
