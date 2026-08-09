@@ -1,5 +1,6 @@
 package br.com.lms.domain.upload;
 
+import br.com.lms.config.CacheConfig;
 import br.com.lms.domain.curso.Curso;
 import br.com.lms.domain.curso.CursoRepository;
 import br.com.lms.domain.regiao.Unidade;
@@ -9,6 +10,7 @@ import br.com.lms.domain.usuario.UsuarioRepository;
 import br.com.lms.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,7 +62,10 @@ public class ImagemUploadService {
         return url;
     }
 
+    // A imagem da unidade aparece no UnidadeResponse, que é servido pelo cache de
+    // regiões — trocar a foto precisa invalidar aquele cache.
     @Transactional
+    @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public String atualizarImagemUnidade(Long unidadeId, MultipartFile file) throws IOException {
         Unidade unidade = unidadeRepository.findById(unidadeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade", unidadeId));

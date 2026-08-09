@@ -1,8 +1,11 @@
 package br.com.lms.domain.regiao;
 
+import br.com.lms.config.CacheConfig;
 import br.com.lms.dto.DTOs.*;
 import br.com.lms.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +13,11 @@ import java.util.List;
 
 /**
  * CRUD de regiões e das unidades aninhadas nelas.
+ *
+ * <p>As leituras de listagem são cacheadas (dados de referência: 4 regiões e 64
+ * unidades do seed). Toda escrita — em região <em>ou</em> em unidade — limpa o
+ * cache inteiro de regiões, porque {@code RegiaoResponse} carrega as unidades
+ * aninhadas: mexer numa unidade muda a resposta da listagem de regiões.
  */
 @Service
 @RequiredArgsConstructor
@@ -18,6 +26,7 @@ public class RegiaoService {
     private final RegiaoRepository regiaoRepository;
     private final UnidadeRepository unidadeRepository;
 
+    @Cacheable(CacheConfig.REGIOES)
     @Transactional(readOnly = true)
     public List<RegiaoResponse> listar() {
         return regiaoRepository.findAllWithUnidades().stream().map(RegiaoResponse::from).toList();
@@ -29,12 +38,14 @@ public class RegiaoService {
     }
 
     @Transactional
+    @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public RegiaoResponse criar(RegiaoRequest request) {
         return RegiaoResponse.from(regiaoRepository.save(
                 Regiao.builder().nome(request.nome()).build()));
     }
 
     @Transactional
+    @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public RegiaoResponse atualizar(Long id, RegiaoRequest request) {
         Regiao regiao = buscarRegiao(id);
         regiao.setNome(request.nome());
@@ -42,6 +53,7 @@ public class RegiaoService {
     }
 
     @Transactional
+    @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public void deletar(Long id) {
         if (!regiaoRepository.existsById(id))
             throw new ResourceNotFoundException("Região", id);
@@ -53,12 +65,14 @@ public class RegiaoService {
         return unidadeRepository.findByRegiaoId(regiaoId).stream().map(UnidadeResponse::from).toList();
     }
 
+    @Cacheable(value = CacheConfig.REGIOES, key = "'todas-unidades'")
     @Transactional(readOnly = true)
     public List<UnidadeResponse> listarTodasUnidades() {
         return unidadeRepository.findAllWithRegiao().stream().map(UnidadeResponse::from).toList();
     }
 
     @Transactional
+    @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public UnidadeResponse criarUnidade(Long regiaoId, UnidadeRequest request) {
         Regiao regiao = buscarRegiao(regiaoId);
         return UnidadeResponse.from(unidadeRepository.save(Unidade.builder()
@@ -69,6 +83,7 @@ public class RegiaoService {
     }
 
     @Transactional
+    @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public UnidadeResponse atualizarUnidade(Long unidadeId, UnidadeRequest request) {
         Unidade unidade = unidadeRepository.findById(unidadeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade", unidadeId));
@@ -78,6 +93,7 @@ public class RegiaoService {
     }
 
     @Transactional
+    @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public void deletarUnidade(Long unidadeId) {
         if (!unidadeRepository.existsById(unidadeId))
             throw new ResourceNotFoundException("Unidade", unidadeId);

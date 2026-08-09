@@ -242,6 +242,32 @@ Breaking changes efetivamente encontrados, com a correção aplicada. Os três �
 | 8 | **Test slices divididas por tecnologia**: `AutoConfigureMockMvc` saiu de `org.springframework.boot.test.autoconfigure.web.servlet` | → `org.springframework.boot.webmvc.test.autoconfigure`, via `spring-boot-starter-webmvc-test` |
 | 9 | **Testcontainers 2.x** renomeou os artefatos (`postgresql` → `testcontainers-postgresql`) e os pacotes (`org.testcontainers.postgresql`), removeu o self-type genérico (`PostgreSQLContainer<?>`) e o construtor com `String` crua | `new PostgreSQLContainer(DockerImageName.parse(...))` |
 
+### 6.1 Performance — medições reais
+
+`CursoQueryCountIT` mede com o `Statistics` do Hibernate e trava o resultado como regressão no CI.
+
+| Endpoint | Antes | Depois |
+|---|---|---|
+| `GET /api/cursos?size=10` (10 cursos) | **36** statements JDBC | **4** |
+
+As 4 restantes: count da paginação, select principal com joins de unidade/área, batch das categorias, batch dos tipos. Teto travado em 8 no teste.
+
+O que mudou:
+
+- `Curso.unidade/area/categorias/tipos`, `Area.categorias` e `Categoria.area`: EAGER → **LAZY**
+- `@EntityGraph(unidade, area)` nas 8 queries de listagem (to-one vira JOIN, sem quebrar paginação). As coleções ficam fora do grafo de propósito — fetch join de coleção com `Pageable` força paginação em memória
+- `hibernate.default_batch_fetch_size=50` resolve as coleções em selects com `IN (...)`
+- `Curso.categorias/tipos`: `List` → **`Set`** (`@ManyToMany` sobre `List` é bag e faz DELETE-ALL + re-INSERT da tabela de junção)
+- **`spring.jpa.open-in-view=false`** — possível porque o mapeamento para DTO acontece dentro dos `@Transactional` dos Services
+- **`V17__add_indices_fk.sql`**: 15 índices. O Postgres não indexa FK automaticamente e o schema tinha *um* `CREATE INDEX` em 16 migrations. Inclui índice parcial `cursos(criado_em DESC) WHERE ativo = true`
+- `UnidadeService.buscarPorSlug` não usa mais `Pageable.unpaged()` (carregava todos os cursos da unidade para extrair áreas/tipos em memória) → dois `SELECT DISTINCT`
+- `spring.data.web.pageable.max-page-size=100`
+
+Adotados como passos separados da atualização de versão:
+
+- **Virtual threads** (`spring.threads.virtual.enabled=true`) — API I/O-bound, a concorrência deixa de ser limitada pela pool de threads; em consequência a pool do Hikari passou a ser dimensionada explicitamente
+- **Cache Caffeine** só em dados de referência (áreas, tipos, regiões/unidades), com `@CacheEvict` nas escritas. **O lookup do `UserDetailsServiceImpl` não é cacheado de propósito**: é ele que faz troca de role valer na hora, sem revogar token
+
 Nota sobre dependências: `jjwt-jackson` foi trocado por **`jjwt-gson`** porque o `jjwt-jackson` 0.13 ainda depende do Jackson 2, o que reintroduziria essa árvore só para serializar claims. O Jackson 2 ainda entra transitivamente pelo `springdoc` (swagger-core), mas isso é upstream.
 
 Escolha de versão do Java: o Temurin 26 já existe, mas é *feature release* não-LTS. O alvo é o **25 LTS**.
