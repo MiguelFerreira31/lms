@@ -1,52 +1,60 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
     selector: 'app-image-upload',
-    imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
+    imports: [MatIconModule, MatProgressSpinnerModule],
     template: `
     <div>
       <div class="relative group cursor-pointer"
-           (click)="fileInput.click()"
-           (dragover)="$event.preventDefault()"
-           (drop)="onDrop($event)">
-
+        (click)="fileInput.click()"
+        (dragover)="$event.preventDefault()"
+        (drop)="onDrop($event)">
+    
         <div [class]="containerClass"
              class="bg-gray-100 border-2 border-dashed border-gray-300
                     group-hover:border-[#0054A6] overflow-hidden transition-colors
                     flex items-center justify-center relative">
-
+    
           <!-- Preview da imagem -->
-          <img *ngIf="displayUrl()" [src]="displayUrl()!"
-               alt="Preview" class="w-full h-full object-cover absolute inset-0">
-
+          @if (displayUrl()) {
+            <img [src]="displayUrl()!"
+              alt="Preview" class="w-full h-full object-cover absolute inset-0">
+          }
+    
           <!-- Placeholder -->
-          <div *ngIf="!displayUrl()" class="text-center p-4 z-10">
-            <mat-icon class="text-gray-400" style="font-size:40px;height:40px;width:40px">add_photo_alternate</mat-icon>
-            <p class="text-gray-400 text-xs mt-1 leading-tight">{{ placeholder }}</p>
-          </div>
-
+          @if (!displayUrl()) {
+            <div class="text-center p-4 z-10">
+              <mat-icon class="text-gray-400" style="font-size:40px;height:40px;width:40px">add_photo_alternate</mat-icon>
+              <p class="text-gray-400 text-xs mt-1 leading-tight">{{ placeholder }}</p>
+            </div>
+          }
+    
           <!-- Overlay de hover -->
           <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100
                       transition-opacity flex items-center justify-center z-20">
             <mat-icon class="text-white">edit</mat-icon>
           </div>
-
+    
           <!-- Spinner de upload -->
-          <div *ngIf="loading" class="absolute inset-0 bg-white/80 flex items-center justify-center z-30">
-            <mat-spinner diameter="32"></mat-spinner>
-          </div>
+          @if (loading) {
+            <div class="absolute inset-0 bg-white/80 flex items-center justify-center z-30">
+              <mat-spinner diameter="32"></mat-spinner>
+            </div>
+          }
         </div>
       </div>
-
-      <p *ngIf="erro()" class="text-red-500 text-xs mt-1.5">{{ erro() }}</p>
-
+    
+      @if (erro()) {
+        <p class="text-red-500 text-xs mt-1.5">{{ erro() }}</p>
+      }
+    
       <input #fileInput type="file" accept="image/jpeg,image/png,image/webp"
-             class="hidden" (change)="onFileChange($event)">
-    </div>
-  `
+        class="hidden" (change)="onFileChange($event)">
+      </div>
+    `
 })
 export class ImageUploadComponent {
   @Input() currentUrl: string | null | undefined = null;

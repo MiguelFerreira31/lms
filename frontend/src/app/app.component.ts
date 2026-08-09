@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { NavbarComponent } from './shared/navbar/navbar.component';
@@ -10,29 +10,28 @@ import { AccessibilityComponent } from './accessibility/accessibility.component'
 
 @Component({
     selector: 'app-root',
-    imports: [CommonModule, RouterOutlet, NavbarComponent, PublicNavComponent, AccessibilityComponent],
+    imports: [RouterOutlet, NavbarComponent, PublicNavComponent, AccessibilityComponent],
     template: `
-    <ng-container *ngIf="auth.isLoggedIn(); else publicLayout">
+    @if (auth.isLoggedIn()) {
       <app-navbar></app-navbar>
       <main class="pt-16 lg:pl-64 min-h-screen bg-gray-50">
         <router-outlet></router-outlet>
       </main>
-    </ng-container>
-
-    <ng-template #publicLayout>
-      <ng-container *ngIf="showPublicNav()">
+    } @else {
+      @if (showPublicNav()) {
         <app-public-nav></app-public-nav>
         <main class="pt-16 min-h-screen">
           <router-outlet></router-outlet>
         </main>
-      </ng-container>
-      <ng-container *ngIf="!showPublicNav()">
+      }
+      @if (!showPublicNav()) {
         <router-outlet></router-outlet>
-      </ng-container>
-    </ng-template>
-
+      }
+    }
+    
+    
     <app-accessibility></app-accessibility>
-  `
+    `
 })
 export class AppComponent {
   auth = inject(AuthService);

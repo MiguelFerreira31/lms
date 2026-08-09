@@ -1,13 +1,13 @@
 import {
   Component, inject, OnInit, OnDestroy, HostListener
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { VlibrasWidgetComponent } from '../shared/vlibras/vlibras-widget.component';
 import { AccessibilityService } from './accessibility.service';
 
 @Component({
     selector: 'app-accessibility',
-    imports: [CommonModule, VlibrasWidgetComponent],
+    imports: [VlibrasWidgetComponent],
     templateUrl: './accessibility.component.html',
     styleUrls: ['./accessibility.component.scss']
 })

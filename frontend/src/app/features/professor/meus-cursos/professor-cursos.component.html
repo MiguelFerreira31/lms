@@ -12,184 +12,211 @@
     </div>
 
     <!-- Loading -->
-    <div *ngIf="loading()" class="flex justify-center py-20">
-      <mat-spinner diameter="48"></mat-spinner>
-    </div>
+    @if (loading()) {
+      <div class="flex justify-center py-20">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    }
 
     <!-- Sem cursos -->
-    <div *ngIf="!loading() && cursos().length === 0"
-      class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
-      <mat-icon class="text-gray-300 mb-4" style="font-size: 64px;">cast_for_education</mat-icon>
-      <p class="text-gray-500 font-medium">Nenhum curso disponível.</p>
-      <p *ngIf="!isAdmin" class="text-gray-400 text-sm mt-1">
-        Solicite ao administrador para vincular você a um curso.
-      </p>
-    </div>
+    @if (!loading() && cursos().length === 0) {
+      <div
+        class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+        <mat-icon class="text-gray-300 mb-4" style="font-size: 64px;">cast_for_education</mat-icon>
+        <p class="text-gray-500 font-medium">Nenhum curso disponível.</p>
+        @if (!isAdmin) {
+          <p class="text-gray-400 text-sm mt-1">
+            Solicite ao administrador para vincular você a um curso.
+          </p>
+        }
+      </div>
+    }
 
     <!-- Lista de cursos -->
-    <div *ngIf="!loading() && cursos().length > 0" class="space-y-4">
-      <div *ngFor="let curso of cursos(); trackBy: trackById"
-        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-
-        <!-- Cabeçalho do curso (clicável) -->
-        <div class="flex items-center gap-4 p-5 cursor-pointer hover:bg-gray-50 transition-colors"
-          (click)="abrirCurso(curso.id)">
-          <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <mat-icon class="text-indigo-600">menu_book</mat-icon>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h2 class="font-semibold text-gray-900">{{ curso.titulo }}</h2>
-              <span [class]="getNivelClass(curso.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ curso.nivel }}</span>
-            </div>
-            <p class="text-sm text-gray-500 mt-0.5 truncate">{{ curso.descricao }}</p>
-          </div>
-          <mat-icon class="text-gray-400 transition-transform flex-shrink-0"
-            [class.rotate-180]="cursoAberto() === curso.id">expand_more</mat-icon>
-        </div>
-
-        <!-- Painel expandido do curso -->
-        <div *ngIf="cursoAberto() === curso.id" class="border-t border-gray-100">
-
-          <!-- Loading detalhe -->
-          <div *ngIf="loadingDetalhe() === curso.id" class="flex justify-center py-8">
-            <mat-spinner diameter="32"></mat-spinner>
-          </div>
-
-          <!-- Sem módulos -->
-          <div *ngIf="loadingDetalhe() !== curso.id && getDetalhe(curso.id) && getDetalhe(curso.id)!.modulos.length === 0"
-            class="bg-gray-50 p-8 text-center">
-            <mat-icon class="text-gray-300 mb-2" style="font-size: 40px;">layers</mat-icon>
-            <p class="text-gray-400 text-sm">Este curso ainda não tem módulos cadastrados.</p>
-            <p class="text-gray-300 text-xs mt-1">Módulos e aulas são criados no banco de dados pelo administrador do sistema.</p>
-          </div>
-
-          <!-- Módulos e Aulas -->
-          <div *ngIf="loadingDetalhe() !== curso.id && getDetalhe(curso.id) as detalhe">
-            <div *ngFor="let modulo of detalhe.modulos; trackBy: trackById" class="border-b border-gray-50 last:border-0">
-
-              <!-- Cabeçalho do módulo -->
-              <div class="flex items-center gap-3 px-5 py-3 bg-gray-50">
-                <div class="w-6 h-6 bg-indigo-200 rounded-lg flex items-center justify-center">
-                  <span class="text-indigo-700 text-xs font-bold">{{ modulo.ordem }}</span>
-                </div>
-                <p class="font-semibold text-gray-700 text-sm">{{ modulo.titulo }}</p>
-                <span class="text-xs text-gray-400">({{ modulo.aulas.length }} aula(s))</span>
+    @if (!loading() && cursos().length > 0) {
+      <div class="space-y-4">
+        @for (curso of cursos(); track curso.id) {
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Cabeçalho do curso (clicável) -->
+            <div class="flex items-center gap-4 p-5 cursor-pointer hover:bg-gray-50 transition-colors"
+              (click)="abrirCurso(curso.id)">
+              <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <mat-icon class="text-indigo-600">menu_book</mat-icon>
               </div>
-
-              <!-- Aulas do módulo -->
-              <div *ngFor="let aula of modulo.aulas; trackBy: trackById"
-                class="border-t border-gray-50">
-
-                <!-- Linha da aula -->
-                <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  (click)="abrirAula(aula.id)">
-                  <div class="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-                    <span class="text-gray-500 text-xs">{{ aula.ordem }}</span>
-                  </div>
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-800">{{ aula.titulo }}</p>
-                    <p class="text-xs text-gray-400">{{ aula.duracaoMin }} min
-                      <span *ngIf="getConteudos(aula.id).length > 0" class="ml-2 text-indigo-500">
-                        · {{ getConteudos(aula.id).length }} conteúdo(s)
-                      </span>
-                    </p>
-                  </div>
-                  <mat-icon class="text-gray-400 text-sm transition-transform"
-                    [class.rotate-180]="aulaAberta() === aula.id">expand_more</mat-icon>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h2 class="font-semibold text-gray-900">{{ curso.titulo }}</h2>
+                  <span [class]="getNivelClass(curso.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ curso.nivel }}</span>
                 </div>
-
-                <!-- Painel de conteúdo da aula -->
-                <div *ngIf="aulaAberta() === aula.id" class="bg-indigo-50 px-6 py-4">
-
-                  <!-- Conteúdos existentes -->
-                  <div *ngFor="let c of getConteudos(aula.id); trackBy: trackById"
-                    class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                      <mat-icon [class]="getTipoColor(c.tipo)" class="text-sm">{{ getTipoIcon(c.tipo) }}</mat-icon>
-                      <div>
-                        <p class="text-sm font-medium text-gray-800">{{ c.titulo }}</p>
-                        <p class="text-xs text-gray-400">{{ c.tipo }} · ordem {{ c.ordem }}</p>
-                        <a *ngIf="c.conteudo && (c.tipo === 'VIDEO' || c.tipo === 'LINK')"
-                          [href]="c.conteudo" target="_blank"
-                          class="text-xs text-indigo-500 hover:text-indigo-700 truncate block max-w-xs">
-                          {{ c.conteudo }}
-                        </a>
-                        <p *ngIf="c.conteudo && c.tipo === 'TEXTO'"
-                          class="text-xs text-gray-500 line-clamp-2">{{ c.conteudo }}</p>
-                      </div>
-                    </div>
-                    <button (click)="deletarConteudo(aula.id, c.id)" matTooltip="Excluir conteúdo"
-                      class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer flex-shrink-0">
-                      <mat-icon class="text-sm">delete</mat-icon>
-                    </button>
-                  </div>
-
-                  <!-- Sem conteúdo -->
-                  <div *ngIf="getConteudos(aula.id).length === 0 && mostrarFormConteudo() !== aula.id"
-                    class="text-center py-3 text-sm text-gray-400">
-                    Nenhum conteúdo nesta aula ainda.
-                  </div>
-
-                  <!-- Form novo conteúdo -->
-                  <div *ngIf="mostrarFormConteudo() === aula.id"
-                    class="bg-white rounded-xl border border-indigo-200 p-4 mb-3">
-                    <div class="flex items-center justify-between mb-3">
-                      <h4 class="text-sm font-semibold text-gray-900">Novo Conteúdo</h4>
-                      <button (click)="fecharFormConteudo()"
-                        class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded">
-                        <mat-icon class="text-sm">close</mat-icon>
-                      </button>
-                    </div>
-                    <form [formGroup]="formConteudo" (ngSubmit)="salvarConteudo(aula.id)">
-                      <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div class="lms-field">
-                          <label class="lms-label">Título <span class="required">*</span></label>
-                          <input type="text" class="lms-input" formControlName="titulo" placeholder="Ex: Introdução" />
-                        </div>
-                        <div class="lms-field">
-                          <label class="lms-label">Tipo <span class="required">*</span></label>
-                          <select class="lms-select" formControlName="tipo">
-                            <option *ngFor="let tipo of tiposConteudo" [value]="tipo">{{ tipo }}</option>
-                          </select>
-                        </div>
-                        <div class="col-span-2 lms-field">
-                          <label class="lms-label">Conteúdo (URL ou texto)</label>
-                          <textarea class="lms-textarea" formControlName="conteudo" rows="2"
-                            placeholder="URL do vídeo, link, ou texto"></textarea>
-                        </div>
-                        <div class="lms-field">
-                          <label class="lms-label">Ordem</label>
-                          <input type="number" class="lms-input" formControlName="ordem" />
-                        </div>
-                      </div>
-                      <div class="flex justify-end gap-2">
-                        <button type="button" (click)="fecharFormConteudo()"
-                          class="px-4 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer">
-                          Cancelar
-                        </button>
-                        <button type="submit" [disabled]="salvando() || formConteudo.invalid"
-                          class="flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer">
-                          <mat-icon class="text-sm">save</mat-icon>
-                          {{ salvando() ? 'Salvando...' : 'Salvar' }}
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-
-                  <!-- Botão adicionar conteúdo -->
-                  <button *ngIf="mostrarFormConteudo() !== aula.id"
-                    (click)="abrirFormConteudo(aula.id)"
-                    class="flex items-center gap-1 text-sm bg-indigo-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors border-0 cursor-pointer mt-2">
-                    <mat-icon class="text-sm">add</mat-icon>
-                    Adicionar Conteúdo
-                  </button>
-                </div>
+                <p class="text-sm text-gray-500 mt-0.5 truncate">{{ curso.descricao }}</p>
               </div>
+              <mat-icon class="text-gray-400 transition-transform flex-shrink-0"
+              [class.rotate-180]="cursoAberto() === curso.id">expand_more</mat-icon>
             </div>
+            <!-- Painel expandido do curso -->
+            @if (cursoAberto() === curso.id) {
+              <div class="border-t border-gray-100">
+                <!-- Loading detalhe -->
+                @if (loadingDetalhe() === curso.id) {
+                  <div class="flex justify-center py-8">
+                    <mat-spinner diameter="32"></mat-spinner>
+                  </div>
+                }
+                <!-- Sem módulos -->
+                @if (loadingDetalhe() !== curso.id && getDetalhe(curso.id) && getDetalhe(curso.id)!.modulos.length === 0) {
+                  <div
+                    class="bg-gray-50 p-8 text-center">
+                    <mat-icon class="text-gray-300 mb-2" style="font-size: 40px;">layers</mat-icon>
+                    <p class="text-gray-400 text-sm">Este curso ainda não tem módulos cadastrados.</p>
+                    <p class="text-gray-300 text-xs mt-1">Módulos e aulas são criados no banco de dados pelo administrador do sistema.</p>
+                  </div>
+                }
+                <!-- Módulos e Aulas -->
+                @if (loadingDetalhe() !== curso.id && getDetalhe(curso.id); as detalhe) {
+                  <div>
+                    @for (modulo of detalhe.modulos; track modulo.id) {
+                      <div class="border-b border-gray-50 last:border-0">
+                        <!-- Cabeçalho do módulo -->
+                        <div class="flex items-center gap-3 px-5 py-3 bg-gray-50">
+                          <div class="w-6 h-6 bg-indigo-200 rounded-lg flex items-center justify-center">
+                            <span class="text-indigo-700 text-xs font-bold">{{ modulo.ordem }}</span>
+                          </div>
+                          <p class="font-semibold text-gray-700 text-sm">{{ modulo.titulo }}</p>
+                          <span class="text-xs text-gray-400">({{ modulo.aulas.length }} aula(s))</span>
+                        </div>
+                        <!-- Aulas do módulo -->
+                        @for (aula of modulo.aulas; track aula.id) {
+                          <div
+                            class="border-t border-gray-50">
+                            <!-- Linha da aula -->
+                            <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                              (click)="abrirAula(aula.id)">
+                              <div class="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
+                                <span class="text-gray-500 text-xs">{{ aula.ordem }}</span>
+                              </div>
+                              <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-800">{{ aula.titulo }}</p>
+                                <p class="text-xs text-gray-400">{{ aula.duracaoMin }} min
+                                  @if (getConteudos(aula.id).length > 0) {
+                                    <span class="ml-2 text-indigo-500">
+                                      · {{ getConteudos(aula.id).length }} conteúdo(s)
+                                    </span>
+                                  }
+                                </p>
+                              </div>
+                              <mat-icon class="text-gray-400 text-sm transition-transform"
+                              [class.rotate-180]="aulaAberta() === aula.id">expand_more</mat-icon>
+                            </div>
+                            <!-- Painel de conteúdo da aula -->
+                            @if (aulaAberta() === aula.id) {
+                              <div class="bg-indigo-50 px-6 py-4">
+                                <!-- Conteúdos existentes -->
+                                @for (c of getConteudos(aula.id); track c.id) {
+                                  <div
+                                    class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                      <mat-icon [class]="getTipoColor(c.tipo)" class="text-sm">{{ getTipoIcon(c.tipo) }}</mat-icon>
+                                      <div>
+                                        <p class="text-sm font-medium text-gray-800">{{ c.titulo }}</p>
+                                        <p class="text-xs text-gray-400">{{ c.tipo }} · ordem {{ c.ordem }}</p>
+                                        @if (c.conteudo && (c.tipo === 'VIDEO' || c.tipo === 'LINK')) {
+                                          <a
+                                            [href]="c.conteudo" target="_blank"
+                                            class="text-xs text-indigo-500 hover:text-indigo-700 truncate block max-w-xs">
+                                            {{ c.conteudo }}
+                                          </a>
+                                        }
+                                        @if (c.conteudo && c.tipo === 'TEXTO') {
+                                          <p
+                                          class="text-xs text-gray-500 line-clamp-2">{{ c.conteudo }}</p>
+                                        }
+                                      </div>
+                                    </div>
+                                    <button (click)="deletarConteudo(aula.id, c.id)" matTooltip="Excluir conteúdo"
+                                      class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer flex-shrink-0">
+                                      <mat-icon class="text-sm">delete</mat-icon>
+                                    </button>
+                                  </div>
+                                }
+                                <!-- Sem conteúdo -->
+                                @if (getConteudos(aula.id).length === 0 && mostrarFormConteudo() !== aula.id) {
+                                  <div
+                                    class="text-center py-3 text-sm text-gray-400">
+                                    Nenhum conteúdo nesta aula ainda.
+                                  </div>
+                                }
+                                <!-- Form novo conteúdo -->
+                                @if (mostrarFormConteudo() === aula.id) {
+                                  <div
+                                    class="bg-white rounded-xl border border-indigo-200 p-4 mb-3">
+                                    <div class="flex items-center justify-between mb-3">
+                                      <h4 class="text-sm font-semibold text-gray-900">Novo Conteúdo</h4>
+                                      <button (click)="fecharFormConteudo()"
+                                        class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded">
+                                        <mat-icon class="text-sm">close</mat-icon>
+                                      </button>
+                                    </div>
+                                    <form [formGroup]="formConteudo" (ngSubmit)="salvarConteudo(aula.id)">
+                                      <div class="grid grid-cols-2 gap-3 mb-3">
+                                        <div class="lms-field">
+                                          <label class="lms-label">Título <span class="required">*</span></label>
+                                          <input type="text" class="lms-input" formControlName="titulo" placeholder="Ex: Introdução" />
+                                        </div>
+                                        <div class="lms-field">
+                                          <label class="lms-label">Tipo <span class="required">*</span></label>
+                                          <select class="lms-select" formControlName="tipo">
+                                            @for (tipo of tiposConteudo; track tipo) {
+                                              <option [value]="tipo">{{ tipo }}</option>
+                                            }
+                                          </select>
+                                        </div>
+                                        <div class="col-span-2 lms-field">
+                                          <label class="lms-label">Conteúdo (URL ou texto)</label>
+                                          <textarea class="lms-textarea" formControlName="conteudo" rows="2"
+                                          placeholder="URL do vídeo, link, ou texto"></textarea>
+                                        </div>
+                                        <div class="lms-field">
+                                          <label class="lms-label">Ordem</label>
+                                          <input type="number" class="lms-input" formControlName="ordem" />
+                                        </div>
+                                      </div>
+                                      <div class="flex justify-end gap-2">
+                                        <button type="button" (click)="fecharFormConteudo()"
+                                          class="px-4 py-2 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer">
+                                          Cancelar
+                                        </button>
+                                        <button type="submit" [disabled]="salvando() || formConteudo.invalid"
+                                          class="flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer">
+                                          <mat-icon class="text-sm">save</mat-icon>
+                                          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+                                        </button>
+                                      </div>
+                                    </form>
+                                  </div>
+                                }
+                                <!-- Botão adicionar conteúdo -->
+                                @if (mostrarFormConteudo() !== aula.id) {
+                                  <button
+                                    (click)="abrirFormConteudo(aula.id)"
+                                    class="flex items-center gap-1 text-sm bg-indigo-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors border-0 cursor-pointer mt-2">
+                                    <mat-icon class="text-sm">add</mat-icon>
+                                    Adicionar Conteúdo
+                                  </button>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
           </div>
-        </div>
+        }
       </div>
-    </div>
+    }
   </div>
 </div>

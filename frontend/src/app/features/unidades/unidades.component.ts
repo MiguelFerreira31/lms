@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -13,10 +13,10 @@ interface GrupoRegiao {
 
 @Component({
     selector: 'app-unidades',
-    imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule],
+    imports: [RouterLink, MatIconModule, MatProgressSpinnerModule],
     template: `
     <div class="min-h-screen bg-white">
-
+    
       <!-- Hero -->
       <section class="bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6] py-16 lg:py-20">
         <div class="max-w-6xl mx-auto px-6 text-center">
@@ -30,81 +30,90 @@ interface GrupoRegiao {
           </p>
         </div>
       </section>
-
+    
       <!-- Loading -->
-      <div *ngIf="loading()" class="flex justify-center py-24">
-        <mat-spinner diameter="48"></mat-spinner>
-      </div>
-
+      @if (loading()) {
+        <div class="flex justify-center py-24">
+          <mat-spinner diameter="48"></mat-spinner>
+        </div>
+      }
+    
       <!-- Seções por região -->
-      <ng-container *ngIf="!loading()">
-        <section *ngFor="let grupo of grupos()"
-                 [id]="'regiao-' + grupo.regiao.id"
-                 class="py-12 border-b border-gray-100 last:border-0"
-                 [class.bg-gray-50]="isRegiaoAtiva(grupo.regiao.id)">
-          <div class="max-w-6xl mx-auto px-6">
-
-            <!-- Título da região -->
-            <div class="flex items-baseline gap-3 mb-8">
-              <h2 class="text-2xl font-bold text-[#1a2e5a]">{{ grupo.regiao.nome }}</h2>
-              <span class="text-sm text-gray-400 font-medium">
-                {{ grupo.unidades.length }} unidade{{ grupo.unidades.length !== 1 ? 's' : '' }}
-              </span>
-            </div>
-
-            <!-- Grid de unidades -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              <div *ngFor="let u of grupo.unidades"
-                   [id]="'unidade-' + u.id"
-                   class="bg-white rounded-2xl border transition-all duration-200 p-5 flex flex-col gap-3"
+      @if (!loading()) {
+        @for (grupo of grupos(); track grupo) {
+          <section
+            [id]="'regiao-' + grupo.regiao.id"
+            class="py-12 border-b border-gray-100 last:border-0"
+            [class.bg-gray-50]="isRegiaoAtiva(grupo.regiao.id)">
+            <div class="max-w-6xl mx-auto px-6">
+              <!-- Título da região -->
+              <div class="flex items-baseline gap-3 mb-8">
+                <h2 class="text-2xl font-bold text-[#1a2e5a]">{{ grupo.regiao.nome }}</h2>
+                <span class="text-sm text-gray-400 font-medium">
+                  {{ grupo.unidades.length }} unidade{{ grupo.unidades.length !== 1 ? 's' : '' }}
+                </span>
+              </div>
+              <!-- Grid de unidades -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                @for (u of grupo.unidades; track u) {
+                  <div
+                    [id]="'unidade-' + u.id"
+                    class="bg-white rounded-2xl border transition-all duration-200 p-5 flex flex-col gap-3"
                    [class]="isUnidadeAtiva(u.id)
                      ? 'border-[#0054A6] shadow-lg ring-2 ring-[#0054A6]/20'
                      : 'border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5'">
-
-                <!-- Badge destaque -->
-                <div *ngIf="isUnidadeAtiva(u.id)"
-                     class="self-start bg-[#0054A6] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                  Unidade selecionada
-                </div>
-
-                <div class="flex items-start gap-3">
-                  <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <mat-icon class="text-[#0054A6]" style="font-size:18px;height:18px;width:18px">
-                      location_city
-                    </mat-icon>
-                  </div>
-                  <div class="min-w-0">
-                    <h3 class="font-bold text-gray-900 text-sm leading-snug">{{ u.nome }}</h3>
-                    <p *ngIf="u.endereco" class="text-gray-500 text-xs mt-1 leading-relaxed">
-                      {{ u.endereco }}
-                    </p>
-                    <p *ngIf="!u.endereco" class="text-gray-400 text-xs mt-1">
-                      {{ grupo.regiao.nome }}
-                    </p>
-                  </div>
-                </div>
-
-                <a [routerLink]="['/unidades', u.slug]"
+                    <!-- Badge destaque -->
+                    @if (isUnidadeAtiva(u.id)) {
+                      <div
+                        class="self-start bg-[#0054A6] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                        Unidade selecionada
+                      </div>
+                    }
+                    <div class="flex items-start gap-3">
+                      <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <mat-icon class="text-[#0054A6]" style="font-size:18px;height:18px;width:18px">
+                          location_city
+                        </mat-icon>
+                      </div>
+                      <div class="min-w-0">
+                        <h3 class="font-bold text-gray-900 text-sm leading-snug">{{ u.nome }}</h3>
+                        @if (u.endereco) {
+                          <p class="text-gray-500 text-xs mt-1 leading-relaxed">
+                            {{ u.endereco }}
+                          </p>
+                        }
+                        @if (!u.endereco) {
+                          <p class="text-gray-400 text-xs mt-1">
+                            {{ grupo.regiao.nome }}
+                          </p>
+                        }
+                      </div>
+                    </div>
+                    <a [routerLink]="['/unidades', u.slug]"
                    class="self-start inline-flex items-center gap-1.5 text-[#0054A6] text-xs
                           font-semibold hover:underline no-underline mt-auto">
-                  <mat-icon style="font-size:14px;height:14px;width:14px">school</mat-icon>
-                  Ver cursos
-                </a>
+                      <mat-icon style="font-size:14px;height:14px;width:14px">school</mat-icon>
+                      Ver cursos
+                    </a>
+                  </div>
+                }
               </div>
             </div>
-          </div>
-        </section>
-      </ng-container>
-
+          </section>
+        }
+      }
+    
       <!-- Empty state -->
-      <div *ngIf="!loading() && grupos().length === 0"
-           class="py-24 text-center text-gray-400">
-        <mat-icon style="font-size:48px;height:48px;width:48px" class="mb-4 opacity-40">
-          location_off
-        </mat-icon>
-        <p class="text-lg font-medium">Nenhuma unidade encontrada.</p>
-      </div>
-
+      @if (!loading() && grupos().length === 0) {
+        <div
+          class="py-24 text-center text-gray-400">
+          <mat-icon style="font-size:48px;height:48px;width:48px" class="mb-4 opacity-40">
+            location_off
+          </mat-icon>
+          <p class="text-lg font-medium">Nenhuma unidade encontrada.</p>
+        </div>
+      }
+    
       <!-- CTA -->
       <section class="py-14 bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6]">
         <div class="max-w-3xl mx-auto px-6 text-center">
@@ -129,9 +138,9 @@ interface GrupoRegiao {
           </div>
         </div>
       </section>
-
+    
     </div>
-  `
+    `
 })
 export class UnidadesComponent implements OnInit {
   private cursoService = inject(CursoService);

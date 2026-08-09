@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,8 +18,7 @@ interface CursoDetalhe {
 
 @Component({
     selector: 'app-professor-cursos',
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
-        MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule],
+    imports: [RouterModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule],
     templateUrl: './professor-cursos.component.html',
     styleUrls: ['./professor-cursos.component.scss']
 })

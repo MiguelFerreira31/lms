@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -9,7 +9,7 @@ import { CursoService, Curso, Area } from '../../core/services/curso.service';
 
 @Component({
     selector: 'app-home',
-    imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
+    imports: [RouterModule, MatIconModule, MatProgressSpinnerModule],
     templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {

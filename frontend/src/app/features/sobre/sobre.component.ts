@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-sobre',
-    imports: [CommonModule, RouterLink, MatIconModule],
+    imports: [RouterLink, MatIconModule],
     template: `
     <div class="min-h-screen bg-white">
-
+    
       <!-- Hero -->
       <section class="bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6] py-20 lg:py-28">
         <div class="max-w-6xl mx-auto px-6 text-center">
@@ -22,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
           </p>
         </div>
       </section>
-
+    
       <!-- Nossa Missão -->
       <section class="py-16 bg-white">
         <div class="max-w-4xl mx-auto px-6">
@@ -42,40 +42,44 @@ import { MatIconModule } from '@angular/material/icon';
           </div>
         </div>
       </section>
-
+    
       <!-- Números -->
       <section class="py-14 bg-gray-50">
         <div class="max-w-4xl mx-auto px-6">
           <h2 class="text-3xl font-bold text-gray-900 text-center mb-10">Em números</h2>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div *ngFor="let s of stats"
-                 class="bg-white rounded-2xl p-8 text-center shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all">
-              <div class="w-12 h-12 bg-[#EBF4FF] rounded-xl flex items-center justify-center mx-auto mb-4">
-                <mat-icon class="text-[#0054A6]">{{ s.icon }}</mat-icon>
+            @for (s of stats; track s) {
+              <div
+                class="bg-white rounded-2xl p-8 text-center shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all">
+                <div class="w-12 h-12 bg-[#EBF4FF] rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <mat-icon class="text-[#0054A6]">{{ s.icon }}</mat-icon>
+                </div>
+                <div class="text-4xl font-extrabold text-[#0054A6] mb-2">{{ s.valor }}</div>
+                <div class="text-gray-600 font-medium">{{ s.label }}</div>
               </div>
-              <div class="text-4xl font-extrabold text-[#0054A6] mb-2">{{ s.valor }}</div>
-              <div class="text-gray-600 font-medium">{{ s.label }}</div>
-            </div>
+            }
           </div>
         </div>
       </section>
-
+    
       <!-- Stack tecnológica -->
       <section class="py-16 bg-white">
         <div class="max-w-4xl mx-auto px-6 text-center">
           <h2 class="text-3xl font-bold text-gray-900 mb-4">Stack Tecnológica</h2>
           <p class="text-gray-500 mb-10">Tecnologias utilizadas no desenvolvimento do projeto</p>
           <div class="flex flex-wrap justify-center gap-3">
-            <span *ngFor="let tech of techs"
-                  class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border-2 transition-all hover:-translate-y-0.5 cursor-default"
-                  [class]="tech.classes">
-              <mat-icon style="font-size:18px;height:18px;width:18px">{{ tech.icon }}</mat-icon>
-              {{ tech.nome }}
-            </span>
+            @for (tech of techs; track tech) {
+              <span
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border-2 transition-all hover:-translate-y-0.5 cursor-default"
+                [class]="tech.classes">
+                <mat-icon style="font-size:18px;height:18px;width:18px">{{ tech.icon }}</mat-icon>
+                {{ tech.nome }}
+              </span>
+            }
           </div>
         </div>
       </section>
-
+    
       <!-- CTA -->
       <section class="py-14 bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6]">
         <div class="max-w-3xl mx-auto px-6 text-center">
@@ -85,21 +89,21 @@ import { MatIconModule } from '@angular/material/icon';
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a routerLink="/login"
-               class="inline-flex items-center justify-center gap-2 bg-[#F7941E] hover:bg-orange-500 text-white font-bold px-8 py-3.5 rounded-xl transition-colors no-underline shadow-lg text-sm">
+              class="inline-flex items-center justify-center gap-2 bg-[#F7941E] hover:bg-orange-500 text-white font-bold px-8 py-3.5 rounded-xl transition-colors no-underline shadow-lg text-sm">
               <mat-icon style="font-size:20px;height:20px;width:20px">login</mat-icon>
               Acessar a plataforma
             </a>
             <a href="https://github.com/MiguelFerreira31/lms" target="_blank" rel="noopener noreferrer"
-               class="inline-flex items-center justify-center gap-2 border-2 border-white text-white hover:bg-white hover:text-[#003087] font-bold px-8 py-3.5 rounded-xl transition-all no-underline text-sm">
+              class="inline-flex items-center justify-center gap-2 border-2 border-white text-white hover:bg-white hover:text-[#003087] font-bold px-8 py-3.5 rounded-xl transition-all no-underline text-sm">
               <mat-icon style="font-size:20px;height:20px;width:20px">code</mat-icon>
               Ver no GitHub
             </a>
           </div>
         </div>
       </section>
-
+    
     </div>
-  `
+    `
 })
 export class SobreComponent {
   stats = [

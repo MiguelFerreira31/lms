@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, Validators, FormsModule, FormArray } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,9 +14,7 @@ import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.
 
 @Component({
     selector: 'app-admin-cursos',
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
-        MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule,
-        MatTabsModule, ImageUploadComponent],
+    imports: [FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatTabsModule, ImageUploadComponent],
     templateUrl: './admin-cursos.component.html',
     styleUrls: ['./admin-cursos.component.scss']
 })

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,9 +13,7 @@ import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.
 
 @Component({
     selector: 'app-admin-regioes',
-    imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
-        MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule,
-        ImageUploadComponent],
+    imports: [ReactiveFormsModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule, ImageUploadComponent],
     templateUrl: './admin-regioes.component.html',
     styleUrls: ['./admin-regioes.component.scss']
 })

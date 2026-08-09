@@ -27,64 +27,72 @@
   </div>
 
   <!-- ─── ERRO ─────────────────────────────────────────────────── -->
-  <div *ngIf="hasError() && !isLoading()"
-    class="flex items-center gap-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl px-5 py-4 mb-8 text-sm font-medium">
-    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
-    </svg>
-    Erro ao carregar os dados. Verifique a conexão com o servidor e tente novamente.
-  </div>
+  @if (hasError() && !isLoading()) {
+    <div
+      class="flex items-center gap-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl px-5 py-4 mb-8 text-sm font-medium">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
+      </svg>
+      Erro ao carregar os dados. Verifique a conexão com o servidor e tente novamente.
+    </div>
+  }
 
   <!-- ─── SKELETON ─────────────────────────────────────────────── -->
-  <div *ngIf="isLoading()" class="animate-pulse">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div *ngFor="let i of skeletonItems" class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div class="flex items-start justify-between">
-          <div class="space-y-2.5 flex-1">
-            <div class="h-3.5 bg-slate-200 rounded-full w-28"></div>
-            <div class="h-8 bg-slate-200 rounded-full w-20 mt-1"></div>
-            <div class="h-3 bg-slate-200 rounded-full w-32"></div>
-          </div>
-          <div class="w-12 h-12 bg-slate-200 rounded-xl ml-4 flex-shrink-0"></div>
-        </div>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
-      <div class="lg:col-span-3 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div class="h-4 bg-slate-200 rounded-full w-40 mb-1.5"></div>
-        <div class="h-3 bg-slate-200 rounded-full w-24 mb-6"></div>
-        <div class="h-64 bg-slate-200 rounded-xl"></div>
-      </div>
-      <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div class="h-4 bg-slate-200 rounded-full w-36 mb-1.5"></div>
-        <div class="h-3 bg-slate-200 rounded-full w-20 mb-5"></div>
-        <div class="space-y-4">
-          <div *ngFor="let i of skeletonTableRows" class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-slate-200 rounded-full flex-shrink-0"></div>
-            <div class="flex-1 space-y-1.5">
-              <div class="h-3 bg-slate-200 rounded-full w-3/4"></div>
-              <div class="h-2.5 bg-slate-200 rounded-full w-1/2"></div>
+  @if (isLoading()) {
+    <div class="animate-pulse">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        @for (i of skeletonItems; track i) {
+          <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div class="flex items-start justify-between">
+              <div class="space-y-2.5 flex-1">
+                <div class="h-3.5 bg-slate-200 rounded-full w-28"></div>
+                <div class="h-8 bg-slate-200 rounded-full w-20 mt-1"></div>
+                <div class="h-3 bg-slate-200 rounded-full w-32"></div>
+              </div>
+              <div class="w-12 h-12 bg-slate-200 rounded-xl ml-4 flex-shrink-0"></div>
             </div>
-            <div class="h-5 w-16 bg-slate-200 rounded-full flex-shrink-0"></div>
+          </div>
+        }
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+        <div class="lg:col-span-3 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+          <div class="h-4 bg-slate-200 rounded-full w-40 mb-1.5"></div>
+          <div class="h-3 bg-slate-200 rounded-full w-24 mb-6"></div>
+          <div class="h-64 bg-slate-200 rounded-xl"></div>
+        </div>
+        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+          <div class="h-4 bg-slate-200 rounded-full w-36 mb-1.5"></div>
+          <div class="h-3 bg-slate-200 rounded-full w-20 mb-5"></div>
+          <div class="space-y-4">
+            @for (i of skeletonTableRows; track i) {
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-slate-200 rounded-full flex-shrink-0"></div>
+                <div class="flex-1 space-y-1.5">
+                  <div class="h-3 bg-slate-200 rounded-full w-3/4"></div>
+                  <div class="h-2.5 bg-slate-200 rounded-full w-1/2"></div>
+                </div>
+                <div class="h-5 w-16 bg-slate-200 rounded-full flex-shrink-0"></div>
+              </div>
+            }
           </div>
         </div>
       </div>
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div *ngFor="let i of skeletonItems3" class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div class="h-4 bg-slate-200 rounded-full w-40 mb-1.5"></div>
-        <div class="h-3 bg-slate-200 rounded-full w-28 mb-5"></div>
-        <div class="h-52 bg-slate-200 rounded-xl"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        @for (i of skeletonItems3; track i) {
+          <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div class="h-4 bg-slate-200 rounded-full w-40 mb-1.5"></div>
+            <div class="h-3 bg-slate-200 rounded-full w-28 mb-5"></div>
+            <div class="h-52 bg-slate-200 rounded-xl"></div>
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 
   <!-- ─── CONTEÚDO PRINCIPAL ───────────────────────────────────── -->
-  <ng-container *ngIf="!isLoading()">
-
+  @if (!isLoading()) {
     <!-- KPI CARDS -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-
       <!-- Alunos -->
       <div class="kpi-card relative bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 border-l-4 border-l-indigo-500 overflow-hidden cursor-default">
         <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -108,7 +116,6 @@
           </div>
         </div>
       </div>
-
       <!-- Cursos Ativos -->
       <div class="kpi-card relative bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 border-l-4 border-l-emerald-500 overflow-hidden cursor-default">
         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -132,7 +139,6 @@
           </div>
         </div>
       </div>
-
       <!-- Professores -->
       <div class="kpi-card relative bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 border-l-4 border-l-amber-500 overflow-hidden cursor-default">
         <div class="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -156,7 +162,6 @@
           </div>
         </div>
       </div>
-
       <!-- Matrículas -->
       <div class="kpi-card relative bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 border-l-4 border-l-rose-500 overflow-hidden cursor-default">
         <div class="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
@@ -180,12 +185,9 @@
           </div>
         </div>
       </div>
-
     </div>
-
     <!-- ROW 1: Gráfico de barras + Tabela de matrículas -->
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
-
       <!-- Bar Chart -->
       <div class="chart-section lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div class="px-6 pt-6 pb-4 border-b border-slate-50">
@@ -207,7 +209,6 @@
           </div>
         </div>
       </div>
-
       <!-- Últimas Matrículas -->
       <div class="chart-section lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div class="px-6 pt-6 pb-4 border-b border-slate-50">
@@ -222,45 +223,46 @@
         <div class="overflow-y-auto" style="max-height: 352px;">
           <table class="w-full">
             <tbody>
-              <tr *ngFor="let m of ultimasMatriculas(); trackBy: trackById"
-                class="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
-                <td class="px-5 py-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                      [ngClass]="getAvatarBg(m.usuarioNome)">
-                      {{ getInitial(m.usuarioNome) }}
+              @for (m of ultimasMatriculas(); track m.id) {
+                <tr
+                  class="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
+                  <td class="px-5 py-3">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                        [ngClass]="getAvatarBg(m.usuarioNome)">
+                        {{ getInitial(m.usuarioNome) }}
+                      </div>
+                      <div class="min-w-0">
+                        <p class="text-sm font-medium text-slate-900 truncate">{{ m.usuarioNome }}</p>
+                        <p class="text-xs text-slate-400 truncate">{{ m.cursoTitulo }}</p>
+                      </div>
                     </div>
-                    <div class="min-w-0">
-                      <p class="text-sm font-medium text-slate-900 truncate">{{ m.usuarioNome }}</p>
-                      <p class="text-xs text-slate-400 truncate">{{ m.cursoTitulo }}</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-3 py-3 text-center whitespace-nowrap">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                    [ngClass]="getStatusBadgeClass(m.status)">
-                    {{ getStatusText(m.status) }}
-                  </span>
-                </td>
-                <td class="pr-5 py-3 text-right text-xs text-slate-400 whitespace-nowrap">
-                  {{ formatDate(m.matriculadoEm) }}
-                </td>
-              </tr>
-              <tr *ngIf="ultimasMatriculas().length === 0">
-                <td colspan="3" class="px-5 py-10 text-center text-sm text-slate-400">
-                  Nenhuma matrícula registrada
-                </td>
-              </tr>
+                  </td>
+                  <td class="px-3 py-3 text-center whitespace-nowrap">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                      [ngClass]="getStatusBadgeClass(m.status)">
+                      {{ getStatusText(m.status) }}
+                    </span>
+                  </td>
+                  <td class="pr-5 py-3 text-right text-xs text-slate-400 whitespace-nowrap">
+                    {{ formatDate(m.matriculadoEm) }}
+                  </td>
+                </tr>
+              }
+              @if (ultimasMatriculas().length === 0) {
+                <tr>
+                  <td colspan="3" class="px-5 py-10 text-center text-sm text-slate-400">
+                    Nenhuma matrícula registrada
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
       </div>
-
     </div>
-
     <!-- ROW 2: Doughnut + Horizontal bar + Top 5 -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
       <!-- Doughnut: Cursos por nível -->
       <div class="chart-section bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div class="px-6 pt-6 pb-4 border-b border-slate-50">
@@ -287,7 +289,6 @@
           </div>
         </div>
       </div>
-
       <!-- Horizontal bar: Unidades por região -->
       <div class="chart-section bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div class="px-6 pt-6 pb-4 border-b border-slate-50">
@@ -300,7 +301,6 @@
           </div>
         </div>
       </div>
-
       <!-- Top 5 Cursos -->
       <div class="chart-section bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div class="px-6 pt-6 pb-4 border-b border-slate-50">
@@ -308,31 +308,35 @@
           <p class="text-xs text-slate-500 mt-0.5">Maior número de matrículas</p>
         </div>
         <div class="p-6">
-          <div *ngIf="top5Cursos().length === 0" class="flex flex-col items-center justify-center py-10 text-slate-400">
-            <svg class="w-10 h-10 mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75Z"/>
-            </svg>
-            <p class="text-sm">Nenhum dado disponível</p>
-          </div>
-          <div class="space-y-5" *ngIf="top5Cursos().length > 0">
-            <div *ngFor="let curso of top5Cursos(); let i = index; trackBy: trackByIdx">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500 flex-shrink-0">{{ i + 1 }}</span>
-                <p class="text-sm font-medium text-slate-700 flex-1 truncate min-w-0" [title]="curso.titulo">{{ curso.titulo }}</p>
-                <span class="text-sm font-bold text-slate-900 flex-shrink-0 ml-1">{{ curso.count }}</span>
-              </div>
-              <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="top-curso-bar h-full rounded-full"
-                  [class]="i === 0 ? 'bg-indigo-500' : i === 1 ? 'bg-indigo-400' : i === 2 ? 'bg-indigo-300' : 'bg-indigo-200'"
-                  [attr.data-width]="curso.percentual + '%'"
-                  style="width: 0"></div>
-              </div>
+          @if (top5Cursos().length === 0) {
+            <div class="flex flex-col items-center justify-center py-10 text-slate-400">
+              <svg class="w-10 h-10 mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75Z"/>
+              </svg>
+              <p class="text-sm">Nenhum dado disponível</p>
             </div>
-          </div>
+          }
+          @if (top5Cursos().length > 0) {
+            <div class="space-y-5">
+              @for (curso of top5Cursos(); track $index; let i = $index) {
+                <div>
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500 flex-shrink-0">{{ i + 1 }}</span>
+                    <p class="text-sm font-medium text-slate-700 flex-1 truncate min-w-0" [title]="curso.titulo">{{ curso.titulo }}</p>
+                    <span class="text-sm font-bold text-slate-900 flex-shrink-0 ml-1">{{ curso.count }}</span>
+                  </div>
+                  <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="top-curso-bar h-full rounded-full"
+                      [class]="i === 0 ? 'bg-indigo-500' : i === 1 ? 'bg-indigo-400' : i === 2 ? 'bg-indigo-300' : 'bg-indigo-200'"
+                      [attr.data-width]="curso.percentual + '%'"
+                    style="width: 0"></div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
         </div>
       </div>
-
     </div>
-
-  </ng-container>
+  }
 </div>

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -12,10 +12,10 @@ const PER_PAGE = 4;
 
 @Component({
     selector: 'app-cursos-unidade-tipo',
-    imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
+    imports: [RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
     template: `
     <div class="min-h-screen bg-gray-50">
-
+    
       <!-- HERO -->
       <section class="bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6] py-14">
         <div class="max-w-5xl mx-auto px-6">
@@ -34,87 +34,100 @@ const PER_PAGE = 4;
             <span class="text-[#F7941E]">{{ tipoNome() }}</span>
             <span class="text-white"> em {{ unidadeNome() }}</span>
           </h1>
-          <p *ngIf="todosCursos().length" class="text-blue-200 mt-2">
-            {{ todosCursos().length }} curso{{ todosCursos().length !== 1 ? 's' : '' }} disponíveis
-          </p>
+          @if (todosCursos().length) {
+            <p class="text-blue-200 mt-2">
+              {{ todosCursos().length }} curso{{ todosCursos().length !== 1 ? 's' : '' }} disponíveis
+            </p>
+          }
         </div>
       </section>
-
+    
       <!-- CHIPS DE ÁREA -->
-      <section *ngIf="areasDisponiveis().length > 0" class="bg-white py-8 border-b border-gray-100">
-        <div class="max-w-5xl mx-auto px-6">
-          <div class="flex flex-wrap gap-2.5">
-            <button (click)="selecionarArea(null)"
-              class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
+      @if (areasDisponiveis().length > 0) {
+        <section class="bg-white py-8 border-b border-gray-100">
+          <div class="max-w-5xl mx-auto px-6">
+            <div class="flex flex-wrap gap-2.5">
+              <button (click)="selecionarArea(null)"
+                class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
               [class]="!areaSelecionada()
                 ? 'bg-[#F7941E] border-[#F7941E] text-white'
                 : 'bg-white border-gray-300 text-gray-600 hover:border-[#F7941E] hover:text-[#F7941E]'">
-              Todos
-            </button>
-            <button *ngFor="let area of areasDisponiveis()"
-              (click)="selecionarArea(area.slug)"
-              class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
+                Todos
+              </button>
+              @for (area of areasDisponiveis(); track area) {
+                <button
+                  (click)="selecionarArea(area.slug)"
+                  class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
               [class]="areaSelecionada() === area.slug
                 ? 'bg-[#F7941E] border-[#F7941E] text-white'
                 : 'bg-white border-gray-300 text-gray-600 hover:border-[#F7941E] hover:text-[#F7941E]'">
-              {{ area.nome }}
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <div *ngIf="loading()" class="flex justify-center py-24">
-        <mat-spinner diameter="48"></mat-spinner>
-      </div>
-
-      <section *ngIf="!loading()" class="max-w-5xl mx-auto px-6 py-10 space-y-12">
-
-        <div *ngIf="gruposVisiveis().length === 0" class="text-center py-16">
-          <mat-icon class="text-gray-200" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
-          <p class="text-gray-500 mt-4">Nenhum curso encontrado.</p>
-        </div>
-
-        <div *ngFor="let grupo of gruposVisiveis()">
-          <h2 class="text-lg font-bold text-gray-900 mb-4">
-            <a [routerLink]="['/unidades', unidadeSlug(), 'areas', grupo.areaSlug]"
-               class="text-[#0054A6] hover:underline no-underline">
-              {{ grupo.areaNome }}
-            </a>
-            <span class="text-gray-400 font-normal text-sm ml-2">({{ grupo.cursos.length }})</span>
-          </h2>
-
-          <!-- Mobile scroll -->
-          <div class="flex gap-4 overflow-x-auto pb-3 lg:hidden snap-x snap-mandatory -mx-6 px-6">
-            <div *ngFor="let c of grupo.cursos" class="flex-shrink-0 snap-start" style="width:240px">
-              <app-curso-card [curso]="c"></app-curso-card>
+                  {{ area.nome }}
+                </button>
+              }
             </div>
           </div>
-
-          <!-- Desktop carousel -->
-          <div class="hidden lg:flex items-center gap-2">
-            <button (click)="prev(grupo.areaSlug)"
-              [disabled]="getPage(grupo.areaSlug) === 0"
-              [class.opacity-30]="getPage(grupo.areaSlug) === 0"
-              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
-                     justify-center hover:bg-gray-50 transition-colors cursor-pointer">
-              <mat-icon style="font-size:20px;height:20px;width:20px">chevron_left</mat-icon>
-            </button>
-            <div class="flex-1 grid grid-cols-4 gap-4">
-              <app-curso-card *ngFor="let c of cursosVisiveis(grupo.cursos, grupo.areaSlug)" [curso]="c"></app-curso-card>
-            </div>
-            <button (click)="next(grupo.areaSlug, grupo.cursos.length)"
-              [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
-              [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
-              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
-                     justify-center hover:bg-gray-50 transition-colors cursor-pointer">
-              <mat-icon style="font-size:20px;height:20px;width:20px">chevron_right</mat-icon>
-            </button>
-          </div>
+        </section>
+      }
+    
+      @if (loading()) {
+        <div class="flex justify-center py-24">
+          <mat-spinner diameter="48"></mat-spinner>
         </div>
-
-      </section>
+      }
+    
+      @if (!loading()) {
+        <section class="max-w-5xl mx-auto px-6 py-10 space-y-12">
+          @if (gruposVisiveis().length === 0) {
+            <div class="text-center py-16">
+              <mat-icon class="text-gray-200" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
+              <p class="text-gray-500 mt-4">Nenhum curso encontrado.</p>
+            </div>
+          }
+          @for (grupo of gruposVisiveis(); track grupo) {
+            <div>
+              <h2 class="text-lg font-bold text-gray-900 mb-4">
+                <a [routerLink]="['/unidades', unidadeSlug(), 'areas', grupo.areaSlug]"
+                  class="text-[#0054A6] hover:underline no-underline">
+                  {{ grupo.areaNome }}
+                </a>
+                <span class="text-gray-400 font-normal text-sm ml-2">({{ grupo.cursos.length }})</span>
+              </h2>
+              <!-- Mobile scroll -->
+              <div class="flex gap-4 overflow-x-auto pb-3 lg:hidden snap-x snap-mandatory -mx-6 px-6">
+                @for (c of grupo.cursos; track c) {
+                  <div class="flex-shrink-0 snap-start" style="width:240px">
+                    <app-curso-card [curso]="c"></app-curso-card>
+                  </div>
+                }
+              </div>
+              <!-- Desktop carousel -->
+              <div class="hidden lg:flex items-center gap-2">
+                <button (click)="prev(grupo.areaSlug)"
+                  [disabled]="getPage(grupo.areaSlug) === 0"
+                  [class.opacity-30]="getPage(grupo.areaSlug) === 0"
+              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+                     justify-center hover:bg-gray-50 transition-colors cursor-pointer">
+                  <mat-icon style="font-size:20px;height:20px;width:20px">chevron_left</mat-icon>
+                </button>
+                <div class="flex-1 grid grid-cols-4 gap-4">
+                  @for (c of cursosVisiveis(grupo.cursos, grupo.areaSlug); track c) {
+                    <app-curso-card [curso]="c"></app-curso-card>
+                  }
+                </div>
+                <button (click)="next(grupo.areaSlug, grupo.cursos.length)"
+                  [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
+                  [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
+              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+                     justify-center hover:bg-gray-50 transition-colors cursor-pointer">
+                  <mat-icon style="font-size:20px;height:20px;width:20px">chevron_right</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </section>
+      }
     </div>
-  `
+    `
 })
 export class CursosUnidadeTipoComponent implements OnInit {
   private cursoService = inject(CursoService);
