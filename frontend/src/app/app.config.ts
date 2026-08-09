@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
@@ -15,7 +15,11 @@ export const appConfig: ApplicationConfig = {
     // mousemove (lupa, máscara e guia de leitura) — com zone.js cada movimento
     // do mouse disparava um ciclo de verificação da aplicação inteira.
     provideZonelessChangeDetection(),
-    provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
+    // Sem withViewTransitions(): a View Transitions API entrava em conflito com
+    // este layout e abortava a navegação ("InvalidStateError: Transition was
+    // aborted because of invalid state"), deixando os links do menu sem efeito.
+    // Navegar direto pela URL funcionava, o que mascarava o problema nos testes.
+    provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withXhr(), withInterceptors([jwtInterceptor, errorInterceptor])),
     // Carrega o pacote de animações sob demanda, em vez de embutir no bundle inicial.
     provideAnimationsAsync()
