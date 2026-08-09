@@ -268,6 +268,25 @@ Adotados como passos separados da atualização de versão:
 - **Virtual threads** (`spring.threads.virtual.enabled=true`) — API I/O-bound, a concorrência deixa de ser limitada pela pool de threads; em consequência a pool do Hikari passou a ser dimensionada explicitamente
 - **Cache Caffeine** só em dados de referência (áreas, tipos, regiões/unidades), com `@CacheEvict` nas escritas. **O lookup do `UserDetailsServiceImpl` não é cacheado de propósito**: é ele que faz troca de role valer na hora, sem revogar token
 
+### 6.2 Contrato de erro (RFC 7807) — **quebra de contrato**
+
+A API tinha **4 formatos de erro** diferentes: o record `ErrorResponse`, um `Map<String,String>` na validação, um JSON escrito à mão no `authenticationEntryPoint` e um `{"error": ...}` no upload. Agora todos convergem para `application/problem+json`:
+
+```json
+{ "type": "https://lms.local/erros/recurso-nao-encontrado",
+  "title": "Recurso não encontrado", "status": 404,
+  "detail": "Curso não encontrado(a) com id: 999999",
+  "instance": "/api/cursos/999999", "timestamp": "..." }
+```
+
+Erros de validação trazem os campos na extensão `errors`. O `GlobalExceptionHandler` estende `ResponseEntityExceptionHandler` — sem isso, o handler embutido do `spring.mvc.problemdetails.enabled` tem precedência e a resposta de validação sai sem `type`/`errors`.
+
+**Paginação também mudou de shape** (`serialization-mode=VIA_DTO`): de `PageImpl` cru para `{content, page:{size, number, totalElements, totalPages}}`. Afeta 4 endpoints. O `errorInterceptor` e os consumos paginados do frontend são ajustados na etapa B3.
+
+Outros itens: Actuator (`/actuator/health`, `/actuator/info` públicos; demais autenticados), **OpenAPI em `/swagger-ui.html`** (39 paths documentados), `@Slf4j` nos services e no handler (o projeto não tinha um único Logger — erro 500 era invisível), `@Size`/`@DecimalMin`/`@DecimalMax` cobrindo as lacunas de validação, e `@Data` das entidades trocado por `@EqualsAndHashCode(onlyExplicitlyIncluded = true)` sobre o id.
+
+**Correção de portabilidade:** `.gitattributes` passou a fixar `*.sql` em `eol=lf`. Com `core.autocrlf=true`, os `.sql` ficavam CRLF no Windows e LF no runner Linux do CI — o mesmo repositório produzia checksums de Flyway diferentes por ambiente, e o boot falhava com `Migration checksum mismatch`.
+
 Nota sobre dependências: `jjwt-jackson` foi trocado por **`jjwt-gson`** porque o `jjwt-jackson` 0.13 ainda depende do Jackson 2, o que reintroduziria essa árvore só para serializar claims. O Jackson 2 ainda entra transitivamente pelo `springdoc` (swagger-core), mas isso é upstream.
 
 Escolha de versão do Java: o Temurin 26 já existe, mas é *feature release* não-LTS. O alvo é o **25 LTS**.

@@ -8,12 +8,20 @@ import java.util.List;
 
 @Entity
 @Table(name = "modulos")
-@Data
+@Getter
+@Setter
+@ToString
+// equals/hashCode apenas pelo id: com @Data, o Lombok os gerava sobre TODOS os
+// campos, incluindo associacoes — um Modulo.equals() chamava Curso.equals(),
+// que percorria a colecao de modulos, e um simples List.contains() forcava a
+// carga do grafo inteiro (ou entrava em recursao).
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Modulo {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

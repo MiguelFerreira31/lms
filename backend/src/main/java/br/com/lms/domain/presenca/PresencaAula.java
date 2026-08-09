@@ -11,7 +11,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "presencas_aula",
     uniqueConstraints = @UniqueConstraint(columnNames = {"matricula_id", "aula_id", "data_aula"}))
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@ToString
+// equals/hashCode apenas pelo id: com @Data, o Lombok os gerava sobre TODOS os
+// campos, incluindo associacoes, o que forcava a carga do grafo inteiro num
+// simples List.contains() (ou entrava em recursao entre os dois lados).
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class PresencaAula {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

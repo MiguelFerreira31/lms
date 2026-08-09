@@ -8,9 +8,17 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "professor_cursos")
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@ToString
+// equals/hashCode apenas pelo id: com @Data, o Lombok os gerava sobre TODOS os
+// campos, incluindo associacoes, o que forcava a carga do grafo inteiro num
+// simples List.contains() (ou entrava em recursao entre os dois lados).
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class ProfessorCurso {
 
+    @EqualsAndHashCode.Include
     @EmbeddedId
     @Builder.Default
     private ProfessorCursoId id = new ProfessorCursoId();

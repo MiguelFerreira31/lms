@@ -12,9 +12,12 @@ import br.com.lms.domain.presenca.PresencaAula;
 import br.com.lms.domain.regiao.Regiao;
 import br.com.lms.domain.regiao.Unidade;
 import br.com.lms.domain.usuario.Usuario;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,11 +28,19 @@ public class DTOs {
 
     public record AuthRequest(@NotBlank @Email String email, @NotBlank String senha) {}
 
-    public record RegisterRequest(@NotBlank String nome, @NotBlank @Email String email, @NotBlank String senha) {}
+    public record RegisterRequest(
+        @NotBlank @Size(max = 150) String nome,
+        @NotBlank @Email @Size(max = 150) String email,
+        // Mínimo de 8 caracteres: antes qualquer senha não-vazia passava.
+        @NotBlank @Size(min = 8, max = 100) String senha
+    ) {}
 
     public record AuthResponse(String token, String tipo, String nome, String email, String role, String avatarUrl) {}
 
-    public record CursoRequest(@NotBlank String titulo, String descricao, @NotNull Curso.Nivel nivel, Long unidadeId,
+    // Os @Size espelham o length das colunas: sem eles, o estouro só aparecia
+    // como DataIntegrityViolationException (409) vinda do banco, em vez de 400.
+    public record CursoRequest(@NotBlank @Size(max = 200) String titulo, String descricao,
+                                @NotNull Curso.Nivel nivel, Long unidadeId,
                                 @NotNull Long areaId,
                                 List<ModuloRequest> modulos, List<Long> categoriaIds, List<Long> tipoIds) {}
 
@@ -89,7 +100,7 @@ public class DTOs {
         }
     }
 
-    public record ModuloRequest(Long id, @NotBlank String titulo, @NotNull Integer ordem) {}
+    public record ModuloRequest(Long id, @NotBlank @Size(max = 200) String titulo, @NotNull Integer ordem) {}
 
     public record CursoDetalheResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
@@ -135,7 +146,7 @@ public class DTOs {
         }
     }
 
-    public record RegiaoRequest(@NotBlank String nome) {}
+    public record RegiaoRequest(@NotBlank @Size(max = 100) String nome) {}
 
     public record RegiaoResponse(Long id, String nome, int totalUnidades) {
         public static RegiaoResponse from(Regiao r) {
@@ -143,7 +154,8 @@ public class DTOs {
         }
     }
 
-    public record UnidadeRequest(@NotBlank String nome, String endereco, @NotNull Long regiaoId) {}
+    public record UnidadeRequest(@NotBlank @Size(max = 150) String nome,
+                                 @Size(max = 300) String endereco, @NotNull Long regiaoId) {}
 
     public record UnidadeResponse(Long id, String nome, String slug, String endereco, Long regiaoId, String regiaoNome, String imagemUrl) {
         public static UnidadeResponse from(Unidade u) {
@@ -163,7 +175,7 @@ public class DTOs {
     }
 
     public record ConteudoAulaRequest(
-        @NotBlank String titulo,
+        @NotBlank @Size(max = 200) String titulo,
         @NotNull ConteudoAula.TipoConteudo tipo,
         String conteudo,
         Integer ordem
@@ -201,7 +213,14 @@ public class DTOs {
         Long matriculaId, long presencas, long totalAulas, double percentual
     ) {}
 
-    public record NotaRequest(@NotNull BigDecimal nota) {}
+    /**
+     * A coluna é {@code numeric(4,2)} e a aprovação automática compara com 6,0.
+     * Sem os limites, uma nota como 99,99 ou negativa era aceita e só a coluna
+     * barrava valores fora de escala.
+     */
+    public record NotaRequest(
+        @NotNull @DecimalMin("0.0") @DecimalMax("10.0") BigDecimal nota
+    ) {}
 
     public record NotaResponse(
         Long matriculaId, BigDecimal nota,
@@ -209,8 +228,8 @@ public class DTOs {
     ) {}
 
     public record UsuarioUpdateRequest(
-        @NotBlank String nome,
-        @NotBlank @Email String email,
+        @NotBlank @Size(max = 150) String nome,
+        @NotBlank @Email @Size(max = 150) String email,
         @NotNull Usuario.Role role,
         Long unidadeId
     ) {}

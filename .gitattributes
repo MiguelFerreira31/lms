@@ -1,0 +1,6 @@
+# O checksum do Flyway é calculado sobre o conteúdo do arquivo, quebras de linha
+# incluídas. Com core.autocrlf=true, o mesmo repositório entrega os .sql em CRLF
+# no Windows e em LF no runner Linux do CI — e o Flyway então acusa
+# "Migration checksum mismatch" ao trocar de máquina ou de ambiente.
+# Fixar em LF mantém o checksum estável em qualquer plataforma.
+*.sql text eol=lf

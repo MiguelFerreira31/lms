@@ -100,6 +100,9 @@ npx ng serve
 
 Acesse: **http://localhost:4200**
 
+- Documentação da API (Swagger UI): **http://localhost:8080/swagger-ui.html**
+- Health check: **http://localhost:8080/actuator/health**
+
 Conta admin padrão: `miguel@lms.com` / `123456`
 
 ---

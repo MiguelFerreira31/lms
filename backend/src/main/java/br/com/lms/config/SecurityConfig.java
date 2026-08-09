@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Configuration
@@ -46,6 +48,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Auth — público
                 .requestMatchers("/api/auth/**").permitAll()
+                // Health check e documentação da API — públicos.
+                // Os demais endpoints do actuator seguem exigindo autenticação
+                // (só health e info estão expostos, ver application.properties).
+                .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 // Arquivos de upload — leitura pública
                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 // Endpoints de upload — requerem autenticação (roles verificados via @PreAuthorize)
@@ -120,13 +127,24 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Erros de autenticação acontecem dentro da cadeia de filtros, antes do
+     * {@code @RestControllerAdvice}, então este ponto precisa emitir o formato
+     * RFC 7807 por conta própria — senão a API teria um contrato de erro para o
+     * filtro e outro para os controllers, que era exatamente o caso antes.
+     */
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write(
-                "{\"status\":401,\"message\":\"Autenticação necessária\"}");
+            response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write("""
+                {"type":"https://lms.local/erros/nao-autenticado",\
+                "title":"Não autenticado",\
+                "status":401,\
+                "detail":"Autenticação necessária",\
+                "instance":"%s"}""".formatted(request.getRequestURI()));
         };
     }
 

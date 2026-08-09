@@ -55,8 +55,14 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
            countQuery = "SELECT COUNT(c) FROM Curso c WHERE c.ativo = true AND c.unidade.id = :unidadeId AND c.area.slug = :areaSlug")
     Page<Curso> findByUnidadeAndArea(@Param("unidadeId") Long unidadeId, @Param("areaSlug") String areaSlug, Pageable pageable);
 
-    /** Detalhe: aqui o grafo inclui a hierarquia de conteúdo, que o resumo não usa. */
-    @EntityGraph(attributePaths = {"unidade", "area", "modulos", "modulos.aulas"})
+    /**
+     * Detalhe: o grafo inclui os módulos, mas <b>não</b> {@code modulos.aulas}.
+     * Buscar as duas coleções no mesmo grafo dispara
+     * {@code MultipleBagFetchException} — o Hibernate não fetcha dois bags
+     * (coleções {@code List} sem índice) na mesma query. As aulas são resolvidas
+     * pelo {@code default_batch_fetch_size} num único select adicional.
+     */
+    @EntityGraph(attributePaths = {"unidade", "area", "modulos"})
     @Query("SELECT c FROM Curso c WHERE c.id = :id")
     java.util.Optional<Curso> findDetalheById(@Param("id") Long id);
 }
