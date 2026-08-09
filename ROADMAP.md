@@ -84,7 +84,7 @@
 - [x] Links destacados
 - [x] Máscara de leitura (faixa de foco de 90px)
 - [x] Guia de leitura (linha horizontal)
-- [x] VLibras integrado (angular-vlibras, gov.br)
+- [x] VLibras integrado (componente próprio sobre o script do gov.br)
 - [x] Persistência em localStorage
 - [x] ColorManager (patching de CSS vars para contraste WCAG)
 

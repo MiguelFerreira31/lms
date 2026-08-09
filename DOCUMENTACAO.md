@@ -55,7 +55,7 @@ LMS Lite é um sistema fullstack de gestão de cursos educacionais desenvolvido 
 ┌─────────────────────────────────────────────┐
 │  Browser — Angular 22 SPA zoneless (:4200)  │
 │  Tailwind CSS · Angular Material · Chart.js  │
-│  GSAP · angular-vlibras                      │
+│  GSAP · VlibrasWidgetComponent (gov.br)      │
 └──────────────────┬──────────────────────────┘
                    │ HTTP/REST — Bearer JWT
                    ▼
@@ -90,7 +90,8 @@ br/com/lms/
 ├── config/
 │   ├── SecurityConfig.java      # CORS, filtros JWT, regras de autorização
 │   ├── UploadConfig.java        # ResourceHandler para /uploads/**
-│   └── WebConfig.java           # Configurações adicionais de web
+│   ├── CacheConfig.java         # Caffeine para dados de referência
+│   └── OpenApiConfig.java       # Swagger UI + esquema bearerAuth
 ├── domain/
 │   ├── area/
 │   │   ├── Area.java            # @Entity — id, nome, slug, categorias (OneToMany)
@@ -164,7 +165,7 @@ app/
 │   ├── color-manager.ts           # Análise de contraste WCAG e patching de CSS vars
 │   ├── models/
 │   │   └── accessibility-state.model.ts
-│   └── vlibras.d.ts               # Type declarations para angular-vlibras
+│   └── vlibras.d.ts               # Tipos do widget VLibras do gov.br
 ├── core/
 │   ├── guards/
 │   │   └── auth.guard.ts          # CanActivateFn → isLoggedIn()
@@ -561,7 +562,7 @@ interface AccessibilityState {
 | **Links destacados** | Classe `acc-links-destacados` no body. |
 | **Máscara de leitura** | Dois overlays (top/bottom) seguem o cursor, deixando janela de 90px ao redor do `clientY`. |
 | **Guia de leitura** | Linha horizontal segue o `clientY` do cursor. |
-| **VLibras** | Integrado via `angular-vlibras` npm (gov.br). Tradução para Libras. |
+| **VLibras** | `VlibrasWidgetComponent` próprio, que carrega o script oficial do gov.br em `afterNextRender`. O pacote `angular-vlibras` foi removido: travava no peer `@angular/core ^21`. |
 
 ### Persistência
 

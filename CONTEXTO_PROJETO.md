@@ -132,7 +132,7 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 | Estado | **Angular Signals** nativos (sem NgRx/Redux) |
 | Gráficos | Chart.js 4.5.1 |
 | Animações | GSAP 3.15.0 |
-| Acessibilidade | angular-vlibras 1.1.0 (Libras) |
+| Acessibilidade | Widget próprio WCAG 2.1 AA/AAA + `VlibrasWidgetComponent` local (script oficial do gov.br) |
 | HTTP | `HttpClient` + interceptors funcionais |
 | Build | Angular CLI 22 · TypeScript 6.0 |
 | Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, roda em jsdom) — 12 specs cobrindo AuthService, authGuard, jwtInterceptor, errorInterceptor e CursoService |
@@ -144,8 +144,8 @@ app.config.ts        # providers globais, HttpClient + interceptors
 app.routes.ts         # rotas lazy via loadComponent()
 accessibility/         # widget de acessibilidade (feature isolada, injetada no root)
 core/
-  guards/auth.guard.ts
-  interceptors/jwt.interceptor.ts, error.interceptor.ts
+  guards/auth.guard.ts        # authGuard, adminGuard, professorGuard
+  interceptors/jwt.interceptor.ts, error.interceptor.ts (+ tipo ProblemDetail e mensagemDeErro)
   services/auth.service.ts, curso.service.ts, upload.service.ts
 features/
   admin/{cursos, dashboard, professores, regioes, usuarios}
@@ -155,25 +155,31 @@ features/
   professor/meus-cursos
   unidades/{detalhe-unidade, cursos-unidade-area, cursos-unidade-tipo}
 shared/
-  curso-card/, image-upload/, navbar/, public-nav/
+  curso-card/, image-upload/, navbar/, public-nav/, vlibras/
+testing/
+  mock.ts             # criarMock<T>() e Mocked<T> — substitui jasmine.createSpyObj
 ```
+Fora de `app/`: `src/tailwind.css` (entrada do Tailwind 4 + `@theme` + design system `.lms-*`) e `src/styles.scss` (variáveis CSS globais, posicionamento do VLibras, estilos de acessibilidade).
 
-Roteamento 100% lazy-loaded; rotas estáticas declaradas antes das dinâmicas para evitar colisão. `authGuard` protege `/dashboard`, `/matriculas`, `/admin/*`, `/professor/*` — diferenciação fina de role acontece dentro dos componentes e é reforçada pelo backend.
+Roteamento 100% lazy-loaded; rotas estáticas declaradas antes das dinâmicas para evitar colisão.
+
+Três guards funcionais: `authGuard` (só exige sessão) em `/dashboard` e `/matriculas`; **`adminGuard`** nas 5 rotas `/admin/*`; **`professorGuard`** em `/professor/cursos` (ADMIN também passa). Quem está autenticado mas não tem a role vai para `/dashboard`, não para o login. Antes, todas usavam apenas `authGuard` — um ALUNO autenticado renderizava a UI de admin, e só as chamadas de API é que voltavam 403.
 
 ### 3.3 Gerenciamento de estado e serviços
 
 - `AuthService`: `signal<AuthResponse|null>` sincronizado com `localStorage` (`lms_token`, `lms_user`); `isAdmin()`/`isProfessor()` são leituras síncronas do signal.
 - `CursoService`: client HTTP central concentrando praticamente todos os endpoints (cursos, áreas, tipos, matrículas, usuários, regiões, unidades, professores, conteúdos, presença, notas).
 - `UploadService`: uploads multipart (avatar, curso, unidade).
-- Interceptors funcionais: `jwtInterceptor` (injeta `Authorization: Bearer`), `errorInterceptor` (tratamento global + logout automático em 401).
+- Interceptors funcionais: `jwtInterceptor` (injeta `Authorization: Bearer`), `errorInterceptor` (logout automático em 401). O `error.interceptor.ts` também exporta o tipo **`ProblemDetail`** e o helper **`mensagemDeErro()`**, que lê `detail` — ou o mapa `errors` nas falhas de validação — com fallback para erro de rede. Os componentes usam esse helper em vez de acessar `error.error?.message`.
 
 ### 3.4 Design system `lms-*`
 
-Conjunto de classes utilitárias (Tailwind `@apply`, em `src/styles.scss`) que **substitui os form fields do Angular Material** em 5 telas (login/registro, admin-cursos, admin-regioes, admin-professores, professor-cursos):
+Conjunto de classes utilitárias (Tailwind `@apply`, em **`src/tailwind.css`**) que **substitui os form fields do Angular Material** em 5 telas (login/registro, admin-cursos, admin-regioes, admin-professores, professor-cursos):
 
 - `.lms-field`, `.lms-label` (com `.required`), `.lms-input`, `.lms-select` (seta custom via SVG), `.lms-textarea`, `.lms-error`, `.lms-hint`, `.lms-form-grid` (`.cols-2/3/4`)
-- Angular Material continua sendo usado para os demais widgets (tabelas, botões, ícones, snackbar, tabs).
-- Paleta Tailwind customizada: cor `senac` (azul, base `#0054A6`), cor `primary` (indigo), `surface`, sombras `card`/`card-hover`; variáveis CSS globais (`--color-primary`, `--color-accent`, etc.).
+- Angular Material cobre ícones, spinner, snackbar, tooltip, tabs, expansion panel, paginator e progress bar. `MatButtonModule` e `MatTableModule` foram removidos: estavam importados e nunca usados em nenhum template.
+- A base comum era um placeholder Sass (`%lms-control-base`) com `@apply`, consumido por `@extend` — dependia de o Sass rodar antes do Tailwind. No v4 virou uma lista de seletores em CSS puro.
+- Paleta customizada declarada em `@theme` (Tailwind 4): `senac` (azul, base `#0054A6`), `primary` (indigo), `surface`, sombras `card`/`card-hover`. Na prática só `surface` e as sombras são usadas nos templates — `senac-*` e `primary-*` já eram config morta no v3 e seguem declaradas a custo zero (o v4 só emite o que é referenciado). As variáveis CSS globais (`--color-primary`, `--color-accent`) continuam em `styles.scss`.
 
 ### 3.5 Principais telas
 
@@ -189,7 +195,7 @@ Conjunto de classes utilitárias (Tailwind `@apply`, em `src/styles.scss`) que *
 
 ### 3.6 Módulo de Acessibilidade (diferencial do projeto)
 
-Widget global standalone (WCAG 2.1 AA/AAA), persistido em `localStorage`: 5 níveis de fonte, fonte para dislexia, espaçamento de linha/letra, alto contraste, contraste invertido, escala de cinza, sépia, simulação de daltonismo (SVG `feColorMatrix`), cursor grande, lupa de navegação, links destacados, máscara/guia de leitura, integração VLibras (Libras).
+Widget global standalone (WCAG 2.1 AA/AAA), persistido em `localStorage`: 5 níveis de fonte, fonte para dislexia, espaçamento de linha/letra, alto contraste, contraste invertido, escala de cinza, sépia, simulação de daltonismo (SVG `feColorMatrix`), cursor grande, lupa de navegação, links destacados, máscara/guia de leitura, integração VLibras (Libras) via `VlibrasWidgetComponent` próprio, que carrega o script oficial do gov.br em `afterNextRender` — o pacote `angular-vlibras` foi removido por travar no peer `@angular/core ^21`.
 
 ---
 
@@ -208,6 +214,7 @@ Widget global standalone (WCAG 2.1 AA/AAA), persistido em `localStorage`: 5 nív
 11. Upload de imagens (avatar, capa de curso, foto de unidade)
 12. Dashboard administrativo com KPIs e gráficos
 13. Acessibilidade digital completa (WCAG 2.1 AA/AAA + Libras)
+14. Documentação interativa da API (OpenAPI/Swagger) e health check (Actuator)
 
 ---
 

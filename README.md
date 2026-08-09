@@ -24,6 +24,7 @@
 - **Vínculo Professor ↔ Curso** gerenciado pelo ADMIN
 - **Upload de imagens** para avatar de usuário, capa de curso e foto de unidade
 - **Dashboard administrativo** com gráficos Chart.js (matrículas/mês, cursos por nível, unidades por região) e animações GSAP
+- **Documentação da API** em OpenAPI/Swagger e health check via Actuator
 - **Widget de acessibilidade** completo (WCAG 2.1 AA/AAA):
   - Controle de tamanho de fonte (5 níveis)
   - Fonte para dislexia (OpenDyslexic)
@@ -35,7 +36,7 @@
   - Lupa de navegação com texto real do elemento
   - Links destacados
   - Máscara e guia de leitura
-  - Integração com **VLibras** (tradução para Libras — gov.br)
+  - Integração com **VLibras** (tradução para Libras — gov.br), via componente próprio
 
 ---
 
@@ -115,30 +116,36 @@ Conta admin padrão: `miguel@lms.com` / `123456`
 lms/
 ├── backend/          # Spring Boot 4.1.0 — API REST
 │   └── src/main/java/br/com/lms/
-│       ├── config/       # Security, Upload, Web
+│       ├── config/       # Security, Upload, Cache, OpenAPI
 │       ├── domain/       # area, conteudo, curso, matricula, presenca,
 │       │                 # professor, regiao, upload, usuario
+│       │                 # (cada um com Entity + Controller + Service + Repository)
 │       ├── dto/          # DTOs centralizados (DTOs.java)
-│       ├── exception/    # GlobalExceptionHandler
+│       ├── exception/    # GlobalExceptionHandler (RFC 7807)
 │       └── security/     # JWT filter, provider, UserDetails
 ├── frontend/         # Angular 22 SPA (zoneless)
 │   └── src/app/
 │       ├── accessibility/  # Widget de acessibilidade standalone
-│       ├── core/           # Guards, interceptors, services
+│       ├── core/           # authGuard/adminGuard/professorGuard, interceptors, services
 │       ├── features/       # admin, areas, cursos, dashboard, home,
 │       │                   # login, matriculas, professor, sobre, unidades
-│       └── shared/         # Navbar, PublicNav, CursoCard, ImageUpload
-└── DOCUMENTACAO.md   # Referência técnica completa
+│       └── shared/         # Navbar, PublicNav, CursoCard, ImageUpload, Vlibras
+│   └── src/tailwind.css    # Tailwind 4: @import, @theme e design system .lms-*
+├── CONTEXTO_PROJETO.md  # Contexto técnico consolidado (inclui o registro da migração)
+├── AUDITORIA.md         # Histórico de auditorias e bugs corrigidos
+└── DOCUMENTACAO.md      # Referência técnica completa
 ```
 
 ---
 
 ## Banco de dados
 
-15 migrations Flyway (V1–V15) gerenciam o schema. Highlights:
+17 migrations Flyway (V1–V17) gerenciam o schema. Highlights:
 - **V12**: seed com 4 regiões, 64 unidades reais do Senac SP e 35 cursos
 - **V13/V14**: slugs únicos para unidades (com correção de transliteração)
 - **V15**: campos de imagem em usuários, cursos e unidades
+- **V16**: vínculo curso ↔ área
+- **V17**: 15 índices de chave estrangeira (o Postgres não indexa FK automaticamente) + índice parcial `cursos(criado_em DESC) WHERE ativo = true`
 
 ---
 
