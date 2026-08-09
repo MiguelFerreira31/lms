@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -65,7 +66,8 @@ public class CursoService {
 
     @Transactional(readOnly = true)
     public CursoDetalheResponse detalhe(Long id) {
-        return CursoDetalheResponse.from(buscar(id));
+        return CursoDetalheResponse.from(cursoRepository.findDetalheById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso", id)));
     }
 
     @Transactional
@@ -135,8 +137,8 @@ public class CursoService {
     }
 
     private void recarregarAssociacoes(Curso curso) {
-        curso.setCategorias(categoriaRepository.findByCursos_Id(curso.getId()));
-        curso.setTipos(tipoRepository.findByCursos_Id(curso.getId()));
+        curso.setCategorias(new LinkedHashSet<>(categoriaRepository.findByCursos_Id(curso.getId())));
+        curso.setTipos(new LinkedHashSet<>(tipoRepository.findByCursos_Id(curso.getId())));
     }
 
     private Unidade resolverUnidade(Long unidadeId) {

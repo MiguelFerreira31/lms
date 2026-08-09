@@ -9,7 +9,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "cursos")
@@ -43,11 +45,14 @@ public class Curso {
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    // As associações são LAZY: quem precisa delas declara o plano de fetch
+    // (@EntityGraph nas queries de listagem + default_batch_fetch_size para as
+    // coleções). Com EAGER, cada curso da página disparava selects próprios.
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unidade_id")
     private Unidade unidade;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id", nullable = false)
     private Area area;
 
@@ -56,17 +61,19 @@ public class Curso {
     @Builder.Default
     private List<Modulo> modulos = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "cursos", fetch = FetchType.EAGER)
+    // Set em vez de List: @ManyToMany sobre List é tratado como bag pelo Hibernate,
+    // que faz DELETE-ALL + re-INSERT da tabela de junção a cada alteração.
+    @ManyToMany(mappedBy = "cursos", fetch = FetchType.LAZY)
     @Builder.Default
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<Categoria> categorias = new ArrayList<>();
+    private Set<Categoria> categorias = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "cursos", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "cursos", fetch = FetchType.LAZY)
     @Builder.Default
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<Tipo> tipos = new ArrayList<>();
+    private Set<Tipo> tipos = new LinkedHashSet<>();
 
     @PrePersist
     protected void onCreate() { criadoEm = LocalDateTime.now(); }

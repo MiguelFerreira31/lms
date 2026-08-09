@@ -24,7 +24,7 @@ public class Area {
     @Column(nullable = false, unique = true, length = 150)
     private String slug;
 
-    @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("nome ASC")
     @Builder.Default
     @ToString.Exclude

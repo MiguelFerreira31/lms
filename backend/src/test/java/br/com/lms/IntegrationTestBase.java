@@ -11,6 +11,9 @@ import br.com.lms.domain.presenca.PresencaAulaRepository;
 import br.com.lms.domain.usuario.Usuario;
 import br.com.lms.domain.usuario.UsuarioRepository;
 import br.com.lms.security.JwtTokenProvider;
+import jakarta.persistence.EntityManager;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -56,10 +59,36 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
+        // Habilita as estatísticas do Hibernate para os testes de contagem de query
+        // (ver CursoQueryCountIT). Fica no base para todos os ITs compartilharem
+        // o mesmo contexto Spring em cache.
+        registry.add("spring.jpa.properties.hibernate.generate_statistics", () -> "true");
     }
 
     @Autowired protected MockMvc mockMvc;
     @Autowired protected ObjectMapper objectMapper;
+    @Autowired protected EntityManager entityManager;
+
+    /**
+     * Executa {@code acao} com o contexto de persistência limpo e devolve quantos
+     * statements JDBC o Hibernate preparou. Sem o {@code clear()}, entidades já
+     * carregadas pelo setup do teste seriam servidas do cache de primeiro nível e
+     * a contagem ficaria otimista.
+     */
+    protected long contarQueries(ThrowingRunnable acao) throws Exception {
+        Statistics stats = entityManager.getEntityManagerFactory()
+                .unwrap(SessionFactory.class).getStatistics();
+        entityManager.flush();
+        entityManager.clear();
+        stats.clear();
+        acao.run();
+        return stats.getPrepareStatementCount();
+    }
+
+    @FunctionalInterface
+    protected interface ThrowingRunnable {
+        void run() throws Exception;
+    }
     @Autowired protected UsuarioRepository usuarioRepository;
     @Autowired protected AreaRepository areaRepository;
     @Autowired protected CursoRepository cursoRepository;

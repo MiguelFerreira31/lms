@@ -1,7 +1,9 @@
 package br.com.lms.domain.regiao;
 
 import br.com.lms.domain.area.Area;
+import br.com.lms.domain.area.AreaRepository;
 import br.com.lms.domain.area.Tipo;
+import br.com.lms.domain.area.TipoRepository;
 import br.com.lms.domain.curso.Curso;
 import br.com.lms.domain.curso.CursoRepository;
 import br.com.lms.dto.DTOs.*;
@@ -23,27 +25,20 @@ public class UnidadeService {
 
     private final UnidadeRepository unidadeRepository;
     private final CursoRepository cursoRepository;
+    private final AreaRepository areaRepository;
+    private final TipoRepository tipoRepository;
 
+    /**
+     * Antes, este método chamava {@code findByAtivoTrueAndUnidade_Id(id, Pageable.unpaged())}
+     * — carregando <em>todos</em> os cursos da unidade, com as coleções de cada um —
+     * apenas para extrair áreas e tipos distintos em memória. Agora são duas
+     * queries {@code SELECT DISTINCT} que trazem só o que o DTO precisa.
+     */
     @Transactional(readOnly = true)
     public UnidadeDetalheResponse buscarPorSlug(String slug) {
         Unidade unidade = buscar(slug);
-
-        // TODO(A4): esta varredura carrega todos os cursos da unidade em memória
-        // só para extrair áreas e tipos distintos — vira duas queries SELECT DISTINCT.
-        List<Curso> cursosDaUnidade = cursoRepository
-                .findByAtivoTrueAndUnidade_Id(unidade.getId(), Pageable.unpaged()).getContent();
-
-        List<Area> areas = cursosDaUnidade.stream()
-                .flatMap(c -> c.getCategorias().stream())
-                .map(Categoria -> Categoria.getArea())
-                .distinct()
-                .toList();
-
-        List<Tipo> tipos = cursosDaUnidade.stream()
-                .flatMap(c -> c.getTipos().stream())
-                .distinct()
-                .toList();
-
+        List<Area> areas = areaRepository.findComCursoAtivoNaUnidade(unidade.getId());
+        List<Tipo> tipos = tipoRepository.findComCursoAtivoNaUnidade(unidade.getId());
         return UnidadeDetalheResponse.from(unidade, areas, tipos);
     }
 

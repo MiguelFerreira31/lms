@@ -26,7 +26,7 @@ public class Categoria {
     @Column(nullable = false, length = 150)
     private String slug;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
