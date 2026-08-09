@@ -10,7 +10,7 @@ import { Curso } from '../../core/services/curso.service';
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <a [routerLink]="['/cursos', curso.id]"
-       class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1
+       class="bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-lg hover:-translate-y-1
               transition-all duration-300 no-underline group cursor-pointer flex flex-col h-full">
     
       <!-- Imagem -->
@@ -22,11 +22,11 @@ import { Curso } from '../../core/services/curso.service';
           <div class="absolute top-2 left-2 flex flex-wrap gap-1">
             @for (tipo of curso.tipos.slice(0,1); track tipo) {
               <span
-                class="bg-[#F7941E] text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow">
+                class="bg-[#F7941E] text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm">
                 {{ tipo.nome }}
               </span>
             }
-            <span class="bg-[#0054A6]/80 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full shadow">
+            <span class="bg-[#0054A6]/80 backdrop-blur-xs text-white text-xs px-2 py-0.5 rounded-full shadow-sm">
               {{ nivelLabel() }}
             </span>
           </div>

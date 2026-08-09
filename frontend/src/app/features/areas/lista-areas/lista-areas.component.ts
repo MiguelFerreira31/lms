@@ -53,7 +53,7 @@ const AREA_CONFIG: Record<string, { icon: string; color: string; bg: string; bor
               @for (area of areas(); track area) {
                 <a
                   [routerLink]="['/cursos/areas', area.slug]"
-                  class="bg-white rounded-2xl border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 no-underline group cursor-pointer block"
+                  class="bg-white rounded-2xl border shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 no-underline group cursor-pointer block"
                   [ngClass]="cfg(area.slug).border">
                   <!-- Icon -->
                   <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-colors"

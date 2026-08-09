@@ -8,7 +8,7 @@
         <p class="text-gray-500 text-sm mt-1">{{ cursos().length }} curso(s) ativo(s)</p>
       </div>
       <button (click)="abrirForm()"
-        class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm border-0 cursor-pointer">
+        class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-xs border-0 cursor-pointer">
         <mat-icon>add</mat-icon>
         Novo Curso
       </button>
@@ -16,7 +16,7 @@
 
     <!-- Formulário criar/editar -->
     @if (mostrarForm()) {
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 block w-full">
+      <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-6 mb-6 block w-full">
         <div class="flex items-center justify-between mb-5">
           <h2 class="text-lg font-semibold text-gray-900">{{ editando() ? 'Editar Curso' : 'Novo Curso' }}</h2>
           <button (click)="fecharForm()" type="button"
@@ -90,7 +90,7 @@
                             class="flex items-center gap-2 text-sm text-gray-700 py-1 cursor-pointer">
                             <input type="checkbox" [checked]="categoriasSelecionadas().has(cat.id)"
                               (change)="toggleCategoria(cat.id)"
-                              class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                              class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                               {{ cat.nome }}
                             </label>
                           }
@@ -110,7 +110,7 @@
                           class="flex items-center gap-2 text-sm text-gray-700 py-1 cursor-pointer">
                           <input type="checkbox" [checked]="tiposSelecionados().has(tipo.id)"
                             (change)="toggleTipo(tipo.id)"
-                            class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                            class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                             {{ tipo.nome }}
                           </label>
                         }
@@ -130,7 +130,7 @@
                     </div>
                     <!-- Botão com classes de tamanho fixo para impedir esmagamento -->
                     <button type="button" (click)="adicionarModulo()"
-                      class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors shadow-sm h-9 min-w-[150px]">
+                      class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors shadow-xs h-9 min-w-[150px]">
                       <mat-icon style="font-size:16px;height:16px;width:16px;line-height:16px;">add</mat-icon>
                       <span>Adicionar Módulo</span>
                     </button>
@@ -150,7 +150,7 @@
                       <div [formGroupName]="idx"
                         class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 block w-full">
                         <span
-                          class="w-7 h-7 bg-white text-gray-500 rounded-lg text-xs font-bold flex items-center justify-center border border-gray-100 flex-shrink-0">
+                          class="w-7 h-7 bg-white text-gray-500 rounded-lg text-xs font-bold flex items-center justify-center border border-gray-100 shrink-0">
                           {{ idx + 1 }}
                         </span>
                         <div class="flex-1 min-w-0">
@@ -158,7 +158,7 @@
                             class="w-full px-4 py-2 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-indigo-500 text-sm text-gray-900 block" />
                           </div>
                           <button type="button" (click)="removerModulo(idx)"
-                            class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl border-0 cursor-pointer bg-transparent transition-colors flex-shrink-0 flex items-center justify-center">
+                            class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl border-0 cursor-pointer bg-transparent transition-colors shrink-0 flex items-center justify-center">
                             <mat-icon style="font-size:20px;height:20px;width:20px;">delete</mat-icon>
                           </button>
                         </div>
@@ -173,7 +173,7 @@
                       Cancelar
                     </button>
                     <button type="submit" [disabled]="salvando() || form.invalid"
-                      class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer transition-colors text-sm shadow-sm">
+                      class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer transition-colors text-sm shadow-xs">
                       <mat-icon class="text-sm" style="font-size:18px;height:18px;width:18px;line-height:18px;">{{ salvando() ?
                       'hourglass_empty' : 'save' }}</mat-icon>
                       <span>{{ salvando() ? 'Salvando...' : 'Salvar Curso' }}</span>
@@ -201,10 +201,10 @@
                 }
                 @for (c of cursos(); track c.id) {
                   <div
-                    class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    class="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden">
                     <!-- Linha principal do curso -->
                     <div class="flex items-center gap-4 p-5">
-                      <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
                         <mat-icon class="text-indigo-600">menu_book</mat-icon>
                       </div>
                       <div class="flex-1 min-w-0">
@@ -236,7 +236,7 @@
                           </div>
                         }
                       </div>
-                      <div class="flex items-center gap-2 flex-shrink-0">
+                      <div class="flex items-center gap-2 shrink-0">
             <button (click)="toggleAlunos(c.id)" [class]="cursoExpandido() === c.id
                 ? 'bg-emerald-600 text-white border-emerald-600'
                 : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'"
@@ -287,7 +287,7 @@
                               <!-- Info do aluno -->
                               <div class="flex items-center gap-3 flex-1">
                                 <div
-                                  class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                  class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                                   {{ mat.usuarioNome.charAt(0).toUpperCase() }}
                                 </div>
                                 <div>

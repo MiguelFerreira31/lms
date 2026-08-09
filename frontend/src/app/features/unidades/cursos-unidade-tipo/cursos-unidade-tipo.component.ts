@@ -96,7 +96,7 @@ const PER_PAGE = 4;
               <!-- Mobile scroll -->
               <div class="flex gap-4 overflow-x-auto pb-3 lg:hidden snap-x snap-mandatory -mx-6 px-6">
                 @for (c of grupo.cursos; track c) {
-                  <div class="flex-shrink-0 snap-start" style="width:240px">
+                  <div class="shrink-0 snap-start" style="width:240px">
                     <app-curso-card [curso]="c"></app-curso-card>
                   </div>
                 }
@@ -106,7 +106,7 @@ const PER_PAGE = 4;
                 <button (click)="prev(grupo.areaSlug)"
                   [disabled]="getPage(grupo.areaSlug) === 0"
                   [class.opacity-30]="getPage(grupo.areaSlug) === 0"
-              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer">
                   <mat-icon style="font-size:20px;height:20px;width:20px">chevron_left</mat-icon>
                 </button>
@@ -118,7 +118,7 @@ const PER_PAGE = 4;
                 <button (click)="next(grupo.areaSlug, grupo.cursos.length)"
                   [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
                   [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
-              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer">
                   <mat-icon style="font-size:20px;height:20px;width:20px">chevron_right</mat-icon>
                 </button>

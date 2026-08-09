@@ -28,7 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
       <section class="py-16 bg-white">
         <div class="max-w-4xl mx-auto px-6">
           <div class="flex flex-col md:flex-row items-center gap-10">
-            <div class="w-24 h-24 bg-[#0054A6] rounded-3xl flex items-center justify-center flex-shrink-0 shadow-xl shadow-blue-200">
+            <div class="w-24 h-24 bg-[#0054A6] rounded-3xl flex items-center justify-center shrink-0 shadow-xl shadow-blue-200">
               <mat-icon class="text-white" style="font-size:44px;height:44px;width:44px">emoji_objects</mat-icon>
             </div>
             <div>

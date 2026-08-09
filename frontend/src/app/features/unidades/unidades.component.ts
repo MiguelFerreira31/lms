@@ -62,7 +62,7 @@ interface GrupoRegiao {
                     class="bg-white rounded-2xl border transition-all duration-200 p-5 flex flex-col gap-3"
                    [class]="isUnidadeAtiva(u.id)
                      ? 'border-[#0054A6] shadow-lg ring-2 ring-[#0054A6]/20'
-                     : 'border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5'">
+                     : 'border-gray-100 shadow-xs hover:shadow-md hover:-translate-y-0.5'">
                     <!-- Badge destaque -->
                     @if (isUnidadeAtiva(u.id)) {
                       <div
@@ -71,7 +71,7 @@ interface GrupoRegiao {
                       </div>
                     }
                     <div class="flex items-start gap-3">
-                      <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
                         <mat-icon class="text-[#0054A6]" style="font-size:18px;height:18px;width:18px">
                           location_city
                         </mat-icon>

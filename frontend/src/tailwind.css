@@ -1,0 +1,95 @@
+/*
+ * Entrada do Tailwind CSS 4.
+ *
+ * Precisa ser .css puro (e não .scss): o Sass resolve o @import antes do
+ * PostCSS, e o plugin do Tailwind perde a referência do diretório de origem.
+ *
+ * O `important` NÃO é decorativo: no v3 isso era `important: true` no
+ * tailwind.config.js, e é o que faz as utilities do Tailwind ganharem dos
+ * estilos do Angular Material. Sem ele, o MDC vence e o layout quebra.
+ */
+@import "tailwindcss" important;
+
+/* Config em CSS: o v4 substitui o tailwind.config.js por @theme. Cada token
+   também vira uma custom property utilizável fora das utilities. */
+@theme {
+  --color-senac-50:  #e6f0fb;
+  --color-senac-100: #c0d9f4;
+  --color-senac-200: #8bb8e9;
+  --color-senac-500: #0072ce;
+  --color-senac-600: #0054A6;
+  --color-senac-700: #003f90;
+  --color-senac-800: #003087;
+  --color-senac-900: #001f5b;
+
+  --color-primary-50:  #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-900: #312e81;
+
+  --color-surface: #f8fafc;
+
+  --shadow-card:       0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-card-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* As classes .lms-* são aplicadas por binding [class] no TypeScript, então a
+   detecção automática pode não enxergá-las apenas pelos templates. */
+@source "./app/**/*.{html,ts}";
+
+/* ─── LMS Design System — controles de formulário ──────────────────────────
+ *
+ * Estas regras viviam em styles.scss e a base comum era um placeholder Sass
+ * (%lms-control-base) consumido por @extend — o que dependia de o Sass rodar
+ * antes do Tailwind e expandir o @apply copiado. Aqui a base é uma lista de
+ * seletores, equivalente direto em CSS puro, sem depender de ordem de
+ * processamento.
+ */
+.lms-field {
+  @apply flex flex-col gap-1;
+}
+
+.lms-label {
+  @apply text-xs font-semibold text-slate-500 uppercase tracking-wide;
+
+  & .required { @apply text-rose-500 ml-0.5; }
+}
+
+.lms-input,
+.lms-select,
+.lms-textarea {
+  @apply w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white;
+  @apply border border-slate-200 rounded-xl outline-hidden;
+  @apply placeholder:text-slate-400;
+  @apply transition-all duration-150;
+
+  &:focus { @apply border-indigo-400 ring-2 ring-indigo-100; }
+  &:disabled { @apply bg-slate-50 text-slate-400 cursor-not-allowed; }
+  &.ng-invalid.ng-touched { @apply border-rose-400 ring-2 ring-rose-100; }
+}
+
+.lms-select {
+  @apply appearance-none cursor-pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 2.5rem;
+}
+
+.lms-textarea {
+  @apply resize-y;
+  min-height: 80px;
+}
+
+.lms-error { @apply text-xs text-rose-500 mt-0.5; }
+.lms-hint  { @apply text-xs text-slate-400 mt-0.5; }
+
+.lms-form-grid {
+  @apply grid grid-cols-1 gap-4;
+
+  &.cols-2 { @apply md:grid-cols-2; }
+  &.cols-3 { @apply md:grid-cols-2 lg:grid-cols-3; }
+  &.cols-4 { @apply md:grid-cols-2 lg:grid-cols-4; }
+}

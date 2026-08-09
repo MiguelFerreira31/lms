@@ -5,7 +5,7 @@
 ![Angular](https://img.shields.io/badge/Angular-22-DD0031?logo=angular)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
-![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss)
+![Tailwind](https://img.shields.io/badge/Tailwind-4.3-06B6D4?logo=tailwindcss)
 
 > Sistema de gestão de cursos educacionais fullstack — projeto de portfólio
 
@@ -44,7 +44,7 @@
 | Camada | Tecnologia | Versão |
 |--------|-----------|--------|
 | Frontend | Angular | 22 |
-| UI | Tailwind CSS | 3.4 |
+| UI | Tailwind CSS | 4.3 |
 | Componentes | Angular Material | 22.1 (tema M3) |
 | Gráficos | Chart.js | 4.5 |
 | Animações | GSAP | 3.15 |

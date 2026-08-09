@@ -11,12 +11,12 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
     imports: [RouterModule, MatIconModule],
     template: `
     <!-- ══════════════════════════════════════════════════════ Header -->
-    <header class="fixed top-0 left-0 right-0 bg-white z-50 shadow-sm">
+    <header class="fixed top-0 left-0 right-0 bg-white z-50 shadow-xs">
     
       <div class="h-16 max-w-screen-xl mx-auto px-4 lg:px-8 flex items-center gap-6">
     
         <!-- Logo -->
-        <a routerLink="/home" class="flex items-center gap-2.5 no-underline flex-shrink-0">
+        <a routerLink="/home" class="flex items-center gap-2.5 no-underline shrink-0">
           <div class="w-8 h-8 bg-[#0054A6] rounded-lg flex items-center justify-center">
             <mat-icon class="text-white" style="font-size:18px;height:18px;width:18px">school</mat-icon>
           </div>
@@ -28,14 +28,14 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
     
           <a routerLink="/home" routerLinkActive="!text-[#0054A6] !font-semibold"
             [routerLinkActiveOptions]="{exact: true}"
-             class="flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-gray-700
+             class="shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-gray-700
                     hover:text-[#0054A6] hover:bg-blue-50 transition-colors no-underline">
             Home
           </a>
     
           <!-- Cursos trigger -->
           <button (click)="toggleDropdown('cursos')"
-            class="flex-shrink-0 whitespace-nowrap flex items-center gap-0.5 px-3 py-2 rounded-lg text-sm
+            class="shrink-0 whitespace-nowrap flex items-center gap-0.5 px-3 py-2 rounded-lg text-sm
                    font-medium transition-colors cursor-pointer border-0 bg-transparent"
             [class]="activeDropdown() === 'cursos'
               ? 'text-[#0054A6] bg-blue-50 font-semibold'
@@ -48,7 +48,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
     
           <!-- Unidades trigger -->
           <button (click)="toggleDropdown('unidades')"
-            class="flex-shrink-0 whitespace-nowrap flex items-center gap-0.5 px-3 py-2 rounded-lg text-sm
+            class="shrink-0 whitespace-nowrap flex items-center gap-0.5 px-3 py-2 rounded-lg text-sm
                    font-medium transition-colors cursor-pointer border-0 bg-transparent"
             [class]="activeDropdown() === 'unidades'
               ? 'text-[#0054A6] bg-blue-50 font-semibold'
@@ -60,34 +60,34 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
           </button>
     
           <a routerLink="/sobre"
-             class="flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-gray-700
+             class="shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-gray-700
                     hover:text-[#0054A6] hover:bg-blue-50 transition-colors no-underline">
             Bolsas de Estudo
           </a>
           <a routerLink="/sobre"
-             class="flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-gray-700
+             class="shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-gray-700
                     hover:text-[#0054A6] hover:bg-blue-50 transition-colors no-underline">
             Eventos
           </a>
         </nav>
     
         <!-- CTA + hamburger -->
-        <div class="flex items-center gap-3 flex-shrink-0">
+        <div class="flex items-center gap-3 shrink-0">
           @if (!auth.isLoggedIn()) {
             <a routerLink="/login"
-               class="flex-shrink-0 whitespace-nowrap text-gray-700 hover:text-[#0054A6] text-sm
+               class="shrink-0 whitespace-nowrap text-gray-700 hover:text-[#0054A6] text-sm
                       font-medium transition-colors no-underline hidden sm:block">
               Entrar
             </a>
             <a routerLink="/login"
-               class="flex-shrink-0 bg-[#F7941E] hover:bg-orange-500 text-white font-semibold text-sm
+               class="shrink-0 bg-[#F7941E] hover:bg-orange-500 text-white font-semibold text-sm
                       px-5 py-2 rounded-xl transition-colors no-underline whitespace-nowrap">
               Matricule-se
             </a>
           }
           @if (auth.isLoggedIn()) {
             <a routerLink="/dashboard"
-             class="flex-shrink-0 bg-[#0054A6] text-white font-semibold text-sm px-5 py-2 rounded-xl
+             class="shrink-0 bg-[#0054A6] text-white font-semibold text-sm px-5 py-2 rounded-xl
                     hover:bg-[#003087] transition-colors no-underline flex items-center gap-1.5 whitespace-nowrap">
               <mat-icon style="font-size:18px;height:18px;width:18px">dashboard</mat-icon>
               Meu Painel
@@ -97,7 +97,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
           <!-- Hamburguer — abaixo de lg -->
           <button (click)="menuOpen.set(!menuOpen())"
             class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors border-0
-                   bg-transparent cursor-pointer text-gray-700 flex-shrink-0">
+                   bg-transparent cursor-pointer text-gray-700 shrink-0">
             <mat-icon>{{ menuOpen() ? 'close' : 'menu' }}</mat-icon>
           </button>
         </div>
@@ -209,7 +209,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
               @if (centrosUnivUnidades().length > 0) {
                 <div
                   class="mt-5 pt-4 border-t border-gray-100 flex flex-wrap items-center gap-x-8 gap-y-2">
-                  <p class="text-[#1a2e5a] font-bold text-xs uppercase tracking-widest flex-shrink-0">
+                  <p class="text-[#1a2e5a] font-bold text-xs uppercase tracking-widest shrink-0">
                     Centros Universitários
                   </p>
                   @for (u of centrosUnivUnidades(); track u) {

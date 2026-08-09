@@ -30,7 +30,7 @@ import { AuthService } from '../../core/services/auth.service';
           <span class="text-sm font-semibold text-white">{{ auth.currentUser()?.nome }}</span>
           <span class="text-xs text-blue-200 font-medium">{{ auth.currentUser()?.role }}</span>
         </div>
-        <div class="w-9 h-9 rounded-full bg-white/20 border-2 border-white/30 overflow-hidden flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+        <div class="w-9 h-9 rounded-full bg-white/20 border-2 border-white/30 overflow-hidden flex items-center justify-center text-white font-bold text-sm shrink-0">
           @if (auth.currentUser()?.avatarUrl) {
             <img
               [src]="auth.currentUser()!.avatarUrl!"
@@ -64,26 +64,26 @@ import { AuthService } from '../../core/services/auth.service';
           [routerLinkActiveOptions]="{exact:true}"
           (click)="sidebarOpen.set(false)"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-[#EBF4FF] hover:text-[#0054A6] transition-colors font-medium text-sm border border-transparent no-underline">
-          <mat-icon class="flex-shrink-0">home</mat-icon>
+          <mat-icon class="shrink-0">home</mat-icon>
           Início
         </a>
         <a routerLink="/cursos" routerLinkActive="bg-[#EBF4FF] text-[#0054A6] border-[#0054A6]/20"
           [routerLinkActiveOptions]="{exact:true}"
           (click)="sidebarOpen.set(false)"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-[#EBF4FF] hover:text-[#0054A6] transition-colors font-medium text-sm border border-transparent no-underline">
-          <mat-icon class="flex-shrink-0">menu_book</mat-icon>
+          <mat-icon class="shrink-0">menu_book</mat-icon>
           Cursos
         </a>
         <a routerLink="/cursos/areas" routerLinkActive="bg-[#EBF4FF] text-[#0054A6] border-[#0054A6]/20"
           (click)="sidebarOpen.set(false)"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-[#EBF4FF] hover:text-[#0054A6] transition-colors font-medium text-sm border border-transparent no-underline">
-          <mat-icon class="flex-shrink-0">category</mat-icon>
+          <mat-icon class="shrink-0">category</mat-icon>
           Explorar por Área
         </a>
         <a routerLink="/matriculas" routerLinkActive="bg-[#EBF4FF] text-[#0054A6] border-[#0054A6]/20"
           (click)="sidebarOpen.set(false)"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-[#EBF4FF] hover:text-[#0054A6] transition-colors font-medium text-sm border border-transparent no-underline">
-          <mat-icon class="flex-shrink-0">assignment</mat-icon>
+          <mat-icon class="shrink-0">assignment</mat-icon>
           Minhas Matrículas
         </a>
     
@@ -94,7 +94,7 @@ import { AuthService } from '../../core/services/auth.service';
             <a routerLink="/professor/cursos" routerLinkActive="bg-emerald-50 text-emerald-700 border-emerald-200"
               (click)="sidebarOpen.set(false)"
               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors font-medium text-sm border border-transparent no-underline">
-              <mat-icon class="flex-shrink-0">cast_for_education</mat-icon>
+              <mat-icon class="shrink-0">cast_for_education</mat-icon>
               Meus Cursos
             </a>
           </div>
@@ -107,37 +107,37 @@ import { AuthService } from '../../core/services/auth.service';
             <a routerLink="/admin/dashboard" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
               (click)="sidebarOpen.set(false)"
               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
-              <mat-icon class="flex-shrink-0">dashboard</mat-icon>
+              <mat-icon class="shrink-0">dashboard</mat-icon>
               Dashboard Admin
             </a>
             <a routerLink="/admin/cursos" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
               (click)="sidebarOpen.set(false)"
               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
-              <mat-icon class="flex-shrink-0">library_books</mat-icon>
+              <mat-icon class="shrink-0">library_books</mat-icon>
               Gerenciar Cursos
             </a>
             <a routerLink="/admin/usuarios" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
               (click)="sidebarOpen.set(false)"
               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
-              <mat-icon class="flex-shrink-0">group</mat-icon>
+              <mat-icon class="shrink-0">group</mat-icon>
               Gerenciar Usuários
             </a>
             <a routerLink="/admin/regioes" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
               (click)="sidebarOpen.set(false)"
               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
-              <mat-icon class="flex-shrink-0">location_city</mat-icon>
+              <mat-icon class="shrink-0">location_city</mat-icon>
               Regiões e Unidades
             </a>
             <a routerLink="/admin/professores" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
               (click)="sidebarOpen.set(false)"
               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
-              <mat-icon class="flex-shrink-0">school</mat-icon>
+              <mat-icon class="shrink-0">school</mat-icon>
               Professores
             </a>
             <a routerLink="/professor/cursos" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
               (click)="sidebarOpen.set(false)"
               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
-              <mat-icon class="flex-shrink-0">cast_for_education</mat-icon>
+              <mat-icon class="shrink-0">cast_for_education</mat-icon>
               Conteúdo das Aulas
             </a>
           </div>
@@ -147,7 +147,7 @@ import { AuthService } from '../../core/services/auth.service';
       <!-- Sidebar footer -->
       <div class="p-4 border-t border-gray-100 bg-gray-50">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-[#0054A6] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+          <div class="w-9 h-9 rounded-full bg-[#0054A6] flex items-center justify-center text-white font-bold text-sm shrink-0">
             {{ auth.currentUser()?.nome?.charAt(0)?.toUpperCase() }}
           </div>
           <div class="min-w-0">

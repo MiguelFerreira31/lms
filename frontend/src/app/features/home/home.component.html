@@ -25,16 +25,16 @@
 
           <!-- Search bar -->
           <div class="flex max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden mb-6">
-            <span class="flex items-center pl-5 text-gray-400 flex-shrink-0">
+            <span class="flex items-center pl-5 text-gray-400 shrink-0">
               <mat-icon>search</mat-icon>
             </span>
             <input [value]="pesquisa()"
               (input)="pesquisa.set($any($event.target).value)"
               (keyup.enter)="irParaCursos()"
               placeholder="O que você quer aprender?"
-              class="flex-1 px-4 py-4 text-gray-900 text-base outline-none bg-transparent placeholder-gray-400" />
+              class="flex-1 px-4 py-4 text-gray-900 text-base outline-hidden bg-transparent placeholder:text-gray-400" />
               <button (click)="irParaCursos()"
-                class="bg-[#F7941E] hover:bg-orange-500 transition-colors px-7 py-4 text-white font-semibold text-sm cursor-pointer border-0 flex-shrink-0">
+                class="bg-[#F7941E] hover:bg-orange-500 transition-colors px-7 py-4 text-white font-semibold text-sm cursor-pointer border-0 shrink-0">
                 Buscar
               </button>
             </div>
@@ -60,16 +60,16 @@
           <div class="hidden lg:flex flex-col items-center justify-center gap-5">
             <!-- Floating cards with stats -->
             <div class="flex gap-5">
-              <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 text-white text-center w-40">
+              <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-5 text-white text-center w-40">
                 <div class="text-3xl font-extrabold text-[#F7941E]">{{ totalCursos() }}+</div>
                 <div class="text-blue-200 text-sm mt-1">Cursos</div>
               </div>
-              <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 text-white text-center w-40">
+              <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-5 text-white text-center w-40">
                 <div class="text-3xl font-extrabold text-white">100%</div>
                 <div class="text-blue-200 text-sm mt-1">Online</div>
               </div>
             </div>
-            <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-white w-full max-w-xs">
+            <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-6 text-white w-full max-w-xs">
               <div class="flex items-center gap-3 mb-3">
                 <div class="w-10 h-10 bg-[#F7941E] rounded-xl flex items-center justify-center">
                   <mat-icon class="text-white">school</mat-icon>
@@ -93,14 +93,14 @@
     </section>
 
     <!-- ===== ÁREAS (chips dinâmicos) ===== -->
-    <section class="bg-white border-b border-gray-100 shadow-sm py-5">
+    <section class="bg-white border-b border-gray-100 shadow-xs py-5">
       <div class="max-w-6xl mx-auto px-6">
         <div class="flex flex-wrap items-center gap-3">
           <span class="text-sm font-semibold text-gray-500 shrink-0">Conheça nossos cursos:</span>
           @for (area of areas().slice(0, 7); track area.slug) {
             <a
               [routerLink]="['/cursos/areas', area.slug]"
-              class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#EBF4FF] text-[#0054A6] hover:bg-[#0054A6] hover:text-white transition-colors no-underline cursor-pointer flex-shrink-0">
+              class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#EBF4FF] text-[#0054A6] hover:bg-[#0054A6] hover:text-white transition-colors no-underline cursor-pointer shrink-0">
               {{ area.nome }}
             </a>
           }
@@ -119,7 +119,7 @@
               Avançado
             </button>
           }
-          <a routerLink="/cursos/areas" class="ml-auto text-sm font-semibold text-[#0054A6] hover:text-[#003087] no-underline flex items-center flex-shrink-0">
+          <a routerLink="/cursos/areas" class="ml-auto text-sm font-semibold text-[#0054A6] hover:text-[#003087] no-underline flex items-center shrink-0">
             Todas as áreas
             <mat-icon style="font-size:18px;height:18px;width:18px;line-height:18px">chevron_right</mat-icon>
           </a>
@@ -213,20 +213,20 @@
             </div>
 
             <!-- Right: stats -->
-            <div class="hidden lg:grid grid-cols-2 gap-4 flex-shrink-0">
-              <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 text-center text-white">
+            <div class="hidden lg:grid grid-cols-2 gap-4 shrink-0">
+              <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-5 text-center text-white">
                 <div class="text-3xl font-extrabold text-[#F7941E]">70+</div>
                 <div class="text-blue-200 text-xs mt-1 font-medium">Anos de história</div>
               </div>
-              <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 text-center text-white">
+              <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-5 text-center text-white">
                 <div class="text-3xl font-extrabold">{{ totalCursos() }}+</div>
                 <div class="text-blue-200 text-xs mt-1 font-medium">Cursos disponíveis</div>
               </div>
-              <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 text-center text-white">
+              <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-5 text-center text-white">
                 <div class="text-3xl font-extrabold">100k+</div>
                 <div class="text-blue-200 text-xs mt-1 font-medium">Alunos formados</div>
               </div>
-              <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 text-center text-white">
+              <div class="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-5 text-center text-white">
                 <div class="text-3xl font-extrabold text-[#F7941E]">SP</div>
                 <div class="text-blue-200 text-xs mt-1 font-medium">Presença em todo estado</div>
               </div>
@@ -305,7 +305,7 @@
               <div
                 [routerLink]="['/cursos', c.id]"
                 class="bg-white rounded-2xl border border-gray-100 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer overflow-hidden group flex">
-                <div class="w-1.5 flex-shrink-0" [class]="'bg-gradient-to-b ' + getNivelBg(c.nivel)"></div>
+                <div class="w-1.5 shrink-0" [class]="'bg-gradient-to-b ' + getNivelBg(c.nivel)"></div>
                 <div class="p-4 flex-1">
                   <span [class]="getNivelClass(c.nivel)" class="px-2 py-0.5 rounded-full text-xs font-semibold">
                     {{ c.nivel === 'BASICO' ? 'Básico' : c.nivel === 'INTERMEDIARIO' ? 'Intermediário' : 'Avançado' }}

@@ -91,7 +91,7 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
               <div class="space-y-2">
                 @for (grupo of tipoGrupos(); track grupo) {
                   <div
-                    class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs">
                     <button (click)="toggleTipo(grupo.nome)"
                 class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50
                        transition-colors cursor-pointer bg-transparent border-0 text-left">
@@ -107,7 +107,7 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
                           class="text-xs text-[#0054A6] hover:underline no-underline hidden sm:block">
                           Ver todos
                         </a>
-                        <mat-icon class="text-gray-500 transition-transform duration-200 flex-shrink-0"
+                        <mat-icon class="text-gray-500 transition-transform duration-200 shrink-0"
                           [style.transform]="isOpen(grupo.nome) ? 'rotate(180deg)' : 'rotate(0deg)'">
                           expand_more
                         </mat-icon>
@@ -137,7 +137,7 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
                 </h3>
               </div>
               <a routerLink="/cursos/areas"
-               class="flex-shrink-0 bg-[#F7941E] hover:bg-orange-500 text-white font-bold px-8 py-3.5
+               class="shrink-0 bg-[#F7941E] hover:bg-orange-500 text-white font-bold px-8 py-3.5
                       rounded-xl transition-colors no-underline whitespace-nowrap">
                 Ver todos os cursos
               </a>

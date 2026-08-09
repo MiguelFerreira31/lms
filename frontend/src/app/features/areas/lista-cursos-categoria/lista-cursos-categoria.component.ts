@@ -50,7 +50,7 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
             @for (c of resultado()!.content; track c) {
               <a
                 [routerLink]="['/cursos', c.id]"
-                class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 no-underline group cursor-pointer flex flex-col">
+                class="bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 no-underline group cursor-pointer flex flex-col">
                 <!-- Header -->
                 <div class="h-36 relative bg-gradient-to-br"
                   [ngClass]="nivelBg(c.nivel)">

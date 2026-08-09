@@ -128,7 +128,7 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 |---|---|
 | Framework | Angular **22** (standalone, zoneless, control flow `@if`/`@for`) |
 | UI Kit | Angular Material 22.1.1 + CDK, tema **M3** (ícones, spinner, snackbar, tooltip, tabs, expansion, paginator) |
-| Estilos | Tailwind CSS 3.4.19 + design system próprio `.lms-*` (migração para o v4 pendente, ver §7.3) |
+| Estilos | Tailwind CSS **4.3.3** (config em `@theme`, entrada `src/tailwind.css`) + design system próprio `.lms-*` |
 | Estado | **Angular Signals** nativos (sem NgRx/Redux) |
 | Gráficos | Chart.js 4.5.1 |
 | Animações | GSAP 3.15.0 |
@@ -323,19 +323,27 @@ Cadeia percorrida um major por vez (18→19→20→21→22), com build e testes 
 - **Acompanhamento do contrato do backend**: `Page<T>` refeito para o shape `PagedModel`; `errorInterceptor` com o tipo `ProblemDetail` e o helper `mensagemDeErro()`.
 - Vazamentos pré-existentes corrigidos: `MutationObserver` sem `disconnect()` e `router.events` sem `takeUntilDestroyed()`.
 
-### 7.3 Pendência conhecida — Tailwind 4
+### 7.3 Tailwind 3 → 4
 
-**O frontend segue no Tailwind 3.4.19.** A migração para o v4 foi tentada e revertida.
+Migrado. O ponto que custou caro: **o builder esbuild do Angular lê `.postcssrc.json`, não `postcss.config.js`.**
 
-Sintoma: o `@import "tailwindcss"` é processado (o `@apply` das classes `.lms-*` expande normalmente), mas a varredura de conteúdo não encontra nenhum template. O CSS gerado cai de **75 KB para 32 KB** e sai **sem nenhuma utility usada no HTML** — a aplicação renderiza praticamente sem estilo. A falha é silenciosa: o build passa, sem warning.
+Com `postcss.config.js`, o Tailwind 4 falhava de forma silenciosa e enganosa: o `@import "tailwindcss"` era parcialmente processado (o `@apply` das classes `.lms-*` expandia normalmente, dando a impressão de que estava tudo certo), mas a varredura de conteúdo não encontrava nenhum template. O CSS caía de 75 KB para 32 KB **sem nenhuma utility usada no HTML** — a aplicação renderizaria praticamente sem estilo, e o build passava sem um único warning.
 
-Combinações testadas, todas com cache limpo: entrada em `.scss` e em `.css` puro; com e sem `postcss.config.js`; `@source` relativo ao CSS, relativo à raiz do projeto e absoluto; `source()` no próprio `@import`.
+O Tailwind 3 funcionava por um caminho diferente: o Angular tem detecção embutida do `tailwind.config.js`, então nunca dependeu do `postcss.config.js`. Ao remover o config do v3, esse caminho sumiu e nada mais fazia a varredura.
 
-O **Tailwind CLI standalone, sobre o mesmo arquivo de entrada, gera 92 KB com as classes corretas** — ou seja, o CSS está certo e o problema é a integração com o pipeline do `@angular/build` 22.
+Outras mudanças do v4:
 
-Reverter foi a decisão consciente: o v3 funciona e a alternativa seria entregar a aplicação sem estilo.
+- `@tailwind base/components/utilities` → `@import "tailwindcss" important;`. O `important` **não é decorativo**: era o `important: true` do config v3 e é o que faz as utilities ganharem dos estilos MDC do Material.
+- `tailwind.config.js` → `@theme` em CSS. `autoprefixer` removido (embutido no v4).
+- A entrada do Tailwind precisa ser **`.css` puro** (`src/tailwind.css`), não `.scss`: o Sass resolve o `@import` antes do PostCSS e o plugin perde a referência do diretório.
+- O `%lms-control-base` era um placeholder Sass contendo `@apply`, consumido por `@extend` — dependia de o Sass rodar antes do Tailwind. Virou lista de seletores em CSS puro.
+- 147 utilities renomeadas. As que importam por semântica: `outline-none` → `outline-hidden` (no v4 `outline-none` virou `outline-style:none`, que remove o anel de foco) e a escala de sombra deslocou (`shadow-sm`→`shadow-xs`, `shadow`→`shadow-sm`).
+- As cores `senac-*` e `primary-*` do tema têm **zero uso nos templates** — já eram config morta no v3. Mantidas no `@theme` (custo zero: o v4 só emite o que é usado).
+
+Custo em bytes: o CSS foi de 75 KB para 85 KB e o bundle de 265.08 kB para 275.62 kB — o v4 traz um preflight e uma camada de tema maiores.
 
 ---
+
 
 ## 8. Documentação original do projeto
 

@@ -94,7 +94,7 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
             @if (!cursosLoading() && tipoGrupos().length > 0) {
               <div class="space-y-2">
                 @for (grupo of tipoGrupos(); track grupo) {
-                  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs">
                     <button (click)="toggleTipo(grupo.nome)"
                 class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50
                        transition-colors cursor-pointer bg-transparent border-0 text-left">

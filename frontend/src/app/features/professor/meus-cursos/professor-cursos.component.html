@@ -37,11 +37,11 @@
       <div class="space-y-4">
         @for (curso of cursos(); track curso.id) {
           <div
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            class="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden">
             <!-- Cabeçalho do curso (clicável) -->
             <div class="flex items-center gap-4 p-5 cursor-pointer hover:bg-gray-50 transition-colors"
               (click)="abrirCurso(curso.id)">
-              <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
                 <mat-icon class="text-indigo-600">menu_book</mat-icon>
               </div>
               <div class="flex-1 min-w-0">
@@ -51,7 +51,7 @@
                 </div>
                 <p class="text-sm text-gray-500 mt-0.5 truncate">{{ curso.descricao }}</p>
               </div>
-              <mat-icon class="text-gray-400 transition-transform flex-shrink-0"
+              <mat-icon class="text-gray-400 transition-transform shrink-0"
               [class.rotate-180]="cursoAberto() === curso.id">expand_more</mat-icon>
             </div>
             <!-- Painel expandido do curso -->
@@ -92,7 +92,7 @@
                             <!-- Linha da aula -->
                             <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
                               (click)="abrirAula(aula.id)">
-                              <div class="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
+                              <div class="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center shrink-0">
                                 <span class="text-gray-500 text-xs">{{ aula.ordem }}</span>
                               </div>
                               <div class="flex-1">
@@ -134,7 +134,7 @@
                                       </div>
                                     </div>
                                     <button (click)="deletarConteudo(aula.id, c.id)" matTooltip="Excluir conteúdo"
-                                      class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer flex-shrink-0">
+                                      class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer shrink-0">
                                       <mat-icon class="text-sm">delete</mat-icon>
                                     </button>
                                   </div>
@@ -153,7 +153,7 @@
                                     <div class="flex items-center justify-between mb-3">
                                       <h4 class="text-sm font-semibold text-gray-900">Novo Conteúdo</h4>
                                       <button (click)="fecharFormConteudo()"
-                                        class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded">
+                                        class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-sm">
                                         <mat-icon class="text-sm">close</mat-icon>
                                       </button>
                                     </div>

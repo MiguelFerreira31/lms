@@ -47,7 +47,7 @@ const PER_PAGE = 4;
                 [value]="busca()"
                 (input)="setBusca($any($event.target).value)"
                 placeholder="Pesquisar curso..."
-                class="flex-1 px-5 py-3.5 text-gray-900 text-sm outline-none border-0">
+                class="flex-1 px-5 py-3.5 text-gray-900 text-sm outline-hidden border-0">
                 <button class="bg-[#F7941E] hover:bg-orange-500 transition-colors px-5 flex items-center justify-center border-0 cursor-pointer">
                   <mat-icon class="text-white">search</mat-icon>
                 </button>
@@ -117,7 +117,7 @@ const PER_PAGE = 4;
                   <div class="flex gap-4 overflow-x-auto pb-3 lg:hidden snap-x snap-mandatory -mx-6 px-6">
                     @for (c of grupo.cursos; track c) {
                       <div
-                        class="flex-shrink-0 snap-start" style="width:240px">
+                        class="shrink-0 snap-start" style="width:240px">
                         <app-curso-card [curso]="c"></app-curso-card>
                       </div>
                     }
@@ -127,7 +127,7 @@ const PER_PAGE = 4;
                     <!-- Seta anterior -->
                     <button (click)="prev(grupo.areaSlug)"
                       [disabled]="getPage(grupo.areaSlug) === 0"
-              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer"
                       [class.opacity-30]="getPage(grupo.areaSlug) === 0"
                       [class.cursor-not-allowed]="getPage(grupo.areaSlug) === 0">
@@ -144,7 +144,7 @@ const PER_PAGE = 4;
                     <!-- Seta próxima -->
                     <button (click)="next(grupo.areaSlug, grupo.cursos.length)"
                       [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
-              class="flex-shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer"
                       [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
                       [class.cursor-not-allowed]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length">

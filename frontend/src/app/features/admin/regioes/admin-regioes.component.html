@@ -8,7 +8,7 @@
         <p class="text-gray-500 text-sm mt-1">{{ regioes().length }} região(ões) cadastrada(s)</p>
       </div>
       <button (click)="abrirFormRegiao()"
-        class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm border-0 cursor-pointer">
+        class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-xs border-0 cursor-pointer">
         <mat-icon>add_location_alt</mat-icon>
         Nova Região
       </button>
@@ -16,7 +16,7 @@
 
     <!-- Form Região -->
     @if (mostrarFormRegiao()) {
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+      <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-gray-900">{{ editandoRegiao() ? 'Editar Região' : 'Nova Região' }}</h2>
           <button (click)="fecharFormRegiao()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100">
@@ -56,7 +56,7 @@
         <mat-accordion class="space-y-3">
           @for (regiao of regioes(); track regiao.id) {
             <mat-expansion-panel
-              class="rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+              class="rounded-2xl shadow-xs border border-gray-100 overflow-hidden"
               (opened)="carregarUnidades(regiao.id)">
               <mat-expansion-panel-header class="bg-white hover:bg-gray-50">
                 <mat-panel-title class="flex items-center gap-3">
@@ -96,7 +96,7 @@
                   <div class="bg-white rounded-xl border border-gray-200 p-4 mb-3">
                     <div class="flex items-center justify-between mb-3">
                       <h3 class="text-sm font-semibold text-gray-900">{{ editandoUnidade() ? 'Editar Unidade' : 'Nova Unidade' }}</h3>
-                      <button (click)="fecharFormUnidade()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded">
+                      <button (click)="fecharFormUnidade()" class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-sm">
                         <mat-icon class="text-sm">close</mat-icon>
                       </button>
                     </div>
@@ -146,7 +146,7 @@
                   <div
                     class="bg-white rounded-xl border border-gray-100 p-3 mb-2 flex items-center gap-3 justify-between">
                     <!-- Thumbnail -->
-                    <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                    <div class="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-100">
                       @if (unidade.imagemUrl) {
                         <img [src]="unidade.imagemUrl"
                           [alt]="unidade.nome" class="w-full h-full object-cover" loading="lazy">
