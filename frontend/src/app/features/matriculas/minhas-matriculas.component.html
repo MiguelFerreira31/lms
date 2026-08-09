@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-fundo py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-gray-900">Minhas Matrículas</h1>
-      <p class="text-gray-500 text-sm mt-1">Acompanhe seu progresso em cada curso</p>
+      <h1 class="text-2xl font-bold text-texto">Minhas Matrículas</h1>
+      <p class="text-texto-suave text-sm mt-1">Acompanhe seu progresso em cada curso</p>
     </div>
 
     @if (loading()) {
@@ -14,11 +14,11 @@
 
     @if (!loading() && matriculas().length === 0) {
       <div class="text-center py-20">
-        <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <mat-icon class="text-gray-400" style="font-size:40px;width:40px;height:40px">school</mat-icon>
+        <div class="w-20 h-20 bg-superficie-2 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <mat-icon class="text-texto-suave" style="font-size:40px;width:40px;height:40px">school</mat-icon>
         </div>
-        <p class="text-gray-600 font-semibold text-lg">Você ainda não está matriculado em nenhum curso</p>
-        <p class="text-gray-400 text-sm mt-2 mb-6">Explore o catálogo e comece sua jornada de aprendizado</p>
+        <p class="text-texto-suave font-semibold text-lg">Você ainda não está matriculado em nenhum curso</p>
+        <p class="text-texto-suave text-sm mt-2 mb-6">Explore o catálogo e comece sua jornada de aprendizado</p>
         <a routerLink="/cursos"
           class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors no-underline">
           <mat-icon>explore</mat-icon> Explorar Cursos
@@ -29,8 +29,8 @@
     @if (!loading() && matriculas().length > 0) {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         @for (m of matriculas(); track m.id) {
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
-            <div class="h-1.5 w-full bg-gray-100">
+          <div class="bg-superficie rounded-2xl border border-borda shadow-card overflow-hidden">
+            <div class="h-1.5 w-full bg-superficie-2">
               <div class="h-1.5 bg-indigo-500 transition-all duration-700 rounded-full"
               [style.width.%]="m.progresso?.percentual || 0"></div>
             </div>
@@ -40,17 +40,17 @@
                   <mat-icon class="text-white">menu_book</mat-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-bold text-gray-900 truncate">{{ m.cursoTitulo }}</h3>
-                  <p class="text-xs text-gray-400 mt-0.5">Desde {{ m.matriculadoEm | date:'dd/MM/yyyy' }}</p>
+                  <h3 class="font-bold text-texto truncate">{{ m.cursoTitulo }}</h3>
+                  <p class="text-xs text-texto-suave mt-0.5">Desde {{ m.matriculadoEm | date:'dd/MM/yyyy' }}</p>
                 </div>
               </div>
               <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm text-gray-500">Progresso</span>
+                  <span class="text-sm text-texto-suave">Progresso</span>
                   <span class="text-sm font-bold text-indigo-600">{{ $safeNavigationMigration(m.progresso?.percentual) | number:'1.0-0' }}%</span>
                 </div>
                 <mat-progress-bar mode="determinate" [value]="m.progresso?.percentual || 0" class="rounded-full"></mat-progress-bar>
-                <p class="text-xs text-gray-400 mt-1.5">
+                <p class="text-xs text-texto-suave mt-1.5">
                   {{ m.progresso?.aulasConcluidas || 0 }} de {{ m.progresso?.totalAulas || 0 }} aulas concluídas
                 </p>
               </div>

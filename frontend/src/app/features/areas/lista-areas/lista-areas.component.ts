@@ -23,10 +23,10 @@ const AREA_CONFIG: Record<string, { icon: string; color: string; bg: string; bor
     imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule],
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-fundo">
     
       <!-- Hero -->
-      <section class="bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6] py-14 lg:py-20">
+      <section class="bg-gradient-to-br from-marca-profunda via-marca-escura to-marca py-14 lg:py-20">
         <div class="max-w-6xl mx-auto px-6 text-center">
           <span class="inline-block bg-white/10 text-blue-200 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
             Catálogo
@@ -53,7 +53,7 @@ const AREA_CONFIG: Record<string, { icon: string; color: string; bg: string; bor
               @for (area of areas(); track area) {
                 <a
                   [routerLink]="['/cursos/areas', area.slug]"
-                  class="bg-white rounded-2xl border shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 no-underline group cursor-pointer block"
+                  class="bg-superficie rounded-2xl border shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 no-underline group cursor-pointer block"
                   [ngClass]="cfg(area.slug).border">
                   <!-- Icon -->
                   <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-colors"
@@ -63,24 +63,24 @@ const AREA_CONFIG: Record<string, { icon: string; color: string; bg: string; bor
                     </mat-icon>
                   </div>
                   <!-- Name -->
-                  <h3 class="font-bold text-gray-900 text-base mb-1 group-hover:text-[#0054A6] transition-colors leading-tight">
+                  <h3 class="font-bold text-texto text-base mb-1 group-hover:text-marca transition-colors leading-tight">
                     {{ area.nome }}
                   </h3>
                   <!-- Category count -->
-                  <p class="text-gray-400 text-sm mb-3">
+                  <p class="text-texto-suave text-sm mb-3">
                     {{ area.categorias.length }} categoria{{ area.categorias.length !== 1 ? 's' : '' }}
                   </p>
                   <!-- Category pills preview -->
                   <div class="flex flex-wrap gap-1.5">
                     @for (cat of area.categorias.slice(0, 3); track cat) {
                       <span
-                        class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                        class="text-xs px-2 py-0.5 rounded-full bg-superficie-2 text-texto-suave">
                         {{ cat.nome }}
                       </span>
                     }
                     @if (area.categorias.length > 3) {
                       <span
-                        class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">
+                        class="text-xs px-2 py-0.5 rounded-full bg-superficie-2 text-texto-suave">
                         +{{ area.categorias.length - 3 }}
                       </span>
                     }
@@ -108,6 +108,6 @@ export class ListaAreasComponent implements OnInit {
   }
 
   cfg(slug: string) {
-    return AREA_CONFIG[slug] ?? { icon: 'category', color: 'text-gray-700', bg: 'bg-gray-100', border: 'border-gray-200' };
+    return AREA_CONFIG[slug] ?? { icon: 'category', color: 'text-texto', bg: 'bg-superficie-2', border: 'border-borda' };
   }
 }

@@ -425,7 +425,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (status === 'EM_ANDAMENTO') return 'bg-indigo-100 text-indigo-700';
     if (status === 'CONCLUIDO') return 'bg-emerald-100 text-emerald-700';
     if (status === 'CANCELADO') return 'bg-rose-100 text-rose-700';
-    return 'bg-slate-100 text-slate-600';
+    return 'bg-superficie-2 text-texto-suave';
   }
 
   getStatusText(status: string): string {

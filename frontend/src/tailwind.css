@@ -10,6 +10,37 @@
  */
 @import "tailwindcss" important;
 
+/*
+ * Tokens semânticos: cada um aponta para uma custom property que o TemaService
+ * sobrescreve em tempo de execução. É isso que faz `bg-superficie` virar branco
+ * no modo claro e quase-preto no escuro, sem duplicar classe nem usar variante
+ * `dark:` em cada elemento — e é o que permite a página de Aparência repintar a
+ * aplicação inteira sem rebuild.
+ *
+ * Os valores concretos (claro e escuro) vivem em src/tema.css.
+ */
+@theme {
+  --color-marca: var(--tema-marca);
+  --color-marca-escura: var(--tema-marca-escura);
+  --color-marca-profunda: var(--tema-marca-profunda);
+  --color-marca-suave: var(--tema-marca-suave);
+  --color-destaque: var(--tema-destaque);
+
+  --color-fundo: var(--tema-fundo);
+  --color-superficie: var(--tema-superficie);
+  --color-superficie-2: var(--tema-superficie-2);
+  --color-texto: var(--tema-texto);
+  --color-texto-suave: var(--tema-texto-suave);
+  --color-borda: var(--tema-borda);
+
+  --color-sucesso: var(--tema-sucesso);
+  --color-erro: var(--tema-erro);
+  --color-aviso: var(--tema-aviso);
+
+  --font-titulo: var(--tema-fonte-titulo);
+  --font-corpo: var(--tema-fonte-corpo);
+}
+
 /* Config em CSS: o v4 substitui o tailwind.config.js por @theme. Cada token
    também vira uma custom property utilizável fora das utilities. */
 @theme {
@@ -52,27 +83,27 @@
 }
 
 .lms-label {
-  @apply text-xs font-semibold text-slate-500 uppercase tracking-wide;
+  @apply text-xs font-semibold text-texto-suave uppercase tracking-wide;
 
-  & .required { @apply text-rose-500 ml-0.5; }
+  & .required { @apply text-erro ml-0.5; }
 }
 
 .lms-input,
 .lms-select,
 .lms-textarea {
-  @apply w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white;
-  @apply border border-slate-200 rounded-xl outline-hidden;
-  @apply placeholder:text-slate-400;
+  @apply w-full px-3.5 py-2.5 text-sm text-texto bg-superficie;
+  @apply border border-borda rounded-xl outline-hidden;
+  @apply placeholder:text-texto-suave;
   @apply transition-all duration-150;
 
-  &:focus { @apply border-indigo-400 ring-2 ring-indigo-100; }
-  &:disabled { @apply bg-slate-50 text-slate-400 cursor-not-allowed; }
-  &.ng-invalid.ng-touched { @apply border-rose-400 ring-2 ring-rose-100; }
+  &:focus { @apply border-marca ring-2; ring-color: color-mix(in srgb, var(--tema-marca) 25%, transparent); }
+  &:disabled { @apply bg-superficie-2 text-texto-suave cursor-not-allowed; }
+  &.ng-invalid.ng-touched { @apply border-erro ring-2; ring-color: color-mix(in srgb, var(--tema-erro) 25%, transparent); }
 }
 
 .lms-select {
   @apply appearance-none cursor-pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 2.5rem;
@@ -83,8 +114,8 @@
   min-height: 80px;
 }
 
-.lms-error { @apply text-xs text-rose-500 mt-0.5; }
-.lms-hint  { @apply text-xs text-slate-400 mt-0.5; }
+.lms-error { @apply text-xs text-erro mt-0.5; }
+.lms-hint  { @apply text-xs text-texto-suave mt-0.5; }
 
 .lms-form-grid {
   @apply grid grid-cols-1 gap-4;

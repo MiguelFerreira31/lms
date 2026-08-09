@@ -128,14 +128,14 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 |---|---|
 | Framework | Angular **22** (standalone, zoneless, control flow `@if`/`@for`) |
 | UI Kit | Angular Material 22.1.1 + CDK, tema **M3** (ícones, spinner, snackbar, tooltip, tabs, expansion, paginator) |
-| Estilos | Tailwind CSS **4.3.3** (config em `@theme`, entrada `src/tailwind.css`) + design system próprio `.lms-*` |
+| Estilos | Tailwind CSS **4.3.3** com **tokens semânticos de tema** (`src/tema.css`), modo claro/escuro configurável + design system `.lms-*` |
 | Estado | **Angular Signals** nativos (sem NgRx/Redux) |
 | Gráficos | Chart.js 4.5.1 |
 | Animações | GSAP 3.15.0 |
 | Acessibilidade | Widget próprio WCAG 2.1 AA/AAA + `VlibrasWidgetComponent` local (script oficial do gov.br) |
 | HTTP | `HttpClient` + interceptors funcionais |
 | Build | Angular CLI 22 · TypeScript 6.0 |
-| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, jsdom) — 35 specs em 8 arquivos · **Playwright** — 19 cenários end-to-end |
+| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, jsdom) — 45 specs em 9 arquivos · **Playwright** — 25 cenários end-to-end |
 
 ### 3.2 Estrutura (`src/app/`)
 
@@ -146,9 +146,10 @@ accessibility/         # widget de acessibilidade (feature isolada, injetada no 
 core/
   guards/auth.guard.ts        # authGuard, adminGuard, professorGuard
   interceptors/jwt.interceptor.ts, error.interceptor.ts (+ tipo ProblemDetail e mensagemDeErro)
-  services/auth.service.ts, curso.service.ts, upload.service.ts
+  services/auth.service.ts, curso.service.ts, upload.service.ts, tema.service.ts
 features/
   admin/{cursos, dashboard, professores, regioes, usuarios}
+  aparencia/            # configuração de cores e tipografia por modo
   areas/, cursos/detalhe-curso, dashboard/ (aluno)
   home/, login/, sobre/
   matriculas/minhas-matriculas
@@ -352,8 +353,53 @@ Custo em bytes: o CSS foi de 75 KB para 85 KB e o bundle de 265.08 kB para 275.6
 
 ---
 
+## 8. Sistema de temas e página de Aparência (2026-08-09)
 
-## 8. Documentação original do projeto
+`/aparencia` (qualquer usuário autenticado) permite configurar **cores e tipografia separadamente para o modo claro e o escuro**, com prévia ao vivo. O botão de alternância fica na barra superior.
+
+### 8.1 Como funciona
+
+Uma única cadeia, do controle até o pixel:
+
+```
+página de Aparência  ->  TemaService  ->  custom properties inline no <html>
+                                              |
+                          src/tema.css  <-----+  (valores padrão de cada modo)
+                                              |
+                       @theme do Tailwind <---+  ->  utilities bg-superficie, text-texto...
+```
+
+- **`src/tema.css`** — valores padrão de claro e escuro, separados por `data-tema` no `<html>`. Não é media query: o usuário precisa poder escolher explicitamente; o modo "sistema" é resolvido no TypeScript, que grava o `data-tema` correspondente.
+- **`TemaService`** — estado em signals, aplica escrevendo custom properties inline no `<html>` (o que vence o CSS estático por especificidade) e persiste em `localStorage`.
+- **`@theme` do Tailwind** — os tokens (`--color-superficie`, `--color-texto`…) apontam para as custom properties. É isso que faz `bg-superficie` ser branco no claro e quase-preto no escuro **sem** variante `dark:` em cada elemento, e permite repintar tudo sem rebuild.
+
+### 8.2 A migração que tornou isso possível
+
+O estilo estava cravado no código: **289 cores hex** (só `#0054A6` aparecia 147 vezes), **257 classes arbitrárias** `bg-[#...]` e centenas de `bg-white` / `text-gray-900` / `border-gray-100`. Nada disso reagiria a uma troca de tema.
+
+**869 substituições em 34 arquivos** converteram isso para tokens semânticos:
+
+| Antes | Depois |
+|---|---|
+| `bg-white` (119) | `bg-superficie` |
+| `text-[#0054A6]` (83) | `text-marca` |
+| `text-gray-400/500/600` (145) | `text-texto-suave` |
+| `border-gray-100/200` (82) | `border-borda` |
+| `text-gray-900` / `text-slate-900` (75) | `text-texto` |
+| `bg-[#F7941E]` (25) | `bg-destaque` |
+
+Restaram **127 fundos em paletas fixas** (`bg-purple-50`, `bg-blue-50`…), usados como "chips" no padrão fundo claro + texto escuro do mesmo matiz — legível no claro, uma mancha branca no escuro. Em vez de decidir 127 casos um a um, uma regra genérica em `tema.css` converte qualquer matiz: no escuro o fundo vira `color-mix()` do mesmo matiz com a superfície, e o texto sobe para o tom 300. Só é possível porque o Tailwind 4 expõe a paleta inteira como custom properties.
+
+### 8.3 Detalhes que exigiram cuidado
+
+- **Angular Material** — o tema prebuilt `azure-blue` é só claro. Os tokens `--mat-sys-*` foram amarrados aos tokens do tema, então ícones, spinner, snackbar, tooltip, tabs, expansion e paginator acompanham o modo.
+- **`text-white` ficou de fora** da migração de propósito: quase sempre está sobre fundo de marca e deve continuar branco nos dois modos.
+- **A seta do `.lms-select`** é um SVG em data-URI; `currentColor` não resolve ali (é outro documento), então usa um cinza médio legível nos dois modos.
+- **Widget de acessibilidade** — continua funcionando por cima do tema. O alto contraste aplica estilos inline, que vencem os tokens; é o comportamento correto (acessibilidade tem precedência).
+
+---
+
+## 9. Documentação original do projeto
 
 O repositório já contém documentação própria mais extensa (datada de 2026-06-02/05, um pouco defasada em relação aos últimos 3 commits, já incorporados aqui):
 

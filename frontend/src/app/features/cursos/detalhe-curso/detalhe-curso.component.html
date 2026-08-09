@@ -9,8 +9,8 @@
 @if (!loading() && !curso()) {
   <div class="max-w-4xl mx-auto px-6 py-20 text-center">
     <mat-icon class="text-gray-300" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
-    <h2 class="text-xl font-semibold text-gray-700 mt-4 mb-2">Curso não encontrado</h2>
-    <a routerLink="/cursos" class="text-[#0054A6] hover:underline no-underline text-sm font-medium">← Voltar ao catálogo</a>
+    <h2 class="text-xl font-semibold text-texto mt-4 mb-2">Curso não encontrado</h2>
+    <a routerLink="/cursos" class="text-marca hover:underline no-underline text-sm font-medium">← Voltar ao catálogo</a>
   </div>
 }
 
@@ -49,7 +49,7 @@
               }
               @for (t of c.tipos; track t.slug) {
                 <span
-                  class="inline-flex items-center gap-1 bg-[#F7941E]/80 text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                  class="inline-flex items-center gap-1 bg-destaque/80 text-white text-xs font-medium px-3 py-1.5 rounded-full">
                   <mat-icon style="font-size:13px;height:13px;width:13px">label</mat-icon>
                   {{ t.nome }}
                 </span>
@@ -63,38 +63,38 @@
             }
           </div>
           <!-- CTA Card -->
-          <div class="bg-white rounded-2xl shadow-2xl p-6 w-full lg:w-72 shrink-0">
+          <div class="bg-superficie rounded-2xl shadow-2xl p-6 w-full lg:w-72 shrink-0">
             <div class="text-center mb-4">
-              <div class="text-2xl font-extrabold text-[#0054A6] mb-0.5">Gratuito</div>
-              <div class="text-gray-400 text-xs">Acesso com matrícula</div>
+              <div class="text-2xl font-extrabold text-marca mb-0.5">Gratuito</div>
+              <div class="text-texto-suave text-xs">Acesso com matrícula</div>
             </div>
             @if (auth.isLoggedIn()) {
               <button (click)="matricular()" [disabled]="matriculando()"
-                class="w-full py-3.5 bg-[#0054A6] hover:bg-[#003087] disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3">
+                class="w-full py-3.5 bg-marca hover:bg-marca-escura disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3">
                 {{ matriculando() ? 'Realizando matrícula...' : 'Matricular-se agora' }}
               </button>
             }
             @if (!auth.isLoggedIn()) {
               <a routerLink="/login" [queryParams]="{ returnUrl: '/cursos/' + c.id }"
-                class="w-full py-3.5 bg-[#0054A6] hover:bg-[#003087] text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3 flex items-center justify-center gap-2 no-underline">
+                class="w-full py-3.5 bg-marca hover:bg-marca-escura text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3 flex items-center justify-center gap-2 no-underline">
                 <mat-icon style="font-size:18px;height:18px;width:18px">login</mat-icon>
                 Entrar para se matricular
               </a>
               <a routerLink="/login"
-                class="w-full py-3 border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium rounded-xl transition-colors text-sm flex items-center justify-center no-underline">
+                class="w-full py-3 border border-borda text-texto-suave hover:bg-gray-50 font-medium rounded-xl transition-colors text-sm flex items-center justify-center no-underline">
                 Criar conta grátis
               </a>
             }
-            <div class="mt-4 pt-4 border-t border-gray-100 space-y-2">
-              <div class="flex items-center gap-2 text-xs text-gray-500">
+            <div class="mt-4 pt-4 border-t border-borda space-y-2">
+              <div class="flex items-center gap-2 text-xs text-texto-suave">
                 <mat-icon style="font-size:15px;height:15px;width:15px" class="text-green-500">check_circle</mat-icon>
                 Acesso imediato após matrícula
               </div>
-              <div class="flex items-center gap-2 text-xs text-gray-500">
+              <div class="flex items-center gap-2 text-xs text-texto-suave">
                 <mat-icon style="font-size:15px;height:15px;width:15px" class="text-green-500">check_circle</mat-icon>
                 Aulas em módulos organizados
               </div>
-              <div class="flex items-center gap-2 text-xs text-gray-500">
+              <div class="flex items-center gap-2 text-xs text-texto-suave">
                 <mat-icon style="font-size:15px;height:15px;width:15px" class="text-green-500">check_circle</mat-icon>
                 Certificado ao concluir
               </div>
@@ -108,26 +108,26 @@
       <div class="grid lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
           <div class="grid grid-cols-3 gap-3 mb-8">
-            <div class="bg-white rounded-xl border border-gray-100 shadow-card p-4 text-center">
-              <mat-icon class="text-[#0054A6] mb-2" style="font-size:24px;height:24px;width:24px">menu_book</mat-icon>
-              <div class="font-bold text-gray-900">{{ c.modulos.length }}</div>
-              <div class="text-xs text-gray-500">Módulos</div>
+            <div class="bg-superficie rounded-xl border border-borda shadow-card p-4 text-center">
+              <mat-icon class="text-marca mb-2" style="font-size:24px;height:24px;width:24px">menu_book</mat-icon>
+              <div class="font-bold text-texto">{{ c.modulos.length }}</div>
+              <div class="text-xs text-texto-suave">Módulos</div>
             </div>
-            <div class="bg-white rounded-xl border border-gray-100 shadow-card p-4 text-center">
-              <mat-icon class="text-[#0054A6] mb-2" style="font-size:24px;height:24px;width:24px">play_circle</mat-icon>
-              <div class="font-bold text-gray-900">{{ getTotalAulas() }}</div>
-              <div class="text-xs text-gray-500">Aulas</div>
+            <div class="bg-superficie rounded-xl border border-borda shadow-card p-4 text-center">
+              <mat-icon class="text-marca mb-2" style="font-size:24px;height:24px;width:24px">play_circle</mat-icon>
+              <div class="font-bold text-texto">{{ getTotalAulas() }}</div>
+              <div class="text-xs text-texto-suave">Aulas</div>
             </div>
-            <div class="bg-white rounded-xl border border-gray-100 shadow-card p-4 text-center">
+            <div class="bg-superficie rounded-xl border border-borda shadow-card p-4 text-center">
               <mat-icon class="text-emerald-500 mb-2" style="font-size:24px;height:24px;width:24px">workspace_premium</mat-icon>
-              <div class="font-bold text-gray-900">Sim</div>
-              <div class="text-xs text-gray-500">Certificado</div>
+              <div class="font-bold text-texto">Sim</div>
+              <div class="text-xs text-texto-suave">Certificado</div>
             </div>
           </div>
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
+          <div class="bg-superficie rounded-2xl border border-borda shadow-card overflow-hidden">
             <div class="p-6 border-b border-gray-50">
-              <h2 class="text-lg font-bold text-gray-900">Conteúdo do curso</h2>
-              <p class="text-gray-400 text-sm mt-0.5">
+              <h2 class="text-lg font-bold text-texto">Conteúdo do curso</h2>
+              <p class="text-texto-suave text-sm mt-0.5">
                 {{ c.modulos.length }} módulo{{ c.modulos.length !== 1 ? 's' : '' }}
               </p>
             </div>
@@ -137,13 +137,13 @@
                   <mat-expansion-panel
                     class="shadow-none border-b border-gray-50 last:border-0 rounded-none">
                     <mat-expansion-panel-header class="py-4 px-6">
-                      <mat-panel-title class="font-medium text-gray-800">
-                        <span class="w-6 h-6 bg-[#EBF4FF] text-[#0054A6] rounded-full text-xs font-bold flex items-center justify-center mr-3 shrink-0">
+                      <mat-panel-title class="font-medium text-texto">
+                        <span class="w-6 h-6 bg-marca-suave text-marca rounded-full text-xs font-bold flex items-center justify-center mr-3 shrink-0">
                           {{ i + 1 }}
                         </span>
                         {{ modulo.titulo }}
                       </mat-panel-title>
-                      <mat-panel-description class="text-gray-400 text-xs">
+                      <mat-panel-description class="text-texto-suave text-xs">
                         {{ modulo.aulas.length }} aula{{ modulo.aulas.length !== 1 ? 's' : '' }}
                       </mat-panel-description>
                     </mat-expansion-panel-header>
@@ -152,11 +152,11 @@
                         @for (aula of modulo.aulas; track aula.id) {
                           <li
                             class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                            <div class="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
-                              <mat-icon class="text-gray-400" style="font-size:16px;height:16px;width:16px">play_arrow</mat-icon>
+                            <div class="w-7 h-7 bg-superficie-2 rounded-lg flex items-center justify-center shrink-0">
+                              <mat-icon class="text-texto-suave" style="font-size:16px;height:16px;width:16px">play_arrow</mat-icon>
                             </div>
-                            <span class="text-sm text-gray-700 flex-1">{{ aula.titulo }}</span>
-                            <span class="text-xs text-gray-400 shrink-0">{{ aula.duracaoMin }} min</span>
+                            <span class="text-sm text-texto flex-1">{{ aula.titulo }}</span>
+                            <span class="text-xs text-texto-suave shrink-0">{{ aula.duracaoMin }} min</span>
                           </li>
                         }
                       </ul>
@@ -168,34 +168,34 @@
             @if (!c.modulos.length) {
               <div class="p-8 text-center">
                 <mat-icon class="text-gray-200" style="font-size:48px;height:48px;width:48px">menu_book</mat-icon>
-                <p class="text-gray-400 mt-3 text-sm">Conteúdo sendo preparado. Em breve!</p>
+                <p class="text-texto-suave mt-3 text-sm">Conteúdo sendo preparado. Em breve!</p>
               </div>
             }
           </div>
         </div>
         <!-- Sidebar -->
         <div class="hidden lg:block">
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-card p-5 sticky top-4">
-            <h3 class="font-semibold text-gray-900 mb-4">Comece agora</h3>
+          <div class="bg-superficie rounded-2xl border border-borda shadow-card p-5 sticky top-4">
+            <h3 class="font-semibold text-texto mb-4">Comece agora</h3>
             @if (auth.isLoggedIn()) {
               <button (click)="matricular()" [disabled]="matriculando()"
-                class="w-full py-3 bg-[#0054A6] hover:bg-[#003087] disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3">
+                class="w-full py-3 bg-marca hover:bg-marca-escura disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-sm mb-3">
                 {{ matriculando() ? 'Aguarde...' : 'Matricular-se' }}
               </button>
             }
             @if (!auth.isLoggedIn()) {
               <a routerLink="/login" [queryParams]="{ returnUrl: '/cursos/' + c.id }"
-                class="w-full py-3 bg-[#0054A6] hover:bg-[#003087] text-white font-semibold rounded-xl transition-colors text-sm mb-3 flex items-center justify-center gap-1.5 no-underline">
+                class="w-full py-3 bg-marca hover:bg-marca-escura text-white font-semibold rounded-xl transition-colors text-sm mb-3 flex items-center justify-center gap-1.5 no-underline">
                 <mat-icon style="font-size:18px;height:18px;width:18px">login</mat-icon>
                 Entrar para matricular
               </a>
               <a routerLink="/login"
-                class="w-full py-2.5 border border-gray-200 text-gray-500 hover:bg-gray-50 font-medium rounded-xl transition-colors text-sm flex items-center justify-center no-underline">
+                class="w-full py-2.5 border border-borda text-texto-suave hover:bg-gray-50 font-medium rounded-xl transition-colors text-sm flex items-center justify-center no-underline">
                 Criar conta grátis
               </a>
             }
             <div class="mt-4 pt-4 border-t border-gray-50">
-              <a routerLink="/cursos/areas" class="text-sm text-[#0054A6] hover:underline no-underline flex items-center gap-1">
+              <a routerLink="/cursos/areas" class="text-sm text-marca hover:underline no-underline flex items-center gap-1">
                 <mat-icon style="font-size:16px;height:16px;width:16px">arrow_back</mat-icon>
                 Voltar ao catálogo
               </a>

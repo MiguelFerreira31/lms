@@ -1,0 +1,121 @@
+import { test, expect } from '@playwright/test';
+import { autenticar, entrarComo, coletarErrosDeConsole, Sessao } from './apoio';
+
+let sessao: Sessao;
+
+test.beforeAll(async () => {
+  sessao = await autenticar();
+});
+
+/**
+ * Página de Aparência e o sistema de temas.
+ *
+ * O que estes cenários realmente protegem é a cadeia inteira: a página escreve
+ * no TemaService, que escreve custom properties no <html>, que o Tailwind
+ * consome nos tokens. Se qualquer elo quebrar, a interface perde a cor sem
+ * nenhum erro aparecer.
+ */
+test.describe('aparência e temas', () => {
+  test.beforeEach(async ({ page }) => {
+    await entrarComo(page, sessao);
+    await page.evaluate(() => localStorage.removeItem('lms_tema'));
+  });
+
+  test('a página abre e mostra os controles de cor e tipografia', async ({ page }) => {
+    const erros = coletarErrosDeConsole(page);
+
+    await page.goto('/aparencia');
+
+    await expect(page.getByRole('heading', { name: 'Aparência' })).toBeVisible();
+    // 14 tokens de cor, cada um com seu seletor
+    await expect(page.locator('input[type="color"]')).toHaveCount(14);
+    await expect(page.locator('#fonte-titulo')).toBeVisible();
+    await expect(page.locator('#escala')).toBeVisible();
+
+    expect(erros).toEqual([]);
+  });
+
+  test('alternar o modo repinta a aplicação e persiste', async ({ page }) => {
+    await page.goto('/aparencia');
+
+    await page.getByRole('button', { name: 'Escuro', exact: true }).first().click();
+    await expect(page.locator('html')).toHaveAttribute('data-tema', 'escuro');
+
+    const fundoEscuro = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--tema-fundo').trim());
+
+    await page.getByRole('button', { name: 'Claro', exact: true }).first().click();
+    await expect(page.locator('html')).toHaveAttribute('data-tema', 'claro');
+
+    const fundoClaro = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--tema-fundo').trim());
+    expect(fundoClaro).not.toBe(fundoEscuro);
+
+    // sobrevive ao reload
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-tema', 'claro');
+  });
+
+  test('mudar uma cor repinta a interface na hora', async ({ page }) => {
+    await page.goto('/aparencia');
+    await page.getByRole('button', { name: 'Claro', exact: true }).first().click();
+
+    // primeiro seletor = token "marca"
+    await page.locator('input[type="color"]').first().evaluate((el: HTMLInputElement) => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
+      setter.call(el, '#0a7d3f');
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
+    await expect
+      .poll(() => page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue('--tema-marca').trim()))
+      .toBe('#0a7d3f');
+
+    // e a escolha foi persistida
+    const salvo = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('lms_tema')!).claro.cores.marca);
+    expect(salvo).toBe('#0a7d3f');
+  });
+
+  test('o modo escuro chega às telas do sistema, não só à página de Aparência', async ({ page }) => {
+    await page.goto('/aparencia');
+    await page.getByRole('button', { name: 'Escuro', exact: true }).first().click();
+
+    await page.goto('/admin/cursos');
+    await expect(page.locator('html')).toHaveAttribute('data-tema', 'escuro');
+
+    // A superfície dos cartões precisa ser escura de verdade. Se a migração para
+    // tokens regredir, isto volta a ser branco.
+    const luminancia = await page.locator('.bg-superficie').first().evaluate(el => {
+      const [r, g, b] = getComputedStyle(el).backgroundColor.match(/\d+/g)!.map(Number);
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    });
+    expect(luminancia).toBeLessThan(0.3);
+  });
+
+  test('restaurar tudo volta ao padrão', async ({ page }) => {
+    await page.goto('/aparencia');
+    await page.locator('input[type="color"]').first().evaluate((el: HTMLInputElement) => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
+      setter.call(el, '#ff00ff');
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
+    await page.getByRole('button', { name: /Restaurar tudo/ }).click();
+
+    const marca = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('lms_tema')!).claro.cores.marca);
+    expect(marca.toLowerCase()).toBe('#0054a6');
+  });
+
+  test('o botão da barra superior alterna o modo de qualquer tela', async ({ page }) => {
+    await page.goto('/dashboard');
+
+    const antes = await page.getAttribute('html', 'data-tema');
+    await page.getByRole('button', { name: /Mudar para o modo/ }).click();
+    const depois = await page.getAttribute('html', 'data-tema');
+
+    expect(depois).not.toBe(antes);
+  });
+});

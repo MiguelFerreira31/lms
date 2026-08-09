@@ -1,0 +1,246 @@
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+  <!-- Cabeçalho -->
+  <header class="mb-8">
+    <p class="text-xs font-semibold text-texto-suave uppercase tracking-wide">Preferências</p>
+    <h1 class="text-2xl font-bold text-texto mt-1">Aparência</h1>
+    <p class="text-sm text-texto-suave mt-1">
+      Ajuste as cores e a tipografia do sistema. Cada modo tem a própria configuração,
+      e o que você definir aqui fica salvo neste navegador.
+    </p>
+  </header>
+
+  <!-- Modo ativo -->
+  <section class="bg-superficie border border-borda rounded-xl p-5 shadow-card mb-6">
+    <h2 class="text-sm font-semibold text-texto mb-1">Modo ativo</h2>
+    <p class="text-xs text-texto-suave mb-4">
+      "Sistema" acompanha a preferência do seu computador.
+    </p>
+
+    <div class="flex flex-wrap gap-2">
+      @for (m of modos; track m.valor) {
+        <button type="button"
+                (click)="tema.definirModo(m.valor)"
+                [attr.aria-pressed]="tema.config().modo === m.valor"
+                [class]="tema.config().modo === m.valor
+                  ? 'flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-marca bg-marca-suave text-marca text-sm font-semibold cursor-pointer'
+                  : 'flex items-center gap-2 px-4 py-2 rounded-xl border border-borda bg-superficie text-texto-suave text-sm font-medium cursor-pointer hover:border-marca'">
+          <mat-icon class="text-base! w-4! h-4!">{{ m.icone }}</mat-icon>
+          {{ m.rotulo }}
+        </button>
+      }
+
+      @if (tema.config().modo === 'sistema') {
+        <span class="flex items-center text-xs text-texto-suave ml-1">
+          Agora aplicando: <strong class="ml-1 text-texto">{{ tema.modoEfetivo() }}</strong>
+        </span>
+      }
+    </div>
+  </section>
+
+  <!-- Seletor do modo em edição -->
+  <section class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-texto-suave">Editando o modo</span>
+      <div class="inline-flex rounded-xl border border-borda overflow-hidden">
+        <button type="button" (click)="editarModo('claro')"
+                [class]="editando() === 'claro'
+                  ? 'px-4 py-2 text-sm font-semibold bg-marca text-white cursor-pointer border-0'
+                  : 'px-4 py-2 text-sm font-medium bg-superficie text-texto-suave cursor-pointer border-0'">
+          Claro
+        </button>
+        <button type="button" (click)="editarModo('escuro')"
+                [class]="editando() === 'escuro'
+                  ? 'px-4 py-2 text-sm font-semibold bg-marca text-white cursor-pointer border-0'
+                  : 'px-4 py-2 text-sm font-medium bg-superficie text-texto-suave cursor-pointer border-0'">
+          Escuro
+        </button>
+      </div>
+    </div>
+
+    @if (!editandoOModoAtivo()) {
+      <button type="button" (click)="aplicarModoEmEdicao()"
+              class="flex items-center gap-2 px-3 py-2 rounded-xl border border-marca text-marca bg-superficie text-sm font-semibold cursor-pointer">
+        <mat-icon class="text-base! w-4! h-4!">visibility</mat-icon>
+        Ver este modo agora
+      </button>
+    }
+  </section>
+
+  <!-- Cores -->
+  <section class="bg-superficie border border-borda rounded-xl p-5 shadow-card mb-6">
+    <h2 class="text-sm font-semibold text-texto mb-4">
+      Cores — modo {{ editando() }}
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      @for (token of tokens; track token) {
+        <div class="flex items-start gap-3">
+          <!-- amostra + seletor nativo -->
+          <label class="relative shrink-0 cursor-pointer" [attr.aria-label]="rotulos[token].nome">
+            <span class="block w-10 h-10 rounded-lg border border-borda"
+                  [style.background-color]="paletaEmEdicao()[token]"></span>
+            <input type="color" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                   [value]="paletaEmEdicao()[token]"
+                   (input)="aoMudarCor(token, $event)">
+          </label>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-texto">{{ rotulos[token].nome }}</span>
+              @if (contrasteRuim(token)) {
+                <mat-icon class="text-warn text-base! w-4! h-4! text-aviso"
+                          [matTooltip]="'Contraste de ' + contrasteCom(token) + ':1 — abaixo dos 4.5:1 recomendados pela WCAG'">
+                  warning
+                </mat-icon>
+              }
+            </div>
+            <p class="text-xs text-texto-suave leading-snug">{{ rotulos[token].ajuda }}</p>
+            <input type="text" spellcheck="false"
+                   class="mt-1 w-28 px-2 py-1 text-xs font-mono rounded-md border border-borda bg-superficie-2 text-texto outline-hidden"
+                   [value]="paletaEmEdicao()[token]"
+                   (change)="aoDigitarHex(token, $event)">
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Tipografia -->
+  <section class="bg-superficie border border-borda rounded-xl p-5 shadow-card mb-6">
+    <h2 class="text-sm font-semibold text-texto mb-4">
+      Tipografia — modo {{ editando() }}
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-semibold text-texto-suave uppercase tracking-wide mb-1"
+               for="fonte-titulo">Fonte dos títulos</label>
+        <select id="fonte-titulo" class="lms-select" (change)="aoMudarFonte('fonteTitulo', $event)">
+          @for (f of fontes; track f.valor) {
+            <option [value]="f.valor" [selected]="tipografiaEmEdicao().fonteTitulo === f.valor">
+              {{ f.rotulo }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-texto-suave uppercase tracking-wide mb-1"
+               for="fonte-corpo">Fonte do corpo</label>
+        <select id="fonte-corpo" class="lms-select" (change)="aoMudarFonte('fonteCorpo', $event)">
+          @for (f of fontes; track f.valor) {
+            <option [value]="f.valor" [selected]="tipografiaEmEdicao().fonteCorpo === f.valor">
+              {{ f.rotulo }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-texto-suave uppercase tracking-wide mb-1"
+               for="peso-titulo">Peso dos títulos</label>
+        <select id="peso-titulo" class="lms-select" (change)="aoMudarPeso($event)">
+          @for (p of pesos; track p.valor) {
+            <option [value]="p.valor" [selected]="tipografiaEmEdicao().pesoTitulo === p.valor">
+              {{ p.rotulo }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-texto-suave uppercase tracking-wide mb-1"
+               for="escala">
+          Escala do texto — {{ (tipografiaEmEdicao().escala * 100).toFixed(0) }}%
+        </label>
+        <input id="escala" type="range" min="0.85" max="1.3" step="0.05" class="w-full accent-marca"
+               [value]="tipografiaEmEdicao().escala"
+               (input)="aoMudarEscala($event)">
+        <p class="text-xs text-texto-suave mt-1">
+          Multiplica o tamanho base de 16px. O widget de acessibilidade continua
+          funcionando por cima disto.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Prévia -->
+  <section class="bg-superficie border border-borda rounded-xl p-5 shadow-card mb-6">
+    <h2 class="text-sm font-semibold text-texto mb-1">Prévia</h2>
+    <p class="text-xs text-texto-suave mb-4">
+      @if (editandoOModoAtivo()) {
+        Reflete o modo aplicado agora.
+      } @else {
+        Mostra as cores do modo <strong>{{ editando() }}</strong>, que não é o aplicado agora.
+      }
+    </p>
+
+    <div class="rounded-xl p-5 border"
+         [style.background-color]="paletaEmEdicao().fundo"
+         [style.border-color]="paletaEmEdicao().borda"
+         [style.font-family]="tipografiaEmEdicao().fonteCorpo">
+      <div class="rounded-lg p-4 mb-3"
+           [style.background-color]="paletaEmEdicao().superficie"
+           [style.border]="'1px solid ' + paletaEmEdicao().borda">
+        <h3 class="text-lg mb-1"
+            [style.color]="paletaEmEdicao().texto"
+            [style.font-family]="tipografiaEmEdicao().fonteTitulo"
+            [style.font-weight]="tipografiaEmEdicao().pesoTitulo">
+          Técnico em Desenvolvimento de Sistemas
+        </h3>
+        <p class="text-sm mb-3" [style.color]="paletaEmEdicao().textoSuave">
+          Forma profissionais para desenvolver sistemas computacionais.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
+                [style.background-color]="paletaEmEdicao().marca" [style.color]="'#fff'">
+            Matricular-se
+          </span>
+          <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
+                [style.background-color]="paletaEmEdicao().destaque" [style.color]="'#fff'">
+            Bolsas
+          </span>
+          <span class="px-3 py-1.5 rounded-lg text-sm font-medium"
+                [style.background-color]="paletaEmEdicao().marcaSuave"
+                [style.color]="paletaEmEdicao().marca">
+            Intermediário
+          </span>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 text-sm font-medium">
+        <span class="px-2 py-1 rounded" [style.color]="paletaEmEdicao().sucesso">Aprovado</span>
+        <span class="px-2 py-1 rounded" [style.color]="paletaEmEdicao().aviso">Pendente</span>
+        <span class="px-2 py-1 rounded" [style.color]="paletaEmEdicao().erro">Reprovado</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ações -->
+  <section class="flex flex-wrap gap-3">
+    <button type="button" (click)="restaurarModo()"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl border border-borda bg-superficie text-texto text-sm font-medium cursor-pointer">
+      <mat-icon class="text-base! w-4! h-4!">restart_alt</mat-icon>
+      Restaurar modo {{ editando() }}
+    </button>
+
+    <button type="button" (click)="restaurarTudo()"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl border border-borda bg-superficie text-texto text-sm font-medium cursor-pointer">
+      <mat-icon class="text-base! w-4! h-4!">settings_backup_restore</mat-icon>
+      Restaurar tudo
+    </button>
+
+    <button type="button" (click)="exportar()"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl border border-borda bg-superficie text-texto text-sm font-medium cursor-pointer">
+      <mat-icon class="text-base! w-4! h-4!">download</mat-icon>
+      Exportar tema
+    </button>
+
+    <label class="flex items-center gap-2 px-4 py-2 rounded-xl border border-borda bg-superficie text-texto text-sm font-medium cursor-pointer">
+      <mat-icon class="text-base! w-4! h-4!">upload</mat-icon>
+      Importar tema
+      <input type="file" accept="application/json" class="hidden" (change)="importar($event)">
+    </label>
+  </section>
+</div>

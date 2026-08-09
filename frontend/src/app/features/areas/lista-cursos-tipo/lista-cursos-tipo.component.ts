@@ -16,7 +16,7 @@ const PER_PAGE = 4;
     imports: [RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-fundo">
     
       <!-- ══════════════════════════ HERO ══════════════════════════ -->
       <section class="relative" style="min-height:340px">
@@ -34,7 +34,7 @@ const PER_PAGE = 4;
     
             <!-- título -->
             <h1 class="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
-              <span class="text-[#F7941E]">Cursos</span>
+              <span class="text-destaque">Cursos</span>
               <span class="text-white"> {{ tipoNome() }}</span>
             </h1>
             <p class="text-white/75 text-base lg:text-lg mb-9 max-w-xl">
@@ -47,8 +47,8 @@ const PER_PAGE = 4;
                 [value]="busca()"
                 (input)="setBusca($any($event.target).value)"
                 placeholder="Pesquisar curso..."
-                class="flex-1 px-5 py-3.5 text-gray-900 text-sm outline-hidden border-0">
-                <button class="bg-[#F7941E] hover:bg-orange-500 transition-colors px-5 flex items-center justify-center border-0 cursor-pointer">
+                class="flex-1 px-5 py-3.5 text-texto text-sm outline-hidden border-0">
+                <button class="bg-destaque hover:bg-orange-500 transition-colors px-5 flex items-center justify-center border-0 cursor-pointer">
                   <mat-icon class="text-white">search</mat-icon>
                 </button>
               </div>
@@ -56,16 +56,16 @@ const PER_PAGE = 4;
           </section>
     
           <!-- ══════════════════════════ CHIPS DE ÁREA ══════════════════════════ -->
-          <section class="bg-white py-9 border-b border-gray-100">
+          <section class="bg-superficie py-9 border-b border-borda">
             <div class="max-w-5xl mx-auto px-6 text-center">
-              <h2 class="text-xl font-bold text-gray-800 mb-6">Qual a sua área de interesse?</h2>
+              <h2 class="text-xl font-bold text-texto mb-6">Qual a sua área de interesse?</h2>
               <div class="flex flex-wrap justify-center gap-2.5">
     
                 <button (click)="selecionarArea(null)"
                   class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
               [class]="!areaSelecionada()
-                ? 'bg-[#F7941E] border-[#F7941E] text-white'
-                : 'bg-white border-gray-300 text-gray-600 hover:border-[#F7941E] hover:text-[#F7941E]'">
+                ? 'bg-destaque border-destaque text-white'
+                : 'bg-superficie border-gray-300 text-texto-suave hover:border-destaque hover:text-destaque'">
                   Todos
                 </button>
     
@@ -74,8 +74,8 @@ const PER_PAGE = 4;
                     (click)="selecionarArea(area.slug)"
                     class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
               [class]="areaSelecionada() === area.slug
-                ? 'bg-[#F7941E] border-[#F7941E] text-white'
-                : 'bg-white border-gray-300 text-gray-600 hover:border-[#F7941E] hover:text-[#F7941E]'">
+                ? 'bg-destaque border-destaque text-white'
+                : 'bg-superficie border-gray-300 text-texto-suave hover:border-destaque hover:text-destaque'">
                     {{ area.nome }}
                   </button>
                 }
@@ -98,8 +98,8 @@ const PER_PAGE = 4;
               @if (gruposVisiveis().length === 0) {
                 <div class="text-center py-16">
                   <mat-icon class="text-gray-200" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
-                  <p class="text-gray-500 mt-4 text-lg">Nenhum curso encontrado.</p>
-                  <a routerLink="/cursos/areas" class="mt-4 inline-block text-[#0054A6] hover:underline no-underline font-medium">
+                  <p class="text-texto-suave mt-4 text-lg">Nenhum curso encontrado.</p>
+                  <a routerLink="/cursos/areas" class="mt-4 inline-block text-marca hover:underline no-underline font-medium">
                     ← Ver catálogo de áreas
                   </a>
                 </div>
@@ -108,10 +108,10 @@ const PER_PAGE = 4;
               @for (grupo of gruposVisiveis(); track grupo) {
                 <div>
                   <!-- Título da área (link azul) -->
-                  <h2 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <h2 class="text-xl font-bold text-texto mb-5 flex items-center gap-2">
                     <a [routerLink]="['/cursos/areas', grupo.areaSlug]"
-                    class="text-[#0054A6] hover:underline no-underline">{{ grupo.areaNome }}</a>
-                    <span class="text-gray-400 font-normal text-base">({{ grupo.cursos.length }})</span>
+                    class="text-marca hover:underline no-underline">{{ grupo.areaNome }}</a>
+                    <span class="text-texto-suave font-normal text-base">({{ grupo.cursos.length }})</span>
                   </h2>
                   <!-- Mobile: scroll horizontal snapping -->
                   <div class="flex gap-4 overflow-x-auto pb-3 lg:hidden snap-x snap-mandatory -mx-6 px-6">
@@ -127,7 +127,7 @@ const PER_PAGE = 4;
                     <!-- Seta anterior -->
                     <button (click)="prev(grupo.areaSlug)"
                       [disabled]="getPage(grupo.areaSlug) === 0"
-              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer"
                       [class.opacity-30]="getPage(grupo.areaSlug) === 0"
                       [class.cursor-not-allowed]="getPage(grupo.areaSlug) === 0">
@@ -144,7 +144,7 @@ const PER_PAGE = 4;
                     <!-- Seta próxima -->
                     <button (click)="next(grupo.areaSlug, grupo.cursos.length)"
                       [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
-              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer"
                       [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
                       [class.cursor-not-allowed]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length">

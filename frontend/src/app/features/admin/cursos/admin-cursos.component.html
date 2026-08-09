@@ -1,11 +1,11 @@
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-fundo py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Gerenciar Cursos</h1>
-        <p class="text-gray-500 text-sm mt-1">{{ cursos().length }} curso(s) ativo(s)</p>
+        <h1 class="text-2xl font-bold text-texto">Gerenciar Cursos</h1>
+        <p class="text-texto-suave text-sm mt-1">{{ cursos().length }} curso(s) ativo(s)</p>
       </div>
       <button (click)="abrirForm()"
         class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-xs border-0 cursor-pointer">
@@ -16,11 +16,11 @@
 
     <!-- Formulário criar/editar -->
     @if (mostrarForm()) {
-      <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-6 mb-6 block w-full">
+      <div class="bg-superficie rounded-2xl shadow-xs border border-borda p-6 mb-6 block w-full">
         <div class="flex items-center justify-between mb-5">
-          <h2 class="text-lg font-semibold text-gray-900">{{ editando() ? 'Editar Curso' : 'Novo Curso' }}</h2>
+          <h2 class="text-lg font-semibold text-texto">{{ editando() ? 'Editar Curso' : 'Novo Curso' }}</h2>
           <button (click)="fecharForm()" type="button"
-            class="text-gray-400 hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100 flex items-center justify-center">
+            class="text-texto-suave hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100 flex items-center justify-center">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -65,7 +65,7 @@
                 placeholder="Objetivos e conteúdo do curso"></textarea>
               </div>
               <div class="md:col-span-3 block w-full">
-                <p class="text-sm font-medium text-gray-700 mb-2">Capa do Curso</p>
+                <p class="text-sm font-medium text-texto mb-2">Capa do Curso</p>
                 <app-image-upload [currentUrl]="editando()?.imagemUrl ?? null"
                   placeholder="Capa do curso (1280×720 recomendado)" shape="rect" [loading]="uploadandoCapa()"
                   (fileSelected)="onCapaSelected($event)">
@@ -73,21 +73,21 @@
               </div>
             </div>
             <!-- Classificação: Área/Categoria e Tipo de Ensino -->
-            <div class="pt-6 border-t border-gray-100 mt-6 block w-full">
-              <h3 class="text-base font-bold text-gray-900 mb-1">Classificação do Curso</h3>
-              <p class="text-xs text-gray-400 mb-4">Refine com categorias específicas e o tipo de ensino (técnico, graduação,
+            <div class="pt-6 border-t border-borda mt-6 block w-full">
+              <h3 class="text-base font-bold text-texto mb-1">Classificação do Curso</h3>
+              <p class="text-xs text-texto-suave mb-4">Refine com categorias específicas e o tipo de ensino (técnico, graduação,
               pós-graduação etc.)</p>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Categorias -->
                 <div>
                   <label class="lms-label mb-2 block">Categorias (opcional)</label>
-                  <div class="max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-3 space-y-3">
+                  <div class="max-h-48 overflow-y-auto border border-borda rounded-xl p-3 space-y-3">
                     @for (area of areas(); track area.id) {
                       <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">{{ area.nome }}</p>
+                        <p class="text-xs font-semibold text-texto-suave uppercase mb-1">{{ area.nome }}</p>
                         @for (cat of area.categorias; track cat.id) {
                           <label
-                            class="flex items-center gap-2 text-sm text-gray-700 py-1 cursor-pointer">
+                            class="flex items-center gap-2 text-sm text-texto py-1 cursor-pointer">
                             <input type="checkbox" [checked]="categoriasSelecionadas().has(cat.id)"
                               (change)="toggleCategoria(cat.id)"
                               class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500" />
@@ -97,17 +97,17 @@
                         </div>
                       }
                       @if (areas().length === 0) {
-                        <p class="text-xs text-gray-400">Nenhuma área cadastrada.</p>
+                        <p class="text-xs text-texto-suave">Nenhuma área cadastrada.</p>
                       }
                     </div>
                   </div>
                   <!-- Tipo de Ensino -->
                   <div>
                     <label class="lms-label mb-2 block">Tipo de Ensino</label>
-                    <div class="border border-gray-200 rounded-xl p-3 space-y-1">
+                    <div class="border border-borda rounded-xl p-3 space-y-1">
                       @for (tipo of tiposDisponiveis(); track tipo.id) {
                         <label
-                          class="flex items-center gap-2 text-sm text-gray-700 py-1 cursor-pointer">
+                          class="flex items-center gap-2 text-sm text-texto py-1 cursor-pointer">
                           <input type="checkbox" [checked]="tiposSelecionados().has(tipo.id)"
                             (change)="toggleTipo(tipo.id)"
                             class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500" />
@@ -115,18 +115,18 @@
                           </label>
                         }
                         @if (tiposDisponiveis().length === 0) {
-                          <p class="text-xs text-gray-400">Nenhum tipo cadastrado.</p>
+                          <p class="text-xs text-texto-suave">Nenhum tipo cadastrado.</p>
                         }
                       </div>
                     </div>
                   </div>
                 </div>
                 <!-- Modulos -->
-                <div class="pt-6 border-t border-gray-100 mt-6 block w-full clear-both">
+                <div class="pt-6 border-t border-borda mt-6 block w-full clear-both">
                   <div class="flex items-center justify-between mb-4 w-full">
                     <div class="block">
-                      <h3 class="text-base font-bold text-gray-900 notranslate" translate="no">Módulos do Curso</h3>
-                      <p class="text-xs text-gray-400 mt-0.5">Gerencie as divisões de ensino deste curso</p>
+                      <h3 class="text-base font-bold text-texto notranslate" translate="no">Módulos do Curso</h3>
+                      <p class="text-xs text-texto-suave mt-0.5">Gerencie as divisões de ensino deste curso</p>
                     </div>
                     <!-- Botão com classes de tamanho fixo para impedir esmagamento -->
                     <button type="button" (click)="adicionarModulo()"
@@ -138,9 +138,9 @@
                   <!-- Estado de Lista Vazia -->
                   @if (modulosFormArray.length === 0) {
                     <div
-                      class="p-6 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200 mb-4 block w-full">
+                      class="p-6 text-center bg-fundo rounded-xl border border-dashed border-borda mb-4 block w-full">
                       <mat-icon class="text-gray-300" style="font-size:32px;height:32px;width:32px;">view_module</mat-icon>
-                      <p class="text-xs text-gray-500 mt-1">Nenhum módulo adicionado. Clique em "Adicionar Módulo" para começar.
+                      <p class="text-xs text-texto-suave mt-1">Nenhum módulo adicionado. Clique em "Adicionar Módulo" para começar.
                       </p>
                     </div>
                   }
@@ -148,17 +148,17 @@
                   <div [formArrayName]="'modulos'" class="space-y-3 mb-6 block w-full">
                     @for (moduloGroup of modulosFormArray.controls; track moduloGroup; let idx = $index) {
                       <div [formGroupName]="idx"
-                        class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 block w-full">
+                        class="flex items-center gap-3 p-3 bg-fundo rounded-xl border border-borda block w-full">
                         <span
-                          class="w-7 h-7 bg-white text-gray-500 rounded-lg text-xs font-bold flex items-center justify-center border border-gray-100 shrink-0">
+                          class="w-7 h-7 bg-superficie text-texto-suave rounded-lg text-xs font-bold flex items-center justify-center border border-borda shrink-0">
                           {{ idx + 1 }}
                         </span>
                         <div class="flex-1 min-w-0">
                           <input type="text" formControlName="titulo" placeholder="Ex: Fundamentos da Linguagem"
-                            class="w-full px-4 py-2 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-indigo-500 text-sm text-gray-900 block" />
+                            class="w-full px-4 py-2 bg-superficie rounded-xl border border-borda focus:outline-none focus:border-indigo-500 text-sm text-texto block" />
                           </div>
                           <button type="button" (click)="removerModulo(idx)"
-                            class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl border-0 cursor-pointer bg-transparent transition-colors shrink-0 flex items-center justify-center">
+                            class="p-2 text-texto-suave hover:text-red-500 hover:bg-red-50 rounded-xl border-0 cursor-pointer bg-transparent transition-colors shrink-0 flex items-center justify-center">
                             <mat-icon style="font-size:20px;height:20px;width:20px;">delete</mat-icon>
                           </button>
                         </div>
@@ -169,7 +169,7 @@
                   <!-- Botões inferiores de envio -->
                   <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
                     <button type="button" (click)="fecharForm()"
-                      class="px-5 py-2.5 rounded-xl text-gray-700 font-medium hover:bg-gray-100 border border-gray-200 bg-white cursor-pointer transition-colors text-sm">
+                      class="px-5 py-2.5 rounded-xl text-texto font-medium hover:bg-gray-100 border border-borda bg-superficie cursor-pointer transition-colors text-sm">
                       Cancelar
                     </button>
                     <button type="submit" [disabled]="salvando() || form.invalid"
@@ -194,14 +194,14 @@
             @if (!loading()) {
               <div class="space-y-4">
                 @if (cursos().length === 0) {
-                  <div class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+                  <div class="bg-superficie rounded-2xl border border-borda p-16 text-center">
                     <mat-icon class="text-gray-300 mb-4" style="font-size: 64px;">menu_book</mat-icon>
-                    <p class="text-gray-600 font-medium">Nenhum curso cadastrado</p>
+                    <p class="text-texto-suave font-medium">Nenhum curso cadastrado</p>
                   </div>
                 }
                 @for (c of cursos(); track c.id) {
                   <div
-                    class="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden">
+                    class="bg-superficie rounded-2xl shadow-xs border border-borda overflow-hidden">
                     <!-- Linha principal do curso -->
                     <div class="flex items-center gap-4 p-5">
                       <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
@@ -209,14 +209,14 @@
                       </div>
                       <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
-                          <p class="font-semibold text-gray-900">{{ c.titulo }}</p>
+                          <p class="font-semibold text-texto">{{ c.titulo }}</p>
                           <span [class]="getNivelClass(c.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ c.nivel
                           }}</span>
                           @if (c.areaNome) {
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">{{ c.areaNome }}</span>
                           }
                         </div>
-                        <p class="text-sm text-gray-400 truncate mt-0.5">{{ c.descricao || 'Sem descrição' }}</p>
+                        <p class="text-sm text-texto-suave truncate mt-0.5">{{ c.descricao || 'Sem descrição' }}</p>
                         @if (c.unidadeNome) {
                           <p class="text-xs text-indigo-500 mt-0.5 flex items-center gap-1">
                             <mat-icon class="text-xs" style="font-size:13px;height:13px;width:13px;">location_on</mat-icon>
@@ -258,11 +258,11 @@
                     </div>
                     <!-- Painel de alunos e notas -->
                     @if (cursoExpandido() === c.id) {
-                      <div class="border-t border-gray-100 bg-gray-50 p-5">
+                      <div class="border-t border-borda bg-fundo p-5">
                         <div class="flex items-center justify-between mb-4">
-                          <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Alunos Matriculados</h3>
+                          <h3 class="font-semibold text-texto text-sm uppercase tracking-wider">Alunos Matriculados</h3>
                           <button (click)="carregarAlunos(c.id)"
-                            class="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 bg-transparent border-0 cursor-pointer">
+                            class="flex items-center gap-1 text-xs text-texto-suave hover:text-gray-700 bg-transparent border-0 cursor-pointer">
                             <mat-icon class="text-sm">refresh</mat-icon> Atualizar
                           </button>
                         </div>
@@ -275,14 +275,14 @@
                         <!-- Sem alunos -->
                         @if (loadingAlunos() !== c.id && getAlunos(c.id).length === 0) {
                           <div
-                            class="text-center py-8 text-sm text-gray-400">
+                            class="text-center py-8 text-sm text-texto-suave">
                             Nenhum aluno matriculado neste curso.
                           </div>
                         }
                         <!-- Lista de alunos -->
                         @for (mat of getAlunos(c.id); track mat.id) {
                           <div
-                            class="bg-white rounded-xl border border-gray-100 p-4 mb-3">
+                            class="bg-superficie rounded-xl border border-borda p-4 mb-3">
                             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                               <!-- Info do aluno -->
                               <div class="flex items-center gap-3 flex-1">
@@ -291,8 +291,8 @@
                                   {{ mat.usuarioNome.charAt(0).toUpperCase() }}
                                 </div>
                                 <div>
-                                  <p class="font-medium text-gray-800 text-sm">{{ mat.usuarioNome }}</p>
-                                  <p class="text-xs text-gray-400">{{ mat.usuarioEmail }}</p>
+                                  <p class="font-medium text-texto text-sm">{{ mat.usuarioNome }}</p>
+                                  <p class="text-xs text-texto-suave">{{ mat.usuarioEmail }}</p>
                                 </div>
                                 <span [class]="getStatusClass(mat.status)" class="px-2 py-0.5 rounded-full text-xs font-medium ml-2">{{
                                 mat.status }}</span>
@@ -311,14 +311,14 @@
                                 @if (mat.nota == null) {
                                   <div class="text-center text-gray-300">
                                     <span class="text-lg font-bold">—</span>
-                                    <p class="text-xs text-gray-400">Sem nota</p>
+                                    <p class="text-xs text-texto-suave">Sem nota</p>
                                   </div>
                                 }
                                 <!-- Input de nota -->
                                 <div class="flex items-center gap-2">
                                   <input type="number" min="0" max="10" step="0.1" [value]="getNota(mat.id)"
                                     (input)="setNota(mat.id, $any($event.target).value)" placeholder="0–10"
-                                    class="w-20 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center">
+                                    class="w-20 px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center">
                                     <button (click)="lancarNota(mat, c.id)" [disabled]="salvandoNota() === mat.id || !getNota(mat.id)"
                                       class="flex items-center gap-1 bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer whitespace-nowrap">
                                       <mat-icon class="text-sm">{{ salvandoNota() === mat.id ? 'hourglass_empty' : 'grade' }}</mat-icon>

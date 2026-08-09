@@ -160,7 +160,7 @@ export class AdminUsuariosComponent implements OnInit {
       PROFESSOR: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
       ALUNO:     'bg-indigo-100 text-indigo-700 border border-indigo-200',
     };
-    return map[role] ?? 'bg-slate-100 text-slate-600 border border-slate-200';
+    return map[role] ?? 'bg-superficie-2 text-texto-suave border border-borda';
   }
 
   getAvatarBg(role: string): string {

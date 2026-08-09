@@ -281,7 +281,7 @@ export class AdminCursosComponent implements OnInit {
       INTERMEDIARIO: 'bg-yellow-100 text-yellow-800',
       AVANCADO: 'bg-red-100 text-red-800'
     };
-    return map[nivel] || 'bg-gray-100 text-gray-800';
+    return map[nivel] || 'bg-superficie-2 text-texto';
   }
 
   getStatusClass(status: string): string {

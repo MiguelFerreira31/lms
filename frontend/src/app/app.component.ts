@@ -15,7 +15,7 @@ import { AccessibilityComponent } from './accessibility/accessibility.component'
     template: `
     @if (auth.isLoggedIn()) {
       <app-navbar></app-navbar>
-      <main class="pt-16 lg:pl-64 min-h-screen bg-gray-50">
+      <main class="pt-16 lg:pl-64 min-h-screen bg-fundo">
         <router-outlet></router-outlet>
       </main>
     } @else {

@@ -88,7 +88,7 @@ export class DashboardComponent implements OnInit {
       'INTERMEDIARIO': 'bg-yellow-100 text-yellow-700',
       'AVANCADO': 'bg-red-100 text-red-700'
     };
-    return map[nivel] || 'bg-gray-100 text-gray-700';
+    return map[nivel] || 'bg-superficie-2 text-texto';
   }
 
   getNivelBg(nivel: string): string {

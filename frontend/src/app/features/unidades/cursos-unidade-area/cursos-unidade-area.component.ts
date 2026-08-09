@@ -14,13 +14,13 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
     imports: [RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-fundo">
     
       <!-- HERO -->
       <section class="relative" style="min-height:240px">
         <img [src]="'https://picsum.photos/seed/' + areaSlug() + '-' + unidadeSlug() + '/1600/400'"
           alt="" class="absolute inset-0 w-full h-full object-cover">
-          <div class="absolute inset-0 bg-[#0054A6]/80"></div>
+          <div class="absolute inset-0 bg-marca/80"></div>
           <div class="relative z-10 max-w-5xl mx-auto px-6 pt-10 pb-12">
             <div class="flex items-center flex-wrap gap-1.5 text-white/70 text-sm mb-5">
               <a routerLink="/home" class="hover:text-white no-underline text-white/70">Home</a>
@@ -51,14 +51,14 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
         @if (!loadingArea()) {
           <!-- CHIPS DE CATEGORIA -->
           @if (area()?.categorias?.length) {
-            <section class="bg-white py-8 border-b border-gray-100">
+            <section class="bg-superficie py-8 border-b border-borda">
               <div class="max-w-5xl mx-auto px-6 text-center">
                 <div class="flex flex-wrap justify-center gap-2.5">
                   <button (click)="selecionarCategoria(null)"
                     class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
                 [class]="!categoriaSelecionada()
-                  ? 'bg-[#0054A6] border-[#0054A6] text-white'
-                  : 'bg-white border-gray-300 text-gray-600 hover:border-[#0054A6] hover:text-[#0054A6]'">
+                  ? 'bg-marca border-marca text-white'
+                  : 'bg-superficie border-gray-300 text-texto-suave hover:border-marca hover:text-marca'">
                     Todos
                   </button>
                   @for (cat of area()!.categorias; track cat) {
@@ -66,8 +66,8 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
                       (click)="selecionarCategoria(cat.slug)"
                       class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
                 [class]="categoriaSelecionada() === cat.slug
-                  ? 'bg-[#0054A6] border-[#0054A6] text-white'
-                  : 'bg-white border-gray-300 text-gray-600 hover:border-[#0054A6] hover:text-[#0054A6]'">
+                  ? 'bg-marca border-marca text-white'
+                  : 'bg-superficie border-gray-300 text-texto-suave hover:border-marca hover:text-marca'">
                       {{ cat.nome }}
                     </button>
                   }
@@ -85,8 +85,8 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
             @if (!cursosLoading() && tipoGrupos().length === 0) {
               <div class="text-center py-16">
                 <mat-icon class="text-gray-200" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
-                <p class="text-gray-500 mt-4">Nenhum curso nesta combinação.</p>
-                <a [routerLink]="['/unidades', unidadeSlug()]" class="mt-3 inline-block text-[#0054A6] hover:underline no-underline text-sm">
+                <p class="text-texto-suave mt-4">Nenhum curso nesta combinação.</p>
+                <a [routerLink]="['/unidades', unidadeSlug()]" class="mt-3 inline-block text-marca hover:underline no-underline text-sm">
                   ← Voltar para a unidade
                 </a>
               </div>
@@ -94,23 +94,23 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
             @if (!cursosLoading() && tipoGrupos().length > 0) {
               <div class="space-y-2">
                 @for (grupo of tipoGrupos(); track grupo) {
-                  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs">
+                  <div class="bg-superficie rounded-xl border border-borda overflow-hidden shadow-xs">
                     <button (click)="toggleTipo(grupo.nome)"
                 class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50
                        transition-colors cursor-pointer bg-transparent border-0 text-left">
                       <div class="flex items-center gap-3">
-                        <span class="font-semibold text-gray-900">{{ grupo.nome }}</span>
-                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                        <span class="font-semibold text-texto">{{ grupo.nome }}</span>
+                        <span class="text-xs text-texto-suave bg-superficie-2 px-2 py-0.5 rounded-full">
                           {{ grupo.cursos.length }}
                         </span>
                       </div>
-                      <mat-icon class="text-gray-500 transition-transform duration-200"
+                      <mat-icon class="text-texto-suave transition-transform duration-200"
                         [style.transform]="isOpen(grupo.nome) ? 'rotate(180deg)' : 'rotate(0deg)'">
                         expand_more
                       </mat-icon>
                     </button>
                     @if (isOpen(grupo.nome)) {
-                      <div class="border-t border-gray-100 px-6 py-6">
+                      <div class="border-t border-borda px-6 py-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                           @for (c of grupo.cursos; track c) {
                             <app-curso-card [curso]="c"></app-curso-card>

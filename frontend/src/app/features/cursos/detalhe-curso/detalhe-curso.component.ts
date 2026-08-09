@@ -59,7 +59,7 @@ export class DetalheCursoComponent implements OnInit {
       'INTERMEDIARIO': 'bg-yellow-100 text-yellow-700',
       'AVANCADO': 'bg-red-100 text-red-700'
     };
-    return map[nivel] || 'bg-gray-100 text-gray-700';
+    return map[nivel] || 'bg-superficie-2 text-texto';
   }
 
   getNivelBg(nivel: string): string {
@@ -68,7 +68,7 @@ export class DetalheCursoComponent implements OnInit {
       'INTERMEDIARIO': 'from-yellow-400 to-orange-400',
       'AVANCADO': 'from-red-400 to-rose-500'
     };
-    return map[nivel] || 'from-blue-500 to-[#0054A6]';
+    return map[nivel] || 'from-blue-500 to-marca';
   }
 
   getTotalAulas(): number {

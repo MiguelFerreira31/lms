@@ -11,10 +11,10 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
     imports: [CommonModule, RouterLink, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-fundo">
     
       <!-- Hero / Breadcrumb -->
-      <section class="bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6] py-12">
+      <section class="bg-gradient-to-br from-marca-profunda via-marca-escura to-marca py-12">
         <div class="max-w-6xl mx-auto px-6">
           <div class="flex items-center gap-2 text-white/60 text-sm mb-4 flex-wrap">
             <a routerLink="/cursos/areas" class="hover:text-white no-underline text-white/60">Áreas</a>
@@ -50,7 +50,7 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
             @for (c of resultado()!.content; track c) {
               <a
                 [routerLink]="['/cursos', c.id]"
-                class="bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 no-underline group cursor-pointer flex flex-col">
+                class="bg-superficie rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 no-underline group cursor-pointer flex flex-col">
                 <!-- Header -->
                 <div class="h-36 relative bg-gradient-to-br"
                   [ngClass]="nivelBg(c.nivel)">
@@ -61,7 +61,7 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
                     </span>
                     @for (t of c.tipos; track t) {
                       <span
-                        class="bg-[#F7941E]/80 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                        class="bg-destaque/80 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
                         {{ t.nome }}
                       </span>
                     }
@@ -69,22 +69,22 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
                 </div>
                 <!-- Body -->
                 <div class="p-5 flex flex-col flex-1">
-                  <h3 class="font-bold text-gray-900 text-base mb-2 group-hover:text-[#0054A6] transition-colors"
+                  <h3 class="font-bold text-texto text-base mb-2 group-hover:text-marca transition-colors"
                     style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
                     {{ c.titulo }}
                   </h3>
-                  <p class="text-gray-500 text-sm flex-1 mb-4"
+                  <p class="text-texto-suave text-sm flex-1 mb-4"
                     style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
                     {{ c.descricao || 'Educação profissional de qualidade.' }}
                   </p>
                   <div class="flex items-center justify-between pt-3 border-t border-gray-50">
                     @if (c.unidadeNome) {
-                      <span class="text-xs text-gray-400 flex items-center gap-0.5">
+                      <span class="text-xs text-texto-suave flex items-center gap-0.5">
                         <mat-icon style="font-size:14px;height:14px;width:14px">location_on</mat-icon>
                         {{ c.unidadeNome }}
                       </span>
                     }
-                    <span class="text-sm font-semibold text-[#0054A6] group-hover:underline ml-auto">
+                    <span class="text-sm font-semibold text-marca group-hover:underline ml-auto">
                       Ver curso →
                     </span>
                   </div>
@@ -98,8 +98,8 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
         @if (!loading() && resultado()?.page?.totalElements === 0) {
           <div class="text-center py-20">
             <mat-icon class="text-gray-200" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
-            <p class="text-gray-500 mt-4 text-lg">Nenhum curso nesta categoria ainda.</p>
-            <a routerLink="/cursos/areas" class="mt-4 inline-block text-[#0054A6] hover:underline no-underline font-medium">
+            <p class="text-texto-suave mt-4 text-lg">Nenhum curso nesta categoria ainda.</p>
+            <a routerLink="/cursos/areas" class="mt-4 inline-block text-marca hover:underline no-underline font-medium">
               ← Ver todas as áreas
             </a>
           </div>
@@ -161,6 +161,6 @@ export class ListaCursosCategoriaComponent implements OnInit {
       'INTERMEDIARIO': 'from-yellow-400 to-orange-400',
       'AVANCADO': 'from-red-400 to-rose-500'
     };
-    return map[nivel] ?? 'from-blue-400 to-[#0054A6]';
+    return map[nivel] ?? 'from-blue-400 to-marca';
   }
 }

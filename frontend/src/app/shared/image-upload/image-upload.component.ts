@@ -15,8 +15,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         (drop)="onDrop($event)">
     
         <div [class]="containerClass"
-             class="bg-gray-100 border-2 border-dashed border-gray-300
-                    group-hover:border-[#0054A6] overflow-hidden transition-colors
+             class="bg-superficie-2 border-2 border-dashed border-gray-300
+                    group-hover:border-marca overflow-hidden transition-colors
                     flex items-center justify-center relative">
     
           <!-- Preview da imagem -->
@@ -28,8 +28,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
           <!-- Placeholder -->
           @if (!displayUrl()) {
             <div class="text-center p-4 z-10">
-              <mat-icon class="text-gray-400" style="font-size:40px;height:40px;width:40px">add_photo_alternate</mat-icon>
-              <p class="text-gray-400 text-xs mt-1 leading-tight">{{ placeholder }}</p>
+              <mat-icon class="text-texto-suave" style="font-size:40px;height:40px;width:40px">add_photo_alternate</mat-icon>
+              <p class="text-texto-suave text-xs mt-1 leading-tight">{{ placeholder }}</p>
             </div>
           }
     

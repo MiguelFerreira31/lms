@@ -173,7 +173,7 @@ export class ProfessorCursosComponent implements OnInit {
     const colors: Record<string, string> = {
       VIDEO: 'text-red-500', PDF: 'text-orange-500', TEXTO: 'text-blue-500', LINK: 'text-green-500'
     };
-    return colors[tipo] || 'text-gray-500';
+    return colors[tipo] || 'text-texto-suave';
   }
 
   getNivelClass(nivel: string): string {
@@ -182,7 +182,7 @@ export class ProfessorCursosComponent implements OnInit {
       INTERMEDIARIO: 'bg-yellow-100 text-yellow-800',
       AVANCADO: 'bg-red-100 text-red-800'
     };
-    return map[nivel] || 'bg-gray-100 text-gray-800';
+    return map[nivel] || 'bg-superficie-2 text-texto';
   }
 
   trackById = (_: number, item: { id: number }) => item.id;

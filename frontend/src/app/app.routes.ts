@@ -68,6 +68,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/matriculas/minhas-matriculas.component').then(m => m.MinhasMatriculasComponent)
   },
+  {
+    path: 'aparencia',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/aparencia/aparencia.component').then(m => m.AparenciaComponent)
+  },
 
   // Admin (rotas planas — sem parent componentless)
   {

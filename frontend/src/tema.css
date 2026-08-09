@@ -1,0 +1,467 @@
+/*
+ * Tokens de tema — a fonte única de verdade da aparência.
+ *
+ * Cada token é uma custom property que o TemaService sobrescreve em tempo de
+ * execução (inline no <html>), e que o Tailwind consome via @theme em
+ * tailwind.css. O efeito é que trocar uma cor aqui repinta a aplicação
+ * inteira, sem rebuild.
+ *
+ * A separação entre claro e escuro é feita por `data-tema` no <html>, e não por
+ * media query: o usuário precisa poder escolher explicitamente, e não só herdar
+ * do sistema. O modo "sistema" é resolvido no TypeScript, que então grava o
+ * `data-tema` correspondente.
+ */
+
+:root {
+  /* ─── Marca ─────────────────────────────────────────────────────────────── */
+  --tema-marca: #0054A6;
+  --tema-marca-escura: #003087;
+  --tema-marca-profunda: #001d5c;
+  --tema-marca-suave: #EBF4FF;
+  --tema-destaque: #F7941E;
+
+  /* ─── Superfícies e texto ───────────────────────────────────────────────── */
+  --tema-fundo: #f8fafc;
+  --tema-superficie: #ffffff;
+  --tema-superficie-2: #f1f5f9;
+  --tema-texto: #1a2e5a;
+  --tema-texto-suave: #64748b;
+  --tema-borda: #e5e7eb;
+
+  /* ─── Estado ────────────────────────────────────────────────────────────── */
+  --tema-sucesso: #16a34a;
+  --tema-erro: #e11d48;
+  --tema-aviso: #f59e0b;
+
+  /* ─── Tipografia ────────────────────────────────────────────────────────── */
+  --tema-fonte-titulo: Roboto, 'Segoe UI', system-ui, sans-serif;
+  --tema-fonte-corpo: Roboto, 'Segoe UI', system-ui, sans-serif;
+  /* Multiplicador aplicado sobre o tamanho base (1 = 16px) */
+  --tema-escala: 1;
+  --tema-peso-titulo: 700;
+
+  color-scheme: light;
+  font-size: calc(16px * var(--tema-escala));
+}
+
+/*
+ * Valores padrão do modo escuro.
+ *
+ * Não é o claro invertido: superfícies escuras precisam de marca mais clara
+ * para manter contraste de texto, e o laranja de destaque é dessaturado para
+ * não vibrar sobre fundo escuro.
+ */
+:root[data-tema='escuro'] {
+  --tema-marca: #4d9fff;
+  --tema-marca-escura: #7db4ff;
+  --tema-marca-profunda: #a8ccff;
+  --tema-marca-suave: #16243a;
+  --tema-destaque: #f0a844;
+
+  --tema-fundo: #0d1117;
+  --tema-superficie: #161b22;
+  --tema-superficie-2: #21262d;
+  --tema-texto: #e6edf3;
+  --tema-texto-suave: #9198a1;
+  --tema-borda: #30363d;
+
+  --tema-sucesso: #3fb950;
+  --tema-erro: #f85149;
+  --tema-aviso: #d29922;
+
+  --tema-peso-titulo: 600;
+
+  color-scheme: dark;
+}
+
+/*
+ * Angular Material M3 lê os tokens --mat-sys-*. Amarrá-los aos tokens do tema
+ * faz ícones, spinner, snackbar, tooltip, tabs, expansion e paginator
+ * acompanharem o modo — o tema prebuilt azure-blue é só claro e, sem isto,
+ * esses componentes ficariam brancos no escuro.
+ */
+:root {
+  --mat-sys-primary: var(--tema-marca);
+  --mat-sys-on-primary: var(--tema-superficie);
+  --mat-sys-surface: var(--tema-superficie);
+  --mat-sys-surface-container: var(--tema-superficie-2);
+  --mat-sys-surface-container-high: var(--tema-superficie-2);
+  --mat-sys-surface-container-highest: var(--tema-superficie-2);
+  --mat-sys-surface-variant: var(--tema-superficie-2);
+  --mat-sys-background: var(--tema-fundo);
+  --mat-sys-on-background: var(--tema-texto);
+  --mat-sys-on-surface: var(--tema-texto);
+  --mat-sys-on-surface-variant: var(--tema-texto-suave);
+  --mat-sys-outline: var(--tema-borda);
+  --mat-sys-outline-variant: var(--tema-borda);
+  --mat-sys-error: var(--tema-erro);
+  --mat-sys-inverse-surface: var(--tema-texto);
+  --mat-sys-inverse-on-surface: var(--tema-superficie);
+}
+
+body {
+  background-color: var(--tema-fundo);
+  color: var(--tema-texto);
+  font-family: var(--tema-fonte-corpo);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--tema-fonte-titulo);
+  font-weight: var(--tema-peso-titulo);
+}
+
+/* Suaviza a troca de modo, sem animar layout. */
+body, .lms-input, .lms-select, .lms-textarea {
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+
+/* Quem prefere menos movimento não recebe a transição. */
+@media (prefers-reduced-motion: reduce) {
+  body, .lms-input, .lms-select, .lms-textarea { transition: none; }
+}
+
+
+/* ─── Matizes fixos no modo escuro ────────────────────────────────────────────
+ *
+ * O projeto usa muitos "chips" no padrão bg-<matiz>-50 + text-<matiz>-700: um
+ * fundo bem claro com texto escuro do mesmo matiz. Legível no claro, ilegível
+ * no escuro — seria uma mancha quase branca no meio de uma tela escura.
+ *
+ * A regra abaixo é genérica em vez de caso a caso: no escuro o fundo vira uma
+ * mistura escura do mesmo matiz com a superfície do tema, e o texto sobe para
+ * um tom claro. Só é possível porque o Tailwind 4 expõe a paleta inteira como
+ * custom properties.
+ *
+ * A especificidade extra (:root[data-tema] + classe) é necessária: as utilities
+ * saem com !important por causa do `@import "tailwindcss" important`.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+:root[data-tema='escuro'] .bg-slate-50,
+:root[data-tema='escuro'] .bg-slate-100 {
+  background-color: color-mix(in srgb, var(--color-slate-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-slate-600,
+:root[data-tema='escuro'] .text-slate-700,
+:root[data-tema='escuro'] .text-slate-800,
+:root[data-tema='escuro'] .text-slate-900 {
+  color: var(--color-slate-300) !important;
+}
+:root[data-tema='escuro'] .border-slate-100,
+:root[data-tema='escuro'] .border-slate-200 {
+  border-color: color-mix(in srgb, var(--color-slate-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-gray-50,
+:root[data-tema='escuro'] .bg-gray-100 {
+  background-color: color-mix(in srgb, var(--color-gray-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-gray-600,
+:root[data-tema='escuro'] .text-gray-700,
+:root[data-tema='escuro'] .text-gray-800,
+:root[data-tema='escuro'] .text-gray-900 {
+  color: var(--color-gray-300) !important;
+}
+:root[data-tema='escuro'] .border-gray-100,
+:root[data-tema='escuro'] .border-gray-200 {
+  border-color: color-mix(in srgb, var(--color-gray-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-zinc-50,
+:root[data-tema='escuro'] .bg-zinc-100 {
+  background-color: color-mix(in srgb, var(--color-zinc-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-zinc-600,
+:root[data-tema='escuro'] .text-zinc-700,
+:root[data-tema='escuro'] .text-zinc-800,
+:root[data-tema='escuro'] .text-zinc-900 {
+  color: var(--color-zinc-300) !important;
+}
+:root[data-tema='escuro'] .border-zinc-100,
+:root[data-tema='escuro'] .border-zinc-200 {
+  border-color: color-mix(in srgb, var(--color-zinc-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-neutral-50,
+:root[data-tema='escuro'] .bg-neutral-100 {
+  background-color: color-mix(in srgb, var(--color-neutral-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-neutral-600,
+:root[data-tema='escuro'] .text-neutral-700,
+:root[data-tema='escuro'] .text-neutral-800,
+:root[data-tema='escuro'] .text-neutral-900 {
+  color: var(--color-neutral-300) !important;
+}
+:root[data-tema='escuro'] .border-neutral-100,
+:root[data-tema='escuro'] .border-neutral-200 {
+  border-color: color-mix(in srgb, var(--color-neutral-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-stone-50,
+:root[data-tema='escuro'] .bg-stone-100 {
+  background-color: color-mix(in srgb, var(--color-stone-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-stone-600,
+:root[data-tema='escuro'] .text-stone-700,
+:root[data-tema='escuro'] .text-stone-800,
+:root[data-tema='escuro'] .text-stone-900 {
+  color: var(--color-stone-300) !important;
+}
+:root[data-tema='escuro'] .border-stone-100,
+:root[data-tema='escuro'] .border-stone-200 {
+  border-color: color-mix(in srgb, var(--color-stone-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-red-50,
+:root[data-tema='escuro'] .bg-red-100 {
+  background-color: color-mix(in srgb, var(--color-red-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-red-600,
+:root[data-tema='escuro'] .text-red-700,
+:root[data-tema='escuro'] .text-red-800,
+:root[data-tema='escuro'] .text-red-900 {
+  color: var(--color-red-300) !important;
+}
+:root[data-tema='escuro'] .border-red-100,
+:root[data-tema='escuro'] .border-red-200 {
+  border-color: color-mix(in srgb, var(--color-red-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-orange-50,
+:root[data-tema='escuro'] .bg-orange-100 {
+  background-color: color-mix(in srgb, var(--color-orange-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-orange-600,
+:root[data-tema='escuro'] .text-orange-700,
+:root[data-tema='escuro'] .text-orange-800,
+:root[data-tema='escuro'] .text-orange-900 {
+  color: var(--color-orange-300) !important;
+}
+:root[data-tema='escuro'] .border-orange-100,
+:root[data-tema='escuro'] .border-orange-200 {
+  border-color: color-mix(in srgb, var(--color-orange-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-amber-50,
+:root[data-tema='escuro'] .bg-amber-100 {
+  background-color: color-mix(in srgb, var(--color-amber-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-amber-600,
+:root[data-tema='escuro'] .text-amber-700,
+:root[data-tema='escuro'] .text-amber-800,
+:root[data-tema='escuro'] .text-amber-900 {
+  color: var(--color-amber-300) !important;
+}
+:root[data-tema='escuro'] .border-amber-100,
+:root[data-tema='escuro'] .border-amber-200 {
+  border-color: color-mix(in srgb, var(--color-amber-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-yellow-50,
+:root[data-tema='escuro'] .bg-yellow-100 {
+  background-color: color-mix(in srgb, var(--color-yellow-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-yellow-600,
+:root[data-tema='escuro'] .text-yellow-700,
+:root[data-tema='escuro'] .text-yellow-800,
+:root[data-tema='escuro'] .text-yellow-900 {
+  color: var(--color-yellow-300) !important;
+}
+:root[data-tema='escuro'] .border-yellow-100,
+:root[data-tema='escuro'] .border-yellow-200 {
+  border-color: color-mix(in srgb, var(--color-yellow-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-lime-50,
+:root[data-tema='escuro'] .bg-lime-100 {
+  background-color: color-mix(in srgb, var(--color-lime-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-lime-600,
+:root[data-tema='escuro'] .text-lime-700,
+:root[data-tema='escuro'] .text-lime-800,
+:root[data-tema='escuro'] .text-lime-900 {
+  color: var(--color-lime-300) !important;
+}
+:root[data-tema='escuro'] .border-lime-100,
+:root[data-tema='escuro'] .border-lime-200 {
+  border-color: color-mix(in srgb, var(--color-lime-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-green-50,
+:root[data-tema='escuro'] .bg-green-100 {
+  background-color: color-mix(in srgb, var(--color-green-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-green-600,
+:root[data-tema='escuro'] .text-green-700,
+:root[data-tema='escuro'] .text-green-800,
+:root[data-tema='escuro'] .text-green-900 {
+  color: var(--color-green-300) !important;
+}
+:root[data-tema='escuro'] .border-green-100,
+:root[data-tema='escuro'] .border-green-200 {
+  border-color: color-mix(in srgb, var(--color-green-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-emerald-50,
+:root[data-tema='escuro'] .bg-emerald-100 {
+  background-color: color-mix(in srgb, var(--color-emerald-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-emerald-600,
+:root[data-tema='escuro'] .text-emerald-700,
+:root[data-tema='escuro'] .text-emerald-800,
+:root[data-tema='escuro'] .text-emerald-900 {
+  color: var(--color-emerald-300) !important;
+}
+:root[data-tema='escuro'] .border-emerald-100,
+:root[data-tema='escuro'] .border-emerald-200 {
+  border-color: color-mix(in srgb, var(--color-emerald-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-teal-50,
+:root[data-tema='escuro'] .bg-teal-100 {
+  background-color: color-mix(in srgb, var(--color-teal-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-teal-600,
+:root[data-tema='escuro'] .text-teal-700,
+:root[data-tema='escuro'] .text-teal-800,
+:root[data-tema='escuro'] .text-teal-900 {
+  color: var(--color-teal-300) !important;
+}
+:root[data-tema='escuro'] .border-teal-100,
+:root[data-tema='escuro'] .border-teal-200 {
+  border-color: color-mix(in srgb, var(--color-teal-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-cyan-50,
+:root[data-tema='escuro'] .bg-cyan-100 {
+  background-color: color-mix(in srgb, var(--color-cyan-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-cyan-600,
+:root[data-tema='escuro'] .text-cyan-700,
+:root[data-tema='escuro'] .text-cyan-800,
+:root[data-tema='escuro'] .text-cyan-900 {
+  color: var(--color-cyan-300) !important;
+}
+:root[data-tema='escuro'] .border-cyan-100,
+:root[data-tema='escuro'] .border-cyan-200 {
+  border-color: color-mix(in srgb, var(--color-cyan-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-sky-50,
+:root[data-tema='escuro'] .bg-sky-100 {
+  background-color: color-mix(in srgb, var(--color-sky-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-sky-600,
+:root[data-tema='escuro'] .text-sky-700,
+:root[data-tema='escuro'] .text-sky-800,
+:root[data-tema='escuro'] .text-sky-900 {
+  color: var(--color-sky-300) !important;
+}
+:root[data-tema='escuro'] .border-sky-100,
+:root[data-tema='escuro'] .border-sky-200 {
+  border-color: color-mix(in srgb, var(--color-sky-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-blue-50,
+:root[data-tema='escuro'] .bg-blue-100 {
+  background-color: color-mix(in srgb, var(--color-blue-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-blue-600,
+:root[data-tema='escuro'] .text-blue-700,
+:root[data-tema='escuro'] .text-blue-800,
+:root[data-tema='escuro'] .text-blue-900 {
+  color: var(--color-blue-300) !important;
+}
+:root[data-tema='escuro'] .border-blue-100,
+:root[data-tema='escuro'] .border-blue-200 {
+  border-color: color-mix(in srgb, var(--color-blue-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-indigo-50,
+:root[data-tema='escuro'] .bg-indigo-100 {
+  background-color: color-mix(in srgb, var(--color-indigo-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-indigo-600,
+:root[data-tema='escuro'] .text-indigo-700,
+:root[data-tema='escuro'] .text-indigo-800,
+:root[data-tema='escuro'] .text-indigo-900 {
+  color: var(--color-indigo-300) !important;
+}
+:root[data-tema='escuro'] .border-indigo-100,
+:root[data-tema='escuro'] .border-indigo-200 {
+  border-color: color-mix(in srgb, var(--color-indigo-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-violet-50,
+:root[data-tema='escuro'] .bg-violet-100 {
+  background-color: color-mix(in srgb, var(--color-violet-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-violet-600,
+:root[data-tema='escuro'] .text-violet-700,
+:root[data-tema='escuro'] .text-violet-800,
+:root[data-tema='escuro'] .text-violet-900 {
+  color: var(--color-violet-300) !important;
+}
+:root[data-tema='escuro'] .border-violet-100,
+:root[data-tema='escuro'] .border-violet-200 {
+  border-color: color-mix(in srgb, var(--color-violet-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-purple-50,
+:root[data-tema='escuro'] .bg-purple-100 {
+  background-color: color-mix(in srgb, var(--color-purple-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-purple-600,
+:root[data-tema='escuro'] .text-purple-700,
+:root[data-tema='escuro'] .text-purple-800,
+:root[data-tema='escuro'] .text-purple-900 {
+  color: var(--color-purple-300) !important;
+}
+:root[data-tema='escuro'] .border-purple-100,
+:root[data-tema='escuro'] .border-purple-200 {
+  border-color: color-mix(in srgb, var(--color-purple-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-fuchsia-50,
+:root[data-tema='escuro'] .bg-fuchsia-100 {
+  background-color: color-mix(in srgb, var(--color-fuchsia-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-fuchsia-600,
+:root[data-tema='escuro'] .text-fuchsia-700,
+:root[data-tema='escuro'] .text-fuchsia-800,
+:root[data-tema='escuro'] .text-fuchsia-900 {
+  color: var(--color-fuchsia-300) !important;
+}
+:root[data-tema='escuro'] .border-fuchsia-100,
+:root[data-tema='escuro'] .border-fuchsia-200 {
+  border-color: color-mix(in srgb, var(--color-fuchsia-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-pink-50,
+:root[data-tema='escuro'] .bg-pink-100 {
+  background-color: color-mix(in srgb, var(--color-pink-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-pink-600,
+:root[data-tema='escuro'] .text-pink-700,
+:root[data-tema='escuro'] .text-pink-800,
+:root[data-tema='escuro'] .text-pink-900 {
+  color: var(--color-pink-300) !important;
+}
+:root[data-tema='escuro'] .border-pink-100,
+:root[data-tema='escuro'] .border-pink-200 {
+  border-color: color-mix(in srgb, var(--color-pink-500) 32%, var(--tema-superficie)) !important;
+}
+
+:root[data-tema='escuro'] .bg-rose-50,
+:root[data-tema='escuro'] .bg-rose-100 {
+  background-color: color-mix(in srgb, var(--color-rose-500) 20%, var(--tema-superficie)) !important;
+}
+:root[data-tema='escuro'] .text-rose-600,
+:root[data-tema='escuro'] .text-rose-700,
+:root[data-tema='escuro'] .text-rose-800,
+:root[data-tema='escuro'] .text-rose-900 {
+  color: var(--color-rose-300) !important;
+}
+:root[data-tema='escuro'] .border-rose-100,
+:root[data-tema='escuro'] .border-rose-200 {
+  border-color: color-mix(in srgb, var(--color-rose-500) 32%, var(--tema-superficie)) !important;
+}

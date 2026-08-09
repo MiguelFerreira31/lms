@@ -15,10 +15,10 @@ const PER_PAGE = 4;
     imports: [RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-fundo">
     
       <!-- HERO -->
-      <section class="bg-gradient-to-br from-[#001d5c] via-[#003087] to-[#0054A6] py-14">
+      <section class="bg-gradient-to-br from-marca-profunda via-marca-escura to-marca py-14">
         <div class="max-w-5xl mx-auto px-6">
           <div class="flex items-center flex-wrap gap-1.5 text-white/60 text-sm mb-6">
             <a routerLink="/home" class="hover:text-white no-underline text-white/60">Home</a>
@@ -32,7 +32,7 @@ const PER_PAGE = 4;
             <span class="text-white/95">{{ tipoNome() }}</span>
           </div>
           <h1 class="text-3xl lg:text-4xl font-extrabold leading-tight">
-            <span class="text-[#F7941E]">{{ tipoNome() }}</span>
+            <span class="text-destaque">{{ tipoNome() }}</span>
             <span class="text-white"> em {{ unidadeNome() }}</span>
           </h1>
           @if (todosCursos().length) {
@@ -45,14 +45,14 @@ const PER_PAGE = 4;
     
       <!-- CHIPS DE ÁREA -->
       @if (areasDisponiveis().length > 0) {
-        <section class="bg-white py-8 border-b border-gray-100">
+        <section class="bg-superficie py-8 border-b border-borda">
           <div class="max-w-5xl mx-auto px-6">
             <div class="flex flex-wrap gap-2.5">
               <button (click)="selecionarArea(null)"
                 class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
               [class]="!areaSelecionada()
-                ? 'bg-[#F7941E] border-[#F7941E] text-white'
-                : 'bg-white border-gray-300 text-gray-600 hover:border-[#F7941E] hover:text-[#F7941E]'">
+                ? 'bg-destaque border-destaque text-white'
+                : 'bg-superficie border-gray-300 text-texto-suave hover:border-destaque hover:text-destaque'">
                 Todos
               </button>
               @for (area of areasDisponiveis(); track area) {
@@ -60,8 +60,8 @@ const PER_PAGE = 4;
                   (click)="selecionarArea(area.slug)"
                   class="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all cursor-pointer"
               [class]="areaSelecionada() === area.slug
-                ? 'bg-[#F7941E] border-[#F7941E] text-white'
-                : 'bg-white border-gray-300 text-gray-600 hover:border-[#F7941E] hover:text-[#F7941E]'">
+                ? 'bg-destaque border-destaque text-white'
+                : 'bg-superficie border-gray-300 text-texto-suave hover:border-destaque hover:text-destaque'">
                   {{ area.nome }}
                 </button>
               }
@@ -81,17 +81,17 @@ const PER_PAGE = 4;
           @if (gruposVisiveis().length === 0) {
             <div class="text-center py-16">
               <mat-icon class="text-gray-200" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
-              <p class="text-gray-500 mt-4">Nenhum curso encontrado.</p>
+              <p class="text-texto-suave mt-4">Nenhum curso encontrado.</p>
             </div>
           }
           @for (grupo of gruposVisiveis(); track grupo) {
             <div>
-              <h2 class="text-lg font-bold text-gray-900 mb-4">
+              <h2 class="text-lg font-bold text-texto mb-4">
                 <a [routerLink]="['/unidades', unidadeSlug(), 'areas', grupo.areaSlug]"
-                  class="text-[#0054A6] hover:underline no-underline">
+                  class="text-marca hover:underline no-underline">
                   {{ grupo.areaNome }}
                 </a>
-                <span class="text-gray-400 font-normal text-sm ml-2">({{ grupo.cursos.length }})</span>
+                <span class="text-texto-suave font-normal text-sm ml-2">({{ grupo.cursos.length }})</span>
               </h2>
               <!-- Mobile scroll -->
               <div class="flex gap-4 overflow-x-auto pb-3 lg:hidden snap-x snap-mandatory -mx-6 px-6">
@@ -106,7 +106,7 @@ const PER_PAGE = 4;
                 <button (click)="prev(grupo.areaSlug)"
                   [disabled]="getPage(grupo.areaSlug) === 0"
                   [class.opacity-30]="getPage(grupo.areaSlug) === 0"
-              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer">
                   <mat-icon style="font-size:20px;height:20px;width:20px">chevron_left</mat-icon>
                 </button>
@@ -118,7 +118,7 @@ const PER_PAGE = 4;
                 <button (click)="next(grupo.areaSlug, grupo.cursos.length)"
                   [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
                   [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
-              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center
+              class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
                      justify-center hover:bg-gray-50 transition-colors cursor-pointer">
                   <mat-icon style="font-size:20px;height:20px;width:20px">chevron_right</mat-icon>
                 </button>
