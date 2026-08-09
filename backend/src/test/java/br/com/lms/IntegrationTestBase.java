@@ -94,6 +94,10 @@ public abstract class IntegrationTestBase {
     @Autowired protected CursoRepository cursoRepository;
     @Autowired protected MatriculaRepository matriculaRepository;
     @Autowired protected PresencaAulaRepository presencaAulaRepository;
+    @Autowired protected br.com.lms.domain.professor.ProfessorCursoRepository professorCursoRepository;
+    @Autowired protected br.com.lms.domain.regiao.RegiaoRepository regiaoRepository;
+    @Autowired protected br.com.lms.domain.regiao.UnidadeRepository unidadeRepository;
+    @Autowired protected br.com.lms.domain.conteudo.ConteudoAulaRepository conteudoAulaRepository;
     @Autowired protected PasswordEncoder passwordEncoder;
     @Autowired protected JwtTokenProvider tokenProvider;
 

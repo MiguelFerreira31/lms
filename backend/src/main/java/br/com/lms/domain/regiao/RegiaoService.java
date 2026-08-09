@@ -71,12 +71,19 @@ public class RegiaoService {
         return unidadeRepository.findAllWithRegiao().stream().map(UnidadeResponse::from).toList();
     }
 
+    /**
+     * O slug é derivado do nome. A coluna é NOT NULL UNIQUE desde a V13, mas
+     * nada preenchia esse campo: criar unidade pela API sempre esbarrava na
+     * constraint e voltava 409. As unidades do seed têm slug porque ele foi
+     * calculado em SQL na própria migration.
+     */
     @Transactional
     @CacheEvict(value = CacheConfig.REGIOES, allEntries = true)
     public UnidadeResponse criarUnidade(Long regiaoId, UnidadeRequest request) {
         Regiao regiao = buscarRegiao(regiaoId);
         return UnidadeResponse.from(unidadeRepository.save(Unidade.builder()
                 .nome(request.nome())
+                .slug(slugUnico(request.nome(), null))
                 .endereco(request.endereco())
                 .regiao(regiao)
                 .build()));
@@ -87,9 +94,22 @@ public class RegiaoService {
     public UnidadeResponse atualizarUnidade(Long unidadeId, UnidadeRequest request) {
         Unidade unidade = unidadeRepository.findById(unidadeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade", unidadeId));
+        // Renomear reflete no slug — que é o identificador da rota pública
+        // /api/unidades/{slug} — mas só se o nome de fato mudou, para não
+        // invalidar links de unidades já publicadas sem necessidade.
+        if (!unidade.getNome().equals(request.nome())) {
+            unidade.setSlug(slugUnico(request.nome(), unidade.getId()));
+        }
         unidade.setNome(request.nome());
         unidade.setEndereco(request.endereco());
         return UnidadeResponse.from(unidadeRepository.save(unidade));
+    }
+
+    private String slugUnico(String nome, Long idIgnorado) {
+        return SlugGenerator.gerarUnico(nome, candidato ->
+                unidadeRepository.findBySlug(candidato)
+                        .filter(u -> idIgnorado == null || !u.getId().equals(idIgnorado))
+                        .isPresent());
     }
 
     @Transactional

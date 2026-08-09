@@ -54,8 +54,8 @@
 | Banco | PostgreSQL | 18 |
 | Migrations | Flyway | 12.4 (V1–V17) |
 | Auth | JWT (jjwt) | 0.13.0 |
-| Testes (back) | JUnit 6 + Testcontainers | 19 testes de integração |
-| Testes (front) | Vitest | 12 specs |
+| Testes (back) | JUnit 6 + Testcontainers | 52 testes de integração |
+| Testes (front) | Vitest · Playwright | 33 specs · 19 cenários E2E |
 | Infra | Docker Compose | — |
 
 ---
@@ -146,6 +146,28 @@ lms/
 - **V15**: campos de imagem em usuários, cursos e unidades
 - **V16**: vínculo curso ↔ área
 - **V17**: 15 índices de chave estrangeira (o Postgres não indexa FK automaticamente) + índice parcial `cursos(criado_em DESC) WHERE ativo = true`
+
+---
+
+## Testes
+
+```bash
+# Backend — 52 testes de integração contra Postgres real (Testcontainers)
+cd backend && ./mvnw verify
+
+# Frontend — 33 testes unitários (Vitest, jsdom)
+cd frontend && npm test
+
+# Frontend — 19 cenários end-to-end (Playwright)
+# exige o backend em :8080; o servidor do Angular sobe sozinho
+cd frontend && npm run e2e
+```
+
+Os E2E cobrem navegação pública, login pela interface, guards por role, o
+dashboard admin (os 3 gráficos Chart.js montando sob zoneless) e o widget de
+acessibilidade. Os cenários de permissão criam usuários de verdade via API —
+forjar a role no `localStorage` não funciona, porque o `AuthService` revalida
+em `/api/usuarios/me` e o backend é a fonte da verdade.
 
 ---
 

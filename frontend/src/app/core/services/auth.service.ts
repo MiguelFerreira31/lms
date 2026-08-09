@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, Injector, afterNextRender, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
@@ -15,8 +15,15 @@ export class AuthService {
   private readonly USER_KEY = 'lms_user';
   currentUser = signal<AuthResponse | null>(this.getStoredUser());
 
+  private readonly injector = inject(Injector);
+
   constructor() {
-    setTimeout(() => this.refreshUser(), 100);
+    // Antes era setTimeout(..., 100): um atraso arbitrário torcendo para cair
+    // depois do primeiro render do zone.js. Sem zone.js isso deixou de valer, e
+    // a escrita no signal aterrissava no meio do ciclo de verificação —
+    // NG0100 na troca de layout do AppComponent. afterNextRender agenda a
+    // revalidação para depois do primeiro paint, que é o que se queria.
+    afterNextRender(() => this.refreshUser(), { injector: this.injector });
   }
 
   refreshUser() {

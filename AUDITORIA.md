@@ -2,6 +2,23 @@
 
 ---
 
+## Validação pós-migração — 2026-08-09
+
+Cobertura ampliada de 19 → **52** testes de integração no backend, 12 → **33** unitários no frontend, e **19** cenários end-to-end novos (Playwright). Os 5 controllers que a migração refatorou sem nenhuma rede de proteção — ConteudoAula, Professor, Regiao, Unidade e Upload — passaram a ter teste.
+
+**Bug de produção encontrado pelos testes novos:** `POST /api/regioes/{id}/unidades` **nunca funcionou**. A coluna `unidades.slug` é NOT NULL UNIQUE desde a V13, mas nada preenchia esse campo — nem o controller original, nem um `@PrePersist`. Toda criação de unidade pelo painel admin morria na constraint e voltava 409. As unidades existentes só têm slug porque ele foi calculado em SQL dentro da própria migration. Corrigido com `SlugGenerator`, que reproduz aquela normalização em Java (minúsculas, sem acentos, não-alfanumérico vira hífen) e resolve colisão com sufixo numérico. Renomear a unidade agora também atualiza o slug.
+
+**Dois defeitos que o zoneless expôs:**
+
+- `LoginComponent.loading` era um campo comum mutado dentro de callback de HTTP. Sem zone.js isso não notifica o Angular; o componente só continuava funcionando por estar marcado como `Eager`, e a escrita caía no meio do ciclo, disparando NG0100 no `[disabled]` do botão. Virou `signal`.
+- `AuthService` revalidava o usuário com `setTimeout(..., 100)` — um atraso arbitrário torcendo para cair depois do primeiro render do zone.js. Passou a usar `afterNextRender`.
+
+**Diferença de comportamento do zoneless em testes:** `fixture.detectChanges()` refaz a verificação de *todos* os fixtures anexados, e não só do que recebeu a chamada. Um fixture criado em `beforeEach` com `@Input` ainda não preenchido quebra os testes seguintes — por isso os specs de componente criam o fixture dentro de cada teste.
+
+**Pendência conhecida (só em dev):** `AppComponent` emite NG0100 na transição de layout do login (`Previous value: '1'. Current value: '0'`), porque `isLoggedIn()` e `currentUrl` mudam dentro do mesmo ciclo disparado pela navegação. Verificado contra o build de **produção**: zero erro de console e os 3 gráficos montando normalmente. O `checkNoChanges` que reporta isso só roda em dev.
+
+---
+
 ## Migração de stack — 2026-08-09
 
 Java 17 → 25 LTS · Spring Boot 3.5.14 → 4.1.0 · PostgreSQL 15 → 18 · Angular 18 → 22 · Tailwind 3 → 4 · Karma → Vitest.

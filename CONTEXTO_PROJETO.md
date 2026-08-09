@@ -37,7 +37,7 @@ Backend e frontend rodam e buildam de forma totalmente independente (CI/CD via G
 | Validação | Bean Validation (`spring-boot-starter-validation`) |
 | Outros | Lombok |
 | Build | Maven (`./mvnw`) |
-| Testes | 19 testes de integração (`@SpringBootTest` + MockMvc + Testcontainers 2.0.5/Postgres real + Flyway) cobrindo Auth, Matrícula, Presença, Curso, contagem de queries e contrato de erro, além do context-load. Rodam no **failsafe** (`*IT.java`, fase `integration-test`); o surefire ficou só para unitários, então `mvnw test` não exige Docker |
+| Testes | **52 testes de integração** (`@SpringBootTest` + MockMvc + Testcontainers 2.0.5/Postgres real + Flyway) cobrindo Auth, Matrícula, Presença, Curso, contagem de queries e contrato de erro, além do context-load. Rodam no **failsafe** (`*IT.java`, fase `integration-test`); o surefire ficou só para unitários, então `mvnw test` não exige Docker |
 
 ### 2.2 Arquitetura de pacotes
 
@@ -135,7 +135,7 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 | Acessibilidade | Widget próprio WCAG 2.1 AA/AAA + `VlibrasWidgetComponent` local (script oficial do gov.br) |
 | HTTP | `HttpClient` + interceptors funcionais |
 | Build | Angular CLI 22 · TypeScript 6.0 |
-| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, roda em jsdom) — 12 specs cobrindo AuthService, authGuard, jwtInterceptor, errorInterceptor e CursoService |
+| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, jsdom) — 33 specs em 8 arquivos · **Playwright** — 19 cenários end-to-end |
 
 ### 3.2 Estrutura (`src/app/`)
 

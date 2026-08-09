@@ -71,9 +71,9 @@
                 <input type="password" class="lms-input" formControlName="senha" placeholder="••••••" />
               </div>
               <button type="submit"
-                [disabled]="loading"
+                [disabled]="loading()"
                 class="w-full py-3.5 bg-[#0054A6] hover:bg-[#003087] disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-base mt-2">
-                {{ loading ? 'Entrando...' : 'Entrar' }}
+                {{ loading() ? 'Entrando...' : 'Entrar' }}
               </button>
             </form>
           </mat-tab>
@@ -94,9 +94,9 @@
                 <input type="password" class="lms-input" formControlName="senha" placeholder="Mínimo 6 caracteres" />
               </div>
               <button type="submit"
-                [disabled]="loading"
+                [disabled]="loading()"
                 class="w-full py-3.5 bg-[#F7941E] hover:bg-orange-500 disabled:opacity-60 text-white font-semibold rounded-xl transition-colors cursor-pointer border-0 text-base mt-2">
-                {{ loading ? 'Criando...' : 'Criar Conta' }}
+                {{ loading() ? 'Criando...' : 'Criar Conta' }}
               </button>
             </form>
           </mat-tab>
