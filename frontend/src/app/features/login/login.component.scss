@@ -1,16 +1,26 @@
+// Estilo das abas de login (Entrar / Cadastrar).
+//
+// Antes isto era feito com quatro regras `::ng-deep` alcançando classes
+// internas do MDC (`.mdc-tab__text-label`, `.mdc-tab-indicator__content--underline`).
+// Essas classes são detalhe de implementação do Angular Material e mudam de
+// nome entre versões — foi o que quebrou na migração para o tema M3.
+//
+// O M3 expõe tokens CSS públicos para exatamente estes pontos, então dá para
+// customizar sem furar o encapsulamento nem depender de nome de classe interna.
 .login-tabs {
-  ::ng-deep .mat-mdc-tab-header {
+  --mat-tab-header-label-text-weight: 600;
+  --mat-tab-header-label-text-size: 14px;
+  --mat-tab-header-active-label-text-color: #0054A6;
+  --mat-tab-header-active-focus-label-text-color: #0054A6;
+  --mat-tab-header-active-hover-label-text-color: #0054A6;
+  --mat-tab-header-active-ripple-color: #0054A6;
+  --mat-tab-header-inactive-ripple-color: #0054A6;
+  --mat-tab-header-divider-color: #f3f4f6;
+  --mat-tab-header-divider-height: 1px;
+
+  // O indicador é o único que ainda precisa de seletor, mas agora é a classe
+  // pública do Material (`.mat-mdc-tab-*`), não a interna do MDC.
+  .mat-mdc-tab-header {
     padding: 0 2rem;
-    border-bottom: 1px solid #f3f4f6;
-  }
-  ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
-    font-weight: 600;
-    font-size: 14px;
-  }
-  ::ng-deep .mat-mdc-tab-indicator .mdc-tab-indicator__content--underline {
-    border-color: #0054A6;
-  }
-  ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-    color: #0054A6;
   }
 }

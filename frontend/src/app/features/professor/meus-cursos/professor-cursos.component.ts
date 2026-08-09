@@ -2,7 +2,6 @@ import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@ang
 
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -19,7 +18,7 @@ interface CursoDetalhe {
 
 @Component({
     selector: 'app-professor-cursos',
-    imports: [RouterModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule],
+    imports: [RouterModule, ReactiveFormsModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule],
     templateUrl: './professor-cursos.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./professor-cursos.component.scss']

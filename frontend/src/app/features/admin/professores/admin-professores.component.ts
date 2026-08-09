@@ -1,7 +1,5 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,7 +9,7 @@ import { CursoService, Curso, Professor } from '../../../core/services/curso.ser
 
 @Component({
     selector: 'app-admin-professores',
-    imports: [FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
+    imports: [FormsModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
     templateUrl: './admin-professores.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./admin-professores.component.scss']

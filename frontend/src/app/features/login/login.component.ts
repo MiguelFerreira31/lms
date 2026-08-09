@@ -2,14 +2,13 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-login',
-    imports: [ReactiveFormsModule, MatButtonModule, MatSnackBarModule, MatTabsModule],
+    imports: [ReactiveFormsModule, MatSnackBarModule, MatTabsModule],
     templateUrl: './login.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./login.component.scss']
