@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -41,8 +42,10 @@ export class AppComponent {
 
   constructor() {
     this.currentUrl.set(this.router.url);
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe((e: any) => this.currentUrl.set(e.urlAfterRedirects));
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntilDestroyed()
+    ).subscribe(e => this.currentUrl.set(e.urlAfterRedirects));
   }
 
   showPublicNav(): boolean {

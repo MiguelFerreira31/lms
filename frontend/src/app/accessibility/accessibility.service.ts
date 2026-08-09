@@ -548,6 +548,10 @@ export class AccessibilityService {
   // ─── MutationObserver ─────────────────────────────────────────────────────
 
   private initMutationObserver(): void {
+    // Idempotente: sem isto, um segundo init() deixaria o observer anterior
+    // rodando para sempre, sem referência para desconectar.
+    this.disconnectMutationObserver();
+
     let pendingNodes: Node[] = [];
     let timer: ReturnType<typeof setTimeout>;
 
@@ -567,6 +571,16 @@ export class AccessibilityService {
     });
 
     this.mutationObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
+  /**
+   * O observer vigia `document.body` inteiro com `subtree: true` e nunca era
+   * desconectado — ficava vivo e reprocessando mutações após o componente ser
+   * destruído. Vazamento pré-existente, sem relação com a migração.
+   */
+  disconnectMutationObserver(): void {
+    this.mutationObserver?.disconnect();
+    this.mutationObserver = null;
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
