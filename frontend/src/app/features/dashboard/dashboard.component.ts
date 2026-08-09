@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
       cursos: this.cursoService.listarCursos(0)
     }).subscribe({
       next: ({ matriculas, cursos }) => {
-        this.totalCursos.set(cursos.totalElements);
+        this.totalCursos.set(cursos.page.totalElements);
         this.cursosDestaque.set(cursos.content.slice(0, 6));
         if (!matriculas.length) { this.matriculas.set([]); this.loading.set(false); return; }
         const progressos$ = matriculas.map(m =>

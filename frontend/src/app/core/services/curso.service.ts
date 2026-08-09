@@ -9,7 +9,16 @@ export interface Curso { id: number; titulo: string; descricao: string; nivel: s
 export interface AulaInfo { id: number; titulo: string; urlVideo: string | null; duracaoMin: number; ordem: number; }
 export interface ModuloInfo { id: number; titulo: string; ordem: number; aulas: AulaInfo[]; }
 export interface CursoDetalhe extends Curso { modulos: ModuloInfo[]; }
-export interface Page<T> { content: T[]; totalElements: number; totalPages: number; number: number; }
+/**
+ * Shape do PagedModel do Spring Data. O backend passou a serializar Page com
+ * `spring.data.web.pageable.serialization-mode=VIA_DTO`: os metadados saíram da
+ * raiz e vivem em `page`. O formato antigo (PageImpl cru) era documentado pelo
+ * próprio Spring como instável entre versões.
+ */
+export interface Page<T> {
+  content: T[];
+  page: { size: number; number: number; totalElements: number; totalPages: number };
+}
 export interface Matricula { id: number; cursoId: number; cursoTitulo: string; status: string; matriculadoEm: string; }
 export interface Progresso { matriculaId: number; aulasConcluidas: number; totalAulas: number; percentual: number; }
 export interface Regiao { id: number; nome: string; totalUnidades: number; }

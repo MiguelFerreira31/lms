@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CursoService, Unidade, UsuarioResponse } from '../../../core/services/curso.service';
+import { mensagemDeErro } from '../../../core/interceptors/error.interceptor';
 
 @Component({
     selector: 'app-admin-usuarios',
@@ -75,7 +76,7 @@ export class AdminUsuariosComponent implements OnInit {
         this.snack.open('Usuário atualizado!', 'OK', { duration: 3000 });
       },
       error: (e: any) => {
-        this.snack.open(e.error?.message || 'Erro ao atualizar', 'Fechar', { duration: 3000 });
+        this.snack.open(mensagemDeErro(e, 'Erro ao atualizar'), 'Fechar', { duration: 3000 });
         this.salvando.set(false);
       }
     });
@@ -120,7 +121,7 @@ export class AdminUsuariosComponent implements OnInit {
         this.salvando.set(false);
       },
       error: (e: any) => {
-        this.snack.open(e.error?.message || 'Erro ao criar usuário', 'Fechar', { duration: 3000 });
+        this.snack.open(mensagemDeErro(e, 'Erro ao criar usuário'), 'Fechar', { duration: 3000 });
         this.salvando.set(false);
       }
     });

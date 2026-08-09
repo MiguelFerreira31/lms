@@ -3,6 +3,8 @@ import {
   OnInit,
   OnDestroy,
   ViewChild,
+  afterNextRender,
+  Injector,
   ElementRef,
   signal,
   computed,
@@ -90,20 +92,27 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     return sorted.map(c => ({ ...c, percentual: Math.round((c.count / max) * 100) }));
   });
 
+  private readonly injector = inject(Injector);
+
   private barChart: Chart | null = null;
   private doughnutChart: Chart | null = null;
   private horizontalBarChart: Chart | null = null;
   private chartsInitialized = false;
 
   constructor() {
+    // Antes: effect() -> setTimeout(50) -> initCharts(), que lia
+    // @ViewChild(...).nativeElement. Isso apostava que o zone.js já teria feito
+    // o render dentro dos 50ms. Sem zone.js essa aposta não se sustenta.
+    // afterNextRender só dispara depois que o DOM foi de fato pintado, então os
+    // canvases existem — e não há mais número mágico.
     effect(() => {
       if (!this.isLoading() && !this.chartsInitialized) {
         this.chartsInitialized = true;
-        setTimeout(() => {
+        afterNextRender(() => {
           this.initCharts();
           this.runCountUp();
           this.runGsapAnimations();
-        }, 50);
+        }, { injector: this.injector });
       }
     });
   }
@@ -174,7 +183,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         if (isRefresh) {
           this.isRefreshing.set(false);
           this.runCountUp(true);
-          setTimeout(() => this.refreshCharts(), 50);
+          afterNextRender(() => this.refreshCharts(), { injector: this.injector });
         } else {
           this.isLoading.set(false);
         }
@@ -402,11 +411,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     const { gsap } = await import('gsap');
     gsap.from('.kpi-card', { opacity: 0, y: 24, stagger: 0.08, duration: 0.5, ease: 'power2.out', clearProps: 'all' });
     gsap.from('.chart-section', { opacity: 0, y: 16, stagger: 0.1, duration: 0.45, ease: 'power2.out', delay: 0.25, clearProps: 'all' });
-    setTimeout(() => {
+    // As barras do "top 5" só existem depois que top5Cursos() renderiza. Antes
+    // isso era um setTimeout(300) torcendo para o DOM estar pronto; agora é o
+    // próprio ciclo de render que avisa.
+    afterNextRender(() => {
       document.querySelectorAll<HTMLElement>('.top-curso-bar').forEach((bar, i) => {
         gsap.to(bar, { width: bar.dataset['width'] || '0%', duration: 0.8, delay: i * 0.12, ease: 'power2.out' });
       });
-    }, 300);
+    }, { injector: this.injector });
   }
 
   getStatusBadgeClass(status: string): string {

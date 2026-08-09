@@ -10,6 +10,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { CursoService, Regiao, Unidade } from '../../../core/services/curso.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
+import { mensagemDeErro } from '../../../core/interceptors/error.interceptor';
 
 @Component({
     selector: 'app-admin-regioes',
@@ -91,7 +92,7 @@ export class AdminRegioesComponent implements OnInit {
         this.salvando.set(false);
       },
       error: (e: any) => {
-        this.snack.open(e.error?.message || 'Erro ao salvar região', 'Fechar', { duration: 3000 });
+        this.snack.open(mensagemDeErro(e, 'Erro ao salvar região'), 'Fechar', { duration: 3000 });
         this.salvando.set(false);
       }
     });
@@ -152,7 +153,7 @@ export class AdminRegioesComponent implements OnInit {
         }
       },
       error: (e: any) => {
-        this.snack.open(e.error?.message || 'Erro ao salvar unidade', 'Fechar', { duration: 3000 });
+        this.snack.open(mensagemDeErro(e, 'Erro ao salvar unidade'), 'Fechar', { duration: 3000 });
         this.salvando.set(false);
       }
     });

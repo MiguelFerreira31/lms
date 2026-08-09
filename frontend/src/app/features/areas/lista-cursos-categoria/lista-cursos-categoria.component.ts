@@ -30,7 +30,7 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
           </h1>
           <p class="text-blue-200">
             @if (resultado()) {
-              <span>{{ resultado()!.totalElements }} curso{{ resultado()!.totalElements !== 1 ? 's' : '' }} encontrado{{ resultado()!.totalElements !== 1 ? 's' : '' }}</span>
+              <span>{{ resultado()!.page.totalElements }} curso{{ resultado()!.page.totalElements !== 1 ? 's' : '' }} encontrado{{ resultado()!.page.totalElements !== 1 ? 's' : '' }}</span>
             }
           </p>
         </div>
@@ -95,7 +95,7 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
         }
     
         <!-- Empty state -->
-        @if (!loading() && resultado()?.totalElements === 0) {
+        @if (!loading() && resultado()?.page?.totalElements === 0) {
           <div class="text-center py-20">
             <mat-icon class="text-gray-200" style="font-size:64px;height:64px;width:64px">search_off</mat-icon>
             <p class="text-gray-500 mt-4 text-lg">Nenhum curso nesta categoria ainda.</p>
@@ -106,12 +106,12 @@ import { CursoService, Curso, Page } from '../../../core/services/curso.service'
         }
     
         <!-- Pagination -->
-        @if (resultado() && resultado()!.totalPages > 1) {
+        @if (resultado() && resultado()!.page.totalPages > 1) {
           <div class="mt-8 flex justify-center">
             <mat-paginator
-              [length]="resultado()!.totalElements"
+              [length]="resultado()!.page.totalElements"
               [pageSize]="10"
-              [pageIndex]="resultado()!.number"
+              [pageIndex]="resultado()!.page.number"
               (page)="onPage($event)"
               hidePageSize showFirstLastButtons>
             </mat-paginator>

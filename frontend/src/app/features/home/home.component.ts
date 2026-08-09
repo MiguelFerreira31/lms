@@ -42,7 +42,7 @@ export class HomeComponent implements OnInit {
     }).subscribe({
       next: ({ cursos, areas }) => {
         this.cursosDestaque.set(cursos.content);
-        this.totalCursos.set(cursos.totalElements);
+        this.totalCursos.set(cursos.page.totalElements);
         this.areas.set(areas);
         this.loading.set(false);
       },

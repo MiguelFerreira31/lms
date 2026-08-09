@@ -7,6 +7,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../core/services/auth.service';
 import { CursoService, CursoDetalhe } from '../../../core/services/curso.service';
+import { mensagemDeErro } from '../../../core/interceptors/error.interceptor';
 
 @Component({
     selector: 'app-detalhe-curso',
@@ -46,7 +47,7 @@ export class DetalheCursoComponent implements OnInit {
         this.matriculando.set(false);
       },
       error: (e: any) => {
-        this.snack.open(e.error?.message || 'Erro ao realizar matrícula', 'Fechar', { duration: 3000 });
+        this.snack.open(mensagemDeErro(e, 'Erro ao realizar matrícula'), 'Fechar', { duration: 3000 });
         this.matriculando.set(false);
       }
     });

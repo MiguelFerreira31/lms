@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CursoService, Curso, ConteudoAula } from '../../../core/services/curso.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { mensagemDeErro } from '../../../core/interceptors/error.interceptor';
 
 interface CursoDetalhe {
   id: number; titulo: string; descricao: string; nivel: string; criadoEm: string;
@@ -145,7 +146,7 @@ export class ProfessorCursosComponent implements OnInit {
         this.salvando.set(false);
       },
       error: (e: any) => {
-        this.snack.open(e.error?.message || 'Erro ao adicionar conteúdo', 'Fechar', { duration: 3000 });
+        this.snack.open(mensagemDeErro(e, 'Erro ao adicionar conteúdo'), 'Fechar', { duration: 3000 });
         this.salvando.set(false);
       }
     });

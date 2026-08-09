@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, adminGuard, professorGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -77,27 +77,27 @@ export const routes: Routes = [
   },
   {
     path: 'admin/dashboard',
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     loadComponent: () => import('./features/admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
   },
   {
     path: 'admin/cursos',
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     loadComponent: () => import('./features/admin/cursos/admin-cursos.component').then(m => m.AdminCursosComponent)
   },
   {
     path: 'admin/usuarios',
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     loadComponent: () => import('./features/admin/usuarios/admin-usuarios.component').then(m => m.AdminUsuariosComponent)
   },
   {
     path: 'admin/regioes',
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     loadComponent: () => import('./features/admin/regioes/admin-regioes.component').then(m => m.AdminRegioesComponent)
   },
   {
     path: 'admin/professores',
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     loadComponent: () => import('./features/admin/professores/admin-professores.component').then(m => m.AdminProfessoresComponent)
   },
 
@@ -109,7 +109,7 @@ export const routes: Routes = [
   },
   {
     path: 'professor/cursos',
-    canActivate: [authGuard],
+    canActivate: [professorGuard],
     loadComponent: () => import('./features/professor/meus-cursos/professor-cursos.component').then(m => m.ProfessorCursosComponent)
   },
 

@@ -19,7 +19,10 @@ describe('CursoService', () => {
   afterEach(() => httpMock.verify());
 
   it('listarCursos busca a página de cursos com os parâmetros corretos', () => {
-    const pageMock: Page<Curso> = { content: [], totalElements: 0, totalPages: 0, number: 1 };
+    const pageMock: Page<Curso> = {
+      content: [],
+      page: { size: 10, number: 1, totalElements: 0, totalPages: 0 }
+    };
 
     service.listarCursos(1, 'BASICO', 5).subscribe(page => {
       expect(page).toEqual(pageMock);
