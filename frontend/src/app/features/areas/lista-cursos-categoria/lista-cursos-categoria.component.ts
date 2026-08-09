@@ -7,10 +7,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CursoService, Curso, Page } from '../../../core/services/curso.service';
 
 @Component({
-  selector: 'app-lista-cursos-categoria',
-  standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
-  template: `
+    selector: 'app-lista-cursos-categoria',
+    imports: [CommonModule, RouterLink, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
+    template: `
     <div class="min-h-screen bg-gray-50">
 
       <!-- Hero / Breadcrumb -->

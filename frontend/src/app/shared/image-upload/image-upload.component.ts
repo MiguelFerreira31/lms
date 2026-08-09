@@ -4,10 +4,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-image-upload',
-  standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
-  template: `
+    selector: 'app-image-upload',
+    imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
+    template: `
     <div>
       <div class="relative group cursor-pointer"
            (click)="fileInput.click()"

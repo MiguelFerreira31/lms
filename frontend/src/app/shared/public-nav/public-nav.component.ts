@@ -7,10 +7,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/services/curso.service';
 
 @Component({
-  selector: 'app-public-nav',
-  standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
-  template: `
+    selector: 'app-public-nav',
+    imports: [CommonModule, RouterModule, MatIconModule],
+    template: `
     <!-- ══════════════════════════════════════════════════════ Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-50 shadow-sm">
 
@@ -360,7 +359,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
       </nav>
     </div>
   `,
-  styles: [`:host { display: block; }`]
+    styles: [`:host { display: block; }`]
 })
 export class PublicNavComponent implements OnInit {
   private elRef = inject(ElementRef);

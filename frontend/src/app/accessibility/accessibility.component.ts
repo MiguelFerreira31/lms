@@ -6,11 +6,10 @@ import { VlibrasWidgetComponent } from '../shared/vlibras/vlibras-widget.compone
 import { AccessibilityService } from './accessibility.service';
 
 @Component({
-  selector: 'app-accessibility',
-  standalone: true,
-  imports: [CommonModule, VlibrasWidgetComponent],
-  templateUrl: './accessibility.component.html',
-  styleUrls: ['./accessibility.component.scss'],
+    selector: 'app-accessibility',
+    imports: [CommonModule, VlibrasWidgetComponent],
+    templateUrl: './accessibility.component.html',
+    styleUrls: ['./accessibility.component.scss']
 })
 export class AccessibilityComponent implements OnInit, OnDestroy {
   svc = inject(AccessibilityService);

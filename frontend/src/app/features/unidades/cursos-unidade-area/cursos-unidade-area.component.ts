@@ -10,10 +10,9 @@ import { CursoCardComponent } from '../../../shared/curso-card/curso-card.compon
 interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
 
 @Component({
-  selector: 'app-cursos-unidade-area',
-  standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
-  template: `
+    selector: 'app-cursos-unidade-area',
+    imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
+    template: `
     <div class="min-h-screen bg-gray-50">
 
       <!-- HERO -->

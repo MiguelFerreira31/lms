@@ -6,10 +6,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatTooltipModule],
-  template: `
+    selector: 'app-navbar',
+    imports: [CommonModule, RouterModule, MatIconModule, MatTooltipModule],
+    template: `
     <!-- Top bar -->
     <header class="fixed top-0 left-0 right-0 h-16 bg-[#0054A6] z-50 flex items-center px-4 gap-4 shadow-md">
       <button (click)="sidebarOpen.set(!sidebarOpen())"
@@ -149,7 +148,7 @@ import { AuthService } from '../../core/services/auth.service';
       </div>
     </aside>
   `,
-  styles: [`:host { display: block; }`]
+    styles: [`:host { display: block; }`]
 })
 export class NavbarComponent {
   auth = inject(AuthService);

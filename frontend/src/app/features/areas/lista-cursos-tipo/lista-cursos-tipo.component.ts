@@ -12,10 +12,9 @@ interface GrupoArea { areaNome: string; areaSlug: string; cursos: Curso[]; }
 const PER_PAGE = 4;
 
 @Component({
-  selector: 'app-lista-cursos-tipo',
-  standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
-  template: `
+    selector: 'app-lista-cursos-tipo',
+    imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, CursoCardComponent],
+    template: `
     <div class="min-h-screen bg-gray-50">
 
       <!-- ══════════════════════════ HERO ══════════════════════════ -->

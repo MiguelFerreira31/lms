@@ -10,12 +10,11 @@ import { FormsModule } from '@angular/forms';
 import { CursoService, Curso, Professor } from '../../../core/services/curso.service';
 
 @Component({
-  selector: 'app-admin-professores',
-  standalone: true,
-  imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
-  templateUrl: './admin-professores.component.html',
-  styleUrls: ['./admin-professores.component.scss']
+    selector: 'app-admin-professores',
+    imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule,
+        MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule],
+    templateUrl: './admin-professores.component.html',
+    styleUrls: ['./admin-professores.component.scss']
 })
 export class AdminProfessoresComponent implements OnInit {
   private svc = inject(CursoService);

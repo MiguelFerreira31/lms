@@ -19,10 +19,9 @@ const AREA_CONFIG: Record<string, { icon: string; color: string; bg: string; bor
 };
 
 @Component({
-  selector: 'app-lista-areas',
-  standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule],
-  template: `
+    selector: 'app-lista-areas',
+    imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule],
+    template: `
     <div class="min-h-screen bg-gray-50">
 
       <!-- Hero -->

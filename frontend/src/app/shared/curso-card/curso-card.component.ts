@@ -5,10 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { Curso } from '../../core/services/curso.service';
 
 @Component({
-  selector: 'app-curso-card',
-  standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule],
-  template: `
+    selector: 'app-curso-card',
+    imports: [CommonModule, RouterLink, MatIconModule],
+    template: `
     <a [routerLink]="['/cursos', curso.id]"
        class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1
               transition-all duration-300 no-underline group cursor-pointer flex flex-col h-full">

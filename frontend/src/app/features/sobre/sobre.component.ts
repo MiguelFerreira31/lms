@@ -4,10 +4,9 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-sobre',
-  standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule],
-  template: `
+    selector: 'app-sobre',
+    imports: [CommonModule, RouterLink, MatIconModule],
+    template: `
     <div class="min-h-screen bg-white">
 
       <!-- Hero -->

@@ -15,11 +15,10 @@ interface MatriculaComProgresso extends Matricula {
 }
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule, ImageUploadComponent],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard',
+    imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule, ImageUploadComponent],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   auth = inject(AuthService);

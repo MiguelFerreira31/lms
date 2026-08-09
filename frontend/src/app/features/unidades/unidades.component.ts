@@ -12,10 +12,9 @@ interface GrupoRegiao {
 }
 
 @Component({
-  selector: 'app-unidades',
-  standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule],
-  template: `
+    selector: 'app-unidades',
+    imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule],
+    template: `
     <div class="min-h-screen bg-white">
 
       <!-- Hero -->

@@ -8,10 +8,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { CursoService, Curso, Area } from '../../core/services/curso.service';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
-  templateUrl: './home.component.html'
+    selector: 'app-home',
+    imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
+    templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
   auth = inject(AuthService);

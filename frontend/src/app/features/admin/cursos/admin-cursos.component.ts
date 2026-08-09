@@ -13,13 +13,12 @@ import { UploadService } from '../../../core/services/upload.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 
 @Component({
-  selector: 'app-admin-cursos',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
-    MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatTabsModule, ImageUploadComponent],
-  templateUrl: './admin-cursos.component.html',
-  styleUrls: ['./admin-cursos.component.scss']
+    selector: 'app-admin-cursos',
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
+        MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule,
+        MatTabsModule, ImageUploadComponent],
+    templateUrl: './admin-cursos.component.html',
+    styleUrls: ['./admin-cursos.component.scss']
 })
 export class AdminCursosComponent implements OnInit {
   private svc = inject(CursoService);

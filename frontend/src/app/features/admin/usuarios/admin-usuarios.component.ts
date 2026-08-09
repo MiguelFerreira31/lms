@@ -6,11 +6,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CursoService, Unidade, UsuarioResponse } from '../../../core/services/curso.service';
 
 @Component({
-  selector: 'app-admin-usuarios',
-  standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatSnackBarModule],
-  templateUrl: './admin-usuarios.component.html',
-  styles: []
+    selector: 'app-admin-usuarios',
+    imports: [CommonModule, FormsModule, MatIconModule, MatSnackBarModule],
+    templateUrl: './admin-usuarios.component.html',
+    styles: []
 })
 export class AdminUsuariosComponent implements OnInit {
   private svc = inject(CursoService);

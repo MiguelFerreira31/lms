@@ -17,12 +17,11 @@ interface CursoDetalhe {
 }
 
 @Component({
-  selector: 'app-professor-cursos',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
-    MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule],
-  templateUrl: './professor-cursos.component.html',
-  styleUrls: ['./professor-cursos.component.scss']
+    selector: 'app-professor-cursos',
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
+        MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule],
+    templateUrl: './professor-cursos.component.html',
+    styleUrls: ['./professor-cursos.component.scss']
 })
 export class ProfessorCursosComponent implements OnInit {
   private svc = inject(CursoService);

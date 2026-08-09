@@ -9,11 +9,10 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-minhas-matriculas',
-  standalone: true,
-  imports: [CommonModule, RouterModule, MatProgressBarModule, MatProgressSpinnerModule, MatIconModule],
-  templateUrl: './minhas-matriculas.component.html',
-  styleUrls: ['./minhas-matriculas.component.scss']
+    selector: 'app-minhas-matriculas',
+    imports: [CommonModule, RouterModule, MatProgressBarModule, MatProgressSpinnerModule, MatIconModule],
+    templateUrl: './minhas-matriculas.component.html',
+    styleUrls: ['./minhas-matriculas.component.scss']
 })
 export class MinhasMatriculasComponent implements OnInit {
   private cursoService = inject(CursoService);

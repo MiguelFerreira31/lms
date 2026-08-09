@@ -9,10 +9,9 @@ import { AuthService } from './core/services/auth.service';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, NavbarComponent, PublicNavComponent, AccessibilityComponent],
-  template: `
+    selector: 'app-root',
+    imports: [CommonModule, RouterOutlet, NavbarComponent, PublicNavComponent, AccessibilityComponent],
+    template: `
     <ng-container *ngIf="auth.isLoggedIn(); else publicLayout">
       <app-navbar></app-navbar>
       <main class="pt-16 lg:pl-64 min-h-screen bg-gray-50">

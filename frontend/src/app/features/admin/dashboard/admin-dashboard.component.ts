@@ -34,10 +34,9 @@ interface MatriculaComCurso extends MatriculaDetalhe {
 }
 
 @Component({
-  selector: 'app-admin-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './admin-dashboard.component.html',
+    selector: 'app-admin-dashboard',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './admin-dashboard.component.html'
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   private cursoService = inject(CursoService);

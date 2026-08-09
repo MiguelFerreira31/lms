@@ -9,11 +9,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CursoService, CursoDetalhe } from '../../../core/services/curso.service';
 
 @Component({
-  selector: 'app-detalhe-curso',
-  standalone: true,
-  imports: [CommonModule, NgClass, RouterModule, MatSnackBarModule, MatProgressSpinnerModule, MatExpansionModule, MatIconModule],
-  templateUrl: './detalhe-curso.component.html',
-  styleUrls: ['./detalhe-curso.component.scss']
+    selector: 'app-detalhe-curso',
+    imports: [CommonModule, NgClass, RouterModule, MatSnackBarModule, MatProgressSpinnerModule, MatExpansionModule, MatIconModule],
+    templateUrl: './detalhe-curso.component.html',
+    styleUrls: ['./detalhe-curso.component.scss']
 })
 export class DetalheCursoComponent implements OnInit {
   private route = inject(ActivatedRoute);

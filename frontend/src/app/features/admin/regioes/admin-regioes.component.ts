@@ -12,13 +12,12 @@ import { UploadService } from '../../../core/services/upload.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 
 @Component({
-  selector: 'app-admin-regioes',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
-    MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule,
-    ImageUploadComponent],
-  templateUrl: './admin-regioes.component.html',
-  styleUrls: ['./admin-regioes.component.scss']
+    selector: 'app-admin-regioes',
+    imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule,
+        MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatExpansionModule,
+        ImageUploadComponent],
+    templateUrl: './admin-regioes.component.html',
+    styleUrls: ['./admin-regioes.component.scss']
 })
 export class AdminRegioesComponent implements OnInit {
   private svc = inject(CursoService);
