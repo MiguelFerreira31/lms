@@ -41,23 +41,23 @@ Backend e frontend rodam e buildam de forma totalmente independente (CI/CD via G
 
 ### 2.2 Arquitetura de pacotes
 
-Organização **por domínio** (não por camada técnica), 2 camadas efetivas (Controller → Repository, sem Service intermediário exceto upload):
+Organização **por domínio** (não por camada técnica), 3 camadas: Controller → Service → Repository. Os Services ficam dentro do próprio pacote de domínio (`domain/curso/CursoService.java`), preservando a convenção de agrupar por domínio em vez de por camada:
 
 ```
 br.com.lms/
 ├── LmsApplication.java
-├── config/          SecurityConfig, UploadConfig, WebConfig
+├── config/          SecurityConfig, UploadConfig
 ├── domain/
-│   ├── area/        Area, Categoria, Tipo
-│   ├── conteudo/    ConteudoAula
-│   ├── curso/       Curso, Modulo, Aula
-│   ├── matricula/   Matricula, ProgressoAula
-│   ├── presenca/    PresencaAula
-│   ├── professor/   ProfessorCurso (PK composta @EmbeddedId)
-│   ├── regiao/      Regiao, Unidade
-│   ├── upload/       UploadController, UploadService
-│   └── usuario/     Usuario, AuthController
-│   (cada pacote de domínio contém Entity + Controller + Repository)
+│   ├── area/        Area, Categoria, Tipo + AreaService
+│   ├── conteudo/    ConteudoAula + ConteudoAulaService
+│   ├── curso/       Curso, Modulo, Aula + CursoService
+│   ├── matricula/   Matricula, ProgressoAula + MatriculaService
+│   ├── presenca/    PresencaAula + PresencaService
+│   ├── professor/   ProfessorCurso (PK composta @EmbeddedId) + ProfessorService
+│   ├── regiao/      Regiao, Unidade + RegiaoService, UnidadeService
+│   ├── upload/      UploadService (armazenamento), ImagemUploadService (orquestração)
+│   └── usuario/     Usuario + UsuarioService, AutenticacaoService
+│   (cada pacote de domínio contém Entity + Controller + Service + Repository)
 ├── dto/DTOs.java    # todos os DTOs (Java records) em um único arquivo
 ├── exception/       GlobalExceptionHandler (@RestControllerAdvice), ResourceNotFoundException
 └── security/        JwtAuthFilter, JwtTokenProvider, UserDetailsServiceImpl
@@ -211,9 +211,18 @@ Widget global standalone (WCAG 2.1 AA/AAA), persistido em `localStorage`: 5 nív
 
 ## 5. Débitos técnicos e pontos de atenção conhecidos
 
-- Sem Service layer explícita no backend — lógica de negócio nos Controllers.
 - Estratégia de atualização de módulos no `PUT /api/cursos` é "replace all" (limpa e recria), não merge incremental.
 - Arquivo de crash dump da JVM (`hs_err_pid*.log`) presente na raiz — candidato a limpeza.
+
+**Resolvidos na migração de 2026-08-09** (ver §6):
+
+- ~~Sem Service layer — lógica de negócio nos Controllers~~ → 11 Services criados, controllers viraram borda HTTP.
+- ~~Escritas multi-etapa não atômicas~~ → `@Transactional` nas escritas; `CursoService.criar/atualizar` grava curso + categorias + tipos numa transação só.
+- ~~Dois handlers `/uploads/**` para diretórios diferentes~~ → `WebConfig` removido; sobrou o `UploadConfig` (`app.upload.dir`).
+- ~~`POST /api/usuarios/{id}/foto` gravava num terceiro diretório e antes de checar se o usuário existia~~ → delega ao `UploadService`; usuário resolvido primeiro.
+- ~~Upload apagava a imagem antiga antes de gravar a nova~~ → ordem invertida.
+- ~~`PATCH /api/usuarios/{id}/role` devolvia 200 com role inválida~~ → `RoleUpdateRequest` validado (400).
+- ~~`POST /api/professores/{id}/cursos` lançava NPE sem `cursoId`~~ → `VincularCursoRequest` com `@NotNull`.
 
 ---
 

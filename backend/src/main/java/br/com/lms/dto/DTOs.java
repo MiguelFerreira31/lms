@@ -215,6 +215,19 @@ public class DTOs {
         Long unidadeId
     ) {}
 
+    /**
+     * Substitui o {@code Map<String,String>} que o PATCH /role recebia. Com o Map,
+     * uma role inválida caía num if silencioso e a resposta era 200 com o usuário
+     * inalterado; agora o enum é desserializado e validado, então vira 400.
+     */
+    public record RoleUpdateRequest(@NotNull Usuario.Role role) {}
+
+    /**
+     * Substitui o {@code Map<String,Long>} do vínculo professor↔curso, que
+     * lançava NPE quando {@code cursoId} vinha ausente.
+     */
+    public record VincularCursoRequest(@NotNull Long cursoId) {}
+
     public record MatriculaDetalheResponse(
         Long id, Long usuarioId, String usuarioNome, String usuarioEmail,
         Matricula.Status status, LocalDateTime matriculadoEm,

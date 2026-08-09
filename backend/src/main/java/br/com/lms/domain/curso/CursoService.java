@@ -1,0 +1,190 @@
+package br.com.lms.domain.curso;
+
+import br.com.lms.domain.area.Area;
+import br.com.lms.domain.area.AreaRepository;
+import br.com.lms.domain.area.Categoria;
+import br.com.lms.domain.area.CategoriaRepository;
+import br.com.lms.domain.area.Tipo;
+import br.com.lms.domain.area.TipoRepository;
+import br.com.lms.domain.regiao.Unidade;
+import br.com.lms.domain.regiao.UnidadeRepository;
+import br.com.lms.dto.DTOs.*;
+import br.com.lms.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * Regras de negócio de curso.
+ *
+ * <p>Antes desta classe, {@code CursoController.criar/atualizar} gravava o curso,
+ * depois sincronizava categorias e depois tipos — cada passo numa transação
+ * própria. Uma falha no meio deixava o curso salvo com metade dos vínculos.
+ * Aqui a sequência inteira é atômica.
+ *
+ * <p>O mapeamento para DTO acontece dentro da transação, de propósito: é o que
+ * permite desligar o {@code open-in-view} sem estourar LazyInitializationException.
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class CursoService {
+
+    private final CursoRepository cursoRepository;
+    private final UnidadeRepository unidadeRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final TipoRepository tipoRepository;
+    private final AreaRepository areaRepository;
+
+    @Transactional(readOnly = true)
+    public Page<CursoResumoResponse> listar(Curso.Nivel nivel, Long unidadeId, String areaSlug,
+                                            String categoriaSlug, String tipoSlug, Pageable pageable) {
+        Page<Curso> page;
+        if (tipoSlug != null) {
+            page = cursoRepository.findByTipoSlug(tipoSlug, pageable);
+        } else if (categoriaSlug != null && areaSlug != null) {
+            page = cursoRepository.findByCategoriaSlug(areaSlug, categoriaSlug, pageable);
+        } else if (areaSlug != null) {
+            page = cursoRepository.findByAreaSlug(areaSlug, pageable);
+        } else if (nivel != null && unidadeId != null) {
+            page = cursoRepository.findByAtivoTrueAndNivelAndUnidade_Id(nivel, unidadeId, pageable);
+        } else if (nivel != null) {
+            page = cursoRepository.findByAtivoTrueAndNivel(nivel, pageable);
+        } else if (unidadeId != null) {
+            page = cursoRepository.findByAtivoTrueAndUnidade_Id(unidadeId, pageable);
+        } else {
+            page = cursoRepository.findByAtivoTrue(pageable);
+        }
+        return page.map(CursoResumoResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public CursoDetalheResponse detalhe(Long id) {
+        return CursoDetalheResponse.from(buscar(id));
+    }
+
+    @Transactional
+    public CursoResumoResponse criar(CursoRequest request) {
+        Curso curso = Curso.builder()
+                .titulo(request.titulo())
+                .descricao(request.descricao())
+                .nivel(request.nivel())
+                .unidade(resolverUnidade(request.unidadeId()))
+                .area(resolverArea(request.areaId()))
+                .build();
+        aplicarModulos(curso, request.modulos());
+
+        curso = cursoRepository.save(curso);
+        sincronizarCategorias(curso, request.categoriaIds());
+        sincronizarTipos(curso, request.tipoIds());
+        recarregarAssociacoes(curso);
+
+        log.info("Curso criado: id={} titulo='{}'", curso.getId(), curso.getTitulo());
+        return CursoResumoResponse.from(curso);
+    }
+
+    @Transactional
+    public CursoResumoResponse atualizar(Long id, CursoRequest request) {
+        Curso curso = buscar(id);
+        curso.setTitulo(request.titulo());
+        curso.setDescricao(request.descricao());
+        curso.setNivel(request.nivel());
+        curso.setUnidade(resolverUnidade(request.unidadeId()));
+        curso.setArea(resolverArea(request.areaId()));
+
+        // Estratégia "replace all": os módulos enviados substituem os existentes.
+        curso.getModulos().clear();
+        aplicarModulos(curso, request.modulos());
+
+        curso = cursoRepository.save(curso);
+        sincronizarCategorias(curso, request.categoriaIds());
+        sincronizarTipos(curso, request.tipoIds());
+        recarregarAssociacoes(curso);
+
+        log.info("Curso atualizado: id={}", curso.getId());
+        return CursoResumoResponse.from(curso);
+    }
+
+    @Transactional
+    public void desativar(Long id) {
+        Curso curso = buscar(id);
+        curso.setAtivo(false);
+        cursoRepository.save(curso);
+        log.info("Curso desativado (soft delete): id={}", id);
+    }
+
+    private Curso buscar(Long id) {
+        return cursoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso", id));
+    }
+
+    private void aplicarModulos(Curso curso, List<ModuloRequest> modulos) {
+        if (modulos == null) return;
+        for (ModuloRequest modReq : modulos) {
+            curso.getModulos().add(Modulo.builder()
+                    .titulo(modReq.titulo())
+                    .ordem(modReq.ordem())
+                    .curso(curso)
+                    .build());
+        }
+    }
+
+    private void recarregarAssociacoes(Curso curso) {
+        curso.setCategorias(categoriaRepository.findByCursos_Id(curso.getId()));
+        curso.setTipos(tipoRepository.findByCursos_Id(curso.getId()));
+    }
+
+    private Unidade resolverUnidade(Long unidadeId) {
+        if (unidadeId == null) return null;
+        return unidadeRepository.findById(unidadeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Unidade", unidadeId));
+    }
+
+    private Area resolverArea(Long areaId) {
+        return areaRepository.findById(areaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Área", areaId));
+    }
+
+    private void sincronizarCategorias(Curso curso, List<Long> categoriaIds) {
+        List<Long> ids = categoriaIds != null ? categoriaIds : List.of();
+        List<Categoria> atuais = categoriaRepository.findByCursos_Id(curso.getId());
+        for (Categoria categoria : atuais) {
+            if (!ids.contains(categoria.getId())) {
+                categoria.getCursos().removeIf(c -> c.getId().equals(curso.getId()));
+                categoriaRepository.save(categoria);
+            }
+        }
+        for (Long id : ids) {
+            if (atuais.stream().noneMatch(c -> c.getId().equals(id))) {
+                Categoria categoria = categoriaRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoria", id));
+                categoria.getCursos().add(curso);
+                categoriaRepository.save(categoria);
+            }
+        }
+    }
+
+    private void sincronizarTipos(Curso curso, List<Long> tipoIds) {
+        List<Long> ids = tipoIds != null ? tipoIds : List.of();
+        List<Tipo> atuais = tipoRepository.findByCursos_Id(curso.getId());
+        for (Tipo tipo : atuais) {
+            if (!ids.contains(tipo.getId())) {
+                tipo.getCursos().removeIf(c -> c.getId().equals(curso.getId()));
+                tipoRepository.save(tipo);
+            }
+        }
+        for (Long id : ids) {
+            if (atuais.stream().noneMatch(t -> t.getId().equals(id))) {
+                Tipo tipo = tipoRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Tipo", id));
+                tipo.getCursos().add(curso);
+                tipoRepository.save(tipo);
+            }
+        }
+    }
+}
