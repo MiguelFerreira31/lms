@@ -6,6 +6,8 @@ import br.com.lms.domain.area.Categoria;
 import br.com.lms.domain.area.CategoriaRepository;
 import br.com.lms.domain.area.Tipo;
 import br.com.lms.domain.area.TipoRepository;
+import br.com.lms.domain.matricula.ProgressoAulaRepository;
+import br.com.lms.domain.presenca.PresencaAulaRepository;
 import br.com.lms.domain.regiao.Unidade;
 import br.com.lms.domain.regiao.UnidadeRepository;
 import br.com.lms.dto.DTOs.*;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Regras de negócio de curso.
@@ -41,6 +44,8 @@ public class CursoService {
     private final CategoriaRepository categoriaRepository;
     private final TipoRepository tipoRepository;
     private final AreaRepository areaRepository;
+    private final ProgressoAulaRepository progressoAulaRepository;
+    private final PresencaAulaRepository presencaAulaRepository;
 
     @Transactional(readOnly = true)
     public Page<CursoResumoResponse> listar(Curso.Nivel nivel, Long unidadeId, String areaSlug,
@@ -99,9 +104,7 @@ public class CursoService {
         curso.setUnidade(resolverUnidade(request.unidadeId()));
         curso.setArea(resolverArea(request.areaId()));
 
-        // Estratégia "replace all": os módulos enviados substituem os existentes.
-        curso.getModulos().clear();
-        aplicarModulos(curso, request.modulos());
+        mergeModulos(curso, request.modulos());
 
         curso = cursoRepository.save(curso);
         sincronizarCategorias(curso, request.categoriaIds());
@@ -133,6 +136,57 @@ public class CursoService {
                     .ordem(modReq.ordem())
                     .curso(curso)
                     .build());
+        }
+    }
+
+    /**
+     * Merge incremental: módulo com {@code id} existente é atualizado no lugar
+     * (preservando suas aulas e o progresso/presença de alunos já registrados
+     * nelas); sem {@code id} é criado; o que sai do payload é removido, a menos
+     * que alguma de suas aulas já tenha progresso ou presença registrados — nesse
+     * caso a edição é rejeitada em vez de apagar histórico do aluno.
+     */
+    private void mergeModulos(Curso curso, List<ModuloRequest> requestsRecebidos) {
+        List<ModuloRequest> requests = requestsRecebidos != null ? requestsRecebidos : List.of();
+        // Snapshot dos módulos já persistidos, tirado antes de qualquer adição: um
+        // Modulo novo (sem id ainda) é "igual" a outro módulo novo pelo equals()
+        // gerado sobre o id (ambos null), então remoção/contains não pode rodar
+        // depois de módulos transitórios entrarem na coleção.
+        List<Modulo> existentes = List.copyOf(curso.getModulos());
+
+        List<Long> idsMantidos = requests.stream()
+                .map(ModuloRequest::id)
+                .filter(Objects::nonNull)
+                .toList();
+        List<Modulo> removidos = existentes.stream()
+                .filter(m -> !idsMantidos.contains(m.getId()))
+                .toList();
+        for (Modulo modulo : removidos) {
+            List<Long> aulaIds = modulo.getAulas().stream().map(Aula::getId).toList();
+            if (!aulaIds.isEmpty() && (progressoAulaRepository.existsByAula_IdIn(aulaIds)
+                    || presencaAulaRepository.existsByAula_IdIn(aulaIds))) {
+                throw new IllegalStateException(
+                        "O módulo '" + modulo.getTitulo() + "' não pode ser removido: "
+                        + "há progresso ou presença de aluno registrados em suas aulas");
+            }
+        }
+        curso.getModulos().removeAll(removidos);
+
+        for (ModuloRequest modReq : requests) {
+            if (modReq.id() == null) {
+                curso.getModulos().add(Modulo.builder()
+                        .titulo(modReq.titulo())
+                        .ordem(modReq.ordem())
+                        .curso(curso)
+                        .build());
+                continue;
+            }
+            Modulo existente = existentes.stream()
+                    .filter(m -> modReq.id().equals(m.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Módulo", modReq.id()));
+            existente.setTitulo(modReq.titulo());
+            existente.setOrdem(modReq.ordem());
         }
     }
 

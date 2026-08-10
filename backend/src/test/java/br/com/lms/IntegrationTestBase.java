@@ -7,6 +7,8 @@ import br.com.lms.domain.curso.CursoRepository;
 import br.com.lms.domain.curso.Modulo;
 import br.com.lms.domain.matricula.Matricula;
 import br.com.lms.domain.matricula.MatriculaRepository;
+import br.com.lms.domain.matricula.ProgressoAula;
+import br.com.lms.domain.matricula.ProgressoAulaRepository;
 import br.com.lms.domain.presenca.PresencaAulaRepository;
 import br.com.lms.domain.usuario.Usuario;
 import br.com.lms.domain.usuario.UsuarioRepository;
@@ -94,6 +96,7 @@ public abstract class IntegrationTestBase {
     @Autowired protected CursoRepository cursoRepository;
     @Autowired protected MatriculaRepository matriculaRepository;
     @Autowired protected PresencaAulaRepository presencaAulaRepository;
+    @Autowired protected ProgressoAulaRepository progressoAulaRepository;
     @Autowired protected br.com.lms.domain.professor.ProfessorCursoRepository professorCursoRepository;
     @Autowired protected br.com.lms.domain.regiao.RegiaoRepository regiaoRepository;
     @Autowired protected br.com.lms.domain.regiao.UnidadeRepository unidadeRepository;
@@ -147,5 +150,13 @@ public abstract class IntegrationTestBase {
     protected Matricula matricular(Usuario usuario, Curso curso) {
         Matricula matricula = Matricula.builder().usuario(usuario).curso(curso).build();
         return matriculaRepository.save(matricula);
+    }
+
+    protected ProgressoAula marcarProgresso(Matricula matricula, Aula aula) {
+        ProgressoAula progresso = ProgressoAula.builder()
+                .matricula(matricula).aula(aula)
+                .concluida(true).concluidoEm(java.time.LocalDateTime.now())
+                .build();
+        return progressoAulaRepository.save(progresso);
     }
 }
