@@ -12,6 +12,7 @@ import br.com.lms.domain.presenca.PresencaAula;
 import br.com.lms.domain.regiao.Regiao;
 import br.com.lms.domain.regiao.Unidade;
 import br.com.lms.domain.usuario.Usuario;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -26,23 +27,39 @@ import java.util.List;
 
 public class DTOs {
 
-    public record AuthRequest(@NotBlank @Email String email, @NotBlank String senha) {}
-
-    public record RegisterRequest(
-        @NotBlank @Size(max = 150) String nome,
-        @NotBlank @Email @Size(max = 150) String email,
-        // Mínimo de 8 caracteres: antes qualquer senha não-vazia passava.
-        @NotBlank @Size(min = 8, max = 100) String senha
+    @Schema(description = "Credenciais para POST /api/auth/login")
+    public record AuthRequest(
+        @Schema(description = "E-mail cadastrado", example = "aluno@lms.com") @NotBlank @Email String email,
+        @Schema(description = "Senha em texto plano, comparada via BCrypt") @NotBlank String senha
     ) {}
 
-    public record AuthResponse(String token, String tipo, String nome, String email, String role, String avatarUrl) {}
+    @Schema(description = "Cadastro de novo usuário (sempre role ALUNO)")
+    public record RegisterRequest(
+        @Schema(example = "Maria Silva") @NotBlank @Size(max = 150) String nome,
+        @Schema(example = "maria@lms.com") @NotBlank @Email @Size(max = 150) String email,
+        // Mínimo de 8 caracteres: antes qualquer senha não-vazia passava.
+        @Schema(description = "Mínimo de 8 caracteres") @NotBlank @Size(min = 8, max = 100) String senha
+    ) {}
+
+    @Schema(description = "Resposta de login/registro: token JWT + dados básicos do usuário")
+    public record AuthResponse(
+        @Schema(description = "JWT a ser enviado em 'Authorization: Bearer <token>'") String token,
+        @Schema(example = "Bearer") String tipo,
+        String nome, String email,
+        @Schema(example = "ALUNO", allowableValues = {"ADMIN", "PROFESSOR", "ALUNO"}) String role,
+        String avatarUrl) {}
 
     // Os @Size espelham o length das colunas: sem eles, o estouro só aparecia
     // como DataIntegrityViolationException (409) vinda do banco, em vez de 400.
-    public record CursoRequest(@NotBlank @Size(max = 200) String titulo, String descricao,
-                                @NotNull Curso.Nivel nivel, Long unidadeId,
-                                @NotNull Long areaId,
-                                List<ModuloRequest> modulos, List<Long> categoriaIds, List<Long> tipoIds) {}
+    @Schema(description = "Criação/edição de curso (POST e PUT /api/cursos). No PUT, os módulos "
+            + "fazem merge incremental por id: com id atualiza, sem id cria, ausente é removido.")
+    public record CursoRequest(
+        @Schema(example = "Introdução ao Spring Boot") @NotBlank @Size(max = 200) String titulo,
+        String descricao,
+        @NotNull Curso.Nivel nivel,
+        @Schema(description = "Opcional: restringe o curso a uma unidade") Long unidadeId,
+        @NotNull Long areaId,
+        List<ModuloRequest> modulos, List<Long> categoriaIds, List<Long> tipoIds) {}
 
     // ---- Áreas, Categorias e Tipos ----
 
@@ -100,7 +117,12 @@ public class DTOs {
         }
     }
 
-    public record ModuloRequest(Long id, @NotBlank @Size(max = 200) String titulo, @NotNull Integer ordem) {}
+    @Schema(description = "Módulo dentro de CursoRequest.modulos: id presente = atualiza módulo "
+            + "existente; id nulo = cria módulo novo")
+    public record ModuloRequest(
+        @Schema(description = "Nulo para criar; id de um módulo existente do curso para atualizar") Long id,
+        @NotBlank @Size(max = 200) String titulo,
+        @NotNull Integer ordem) {}
 
     public record CursoDetalheResponse(Long id, String titulo, String descricao, Curso.Nivel nivel,
                                        LocalDateTime criadoEm, Long unidadeId, String unidadeNome,
@@ -123,9 +145,11 @@ public class DTOs {
         }
     }
 
+    @Schema(description = "Matricula o usuário autenticado num curso (POST /api/matriculas)")
     public record MatriculaRequest(@NotNull Long cursoId) {}
 
-    public record MatriculaResponse(Long id, Long cursoId, String cursoTitulo, Matricula.Status status,
+    public record MatriculaResponse(Long id, Long cursoId, String cursoTitulo,
+                                    @Schema(example = "EM_ANDAMENTO") Matricula.Status status,
                                     LocalDateTime matriculadoEm) {
         public static MatriculaResponse from(Matricula m) {
             return new MatriculaResponse(m.getId(), m.getCurso().getId(), m.getCurso().getTitulo(),
@@ -135,6 +159,7 @@ public class DTOs {
 
     public record ProgressoResponse(Long matriculaId, long aulasConcluidas, long totalAulas, double percentual) {}
 
+    @Schema(description = "Marca uma aula como concluída para a matrícula (POST /api/matriculas/progresso)")
     public record MarcarAulaRequest(@NotNull Long matriculaId, @NotNull Long aulaId) {}
 
     public record UsuarioResponse(Long id, String nome, String email, Usuario.Role role, Long unidadeId, String unidadeNome, String avatarUrl) {
@@ -218,8 +243,10 @@ public class DTOs {
      * Sem os limites, uma nota como 99,99 ou negativa era aceita e só a coluna
      * barrava valores fora de escala.
      */
+    @Schema(description = "Lançamento de nota (PATCH /api/matriculas/{id}/nota). "
+            + "Aprovação automática quando nota >= 6,0.")
     public record NotaRequest(
-        @NotNull @DecimalMin("0.0") @DecimalMax("10.0") BigDecimal nota
+        @Schema(example = "7.5") @NotNull @DecimalMin("0.0") @DecimalMax("10.0") BigDecimal nota
     ) {}
 
     public record NotaResponse(
