@@ -6,7 +6,7 @@ export interface CategoriaInfo { id: number; nome: string; slug: string; areaNom
 export interface TipoCurso { id: number; nome: string; slug: string; }
 export interface Area { id: number; nome: string; slug: string; categorias: CategoriaInfo[]; }
 export interface Curso { id: number; titulo: string; descricao: string; nivel: string; criadoEm: string; unidadeId: number | null; unidadeNome: string | null; areaId: number | null; areaNome: string | null; imagemUrl: string | null; categorias: CategoriaInfo[]; tipos: TipoCurso[]; }
-export interface AulaInfo { id: number; titulo: string; urlVideo: string | null; duracaoMin: number; ordem: number; }
+export interface AulaInfo { id: number; moduloId: number; titulo: string; urlVideo: string | null; duracaoMin: number; ordem: number; }
 export interface ModuloInfo { id: number; titulo: string; ordem: number; aulas: AulaInfo[]; }
 export interface CursoDetalhe extends Curso { modulos: ModuloInfo[]; }
 /**
@@ -210,6 +210,19 @@ export class CursoService {
 
   desvincularProfessorCurso(professorId: number, cursoId: number) {
     return this.http.delete(`${environment.apiUrl}/professores/${professorId}/cursos/${cursoId}`);
+  }
+
+  // --- Aulas ---
+  criarAula(data: { moduloId: number; titulo: string; urlVideo: string | null; duracaoMin: number; ordem: number }) {
+    return this.http.post<AulaInfo>(`${environment.apiUrl}/aulas`, data);
+  }
+
+  atualizarAula(id: number, data: { titulo: string; urlVideo: string | null; duracaoMin: number; ordem: number }) {
+    return this.http.put<AulaInfo>(`${environment.apiUrl}/aulas/${id}`, data);
+  }
+
+  deletarAula(id: number) {
+    return this.http.delete(`${environment.apiUrl}/aulas/${id}`);
   }
 
   // --- Conteúdo das Aulas ---

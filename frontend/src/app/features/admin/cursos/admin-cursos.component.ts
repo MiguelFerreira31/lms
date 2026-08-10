@@ -6,9 +6,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
-import { CursoService, Curso, MatriculaDetalhe, Unidade, Area, TipoCurso } from '../../../core/services/curso.service';
+import { CursoService, Curso, MatriculaDetalhe, Unidade, Area, TipoCurso, AulaInfo } from '../../../core/services/curso.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
+import { mensagemDeErro } from '../../../core/interceptors/error.interceptor';
 
 @Component({
     selector: 'app-admin-cursos',
@@ -42,6 +43,21 @@ export class AdminCursosComponent implements OnInit {
   salvandoNota = signal<number | null>(null);
   niveis = ['BASICO', 'INTERMEDIARIO', 'AVANCADO'];
   colunas = ['titulo', 'nivel', 'criado', 'acoes'];
+
+  // Aulas: geridas por CRUD próprio (POST/PUT/DELETE /api/aulas), à parte do
+  // merge incremental de módulos — só existem para módulos já persistidos.
+  aulasPorModulo = signal<Record<number, AulaInfo[]>>({});
+  moduloAulasExpandido = signal<number | null>(null);
+  moduloAulaAtivo = signal<number | null>(null);
+  editandoAula = signal<AulaInfo | null>(null);
+  salvandoAula = signal(false);
+
+  aulaForm = this.fb.group({
+    titulo: ['', [Validators.required]],
+    urlVideo: [''],
+    duracaoMin: [0, [Validators.required, Validators.min(0)]],
+    ordem: [1, [Validators.required]]
+  });
 
   // Formulário estendido com a lista de módulos (FormArray)
   form = this.fb.group({
@@ -137,13 +153,16 @@ export class AdminCursosComponent implements OnInit {
       this.svc.buscarCurso(curso.id).subscribe({
         next: (cursoCompleto) => {
           if (cursoCompleto && cursoCompleto.modulos) {
+            const aulas: Record<number, AulaInfo[]> = {};
             cursoCompleto.modulos.forEach((mod: any) => {
               this.modulosFormArray.push(this.fb.group({
                 id: [mod.id],
                 titulo: [mod.titulo || '', [Validators.required]],
                 ordem: [mod.ordem, [Validators.required]]
               }));
+              aulas[mod.id] = mod.aulas || [];
             });
+            this.aulasPorModulo.set(aulas);
           }
         },
         error: (err) => console.error('Erro ao buscar detalhes do curso:', err)
@@ -165,9 +184,85 @@ export class AdminCursosComponent implements OnInit {
     this.imagemSelecionada.set(null);
     this.categoriasSelecionadas.set(new Set());
     this.tiposSelecionados.set(new Set());
+    this.aulasPorModulo.set({});
+    this.moduloAulasExpandido.set(null);
+    this.fecharFormAula();
   }
 
   onCapaSelected(file: File) { this.imagemSelecionada.set(file); }
+
+  getAulas(moduloId: number): AulaInfo[] {
+    return this.aulasPorModulo()[moduloId] || [];
+  }
+
+  toggleAulasModulo(moduloId: number) {
+    this.moduloAulasExpandido.set(this.moduloAulasExpandido() === moduloId ? null : moduloId);
+    this.fecharFormAula();
+  }
+
+  abrirFormAula(moduloId: number, aula?: AulaInfo) {
+    this.editandoAula.set(aula || null);
+    this.aulaForm.reset({
+      titulo: aula?.titulo || '',
+      urlVideo: aula?.urlVideo || '',
+      duracaoMin: aula?.duracaoMin ?? 0,
+      ordem: aula?.ordem ?? (this.getAulas(moduloId).length + 1)
+    });
+    this.moduloAulaAtivo.set(moduloId);
+  }
+
+  fecharFormAula() {
+    this.moduloAulaAtivo.set(null);
+    this.editandoAula.set(null);
+    this.aulaForm.reset();
+  }
+
+  salvarAula(moduloId: number) {
+    if (this.aulaForm.invalid) return;
+    this.salvandoAula.set(true);
+    const v = this.aulaForm.value;
+    const dados = {
+      titulo: v.titulo!,
+      urlVideo: v.urlVideo || null,
+      duracaoMin: v.duracaoMin ?? 0,
+      ordem: v.ordem ?? 1
+    };
+
+    const aula = this.editandoAula();
+    const op = aula
+      ? this.svc.atualizarAula(aula.id, dados)
+      : this.svc.criarAula({ moduloId, ...dados });
+
+    op.subscribe({
+      next: (resultado) => {
+        this.aulasPorModulo.update(m => {
+          const lista = m[moduloId] || [];
+          const atualizada = aula
+            ? lista.map(a => a.id === resultado.id ? resultado : a)
+            : [...lista, resultado];
+          return { ...m, [moduloId]: atualizada };
+        });
+        this.snack.open(aula ? 'Aula atualizada!' : 'Aula criada!', 'OK', { duration: 3000 });
+        this.salvandoAula.set(false);
+        this.fecharFormAula();
+      },
+      error: (e) => {
+        this.snack.open(mensagemDeErro(e, 'Erro ao salvar aula'), 'Fechar', { duration: 3000 });
+        this.salvandoAula.set(false);
+      }
+    });
+  }
+
+  excluirAula(moduloId: number, aula: AulaInfo) {
+    if (!confirm(`Excluir a aula "${aula.titulo}"?`)) return;
+    this.svc.deletarAula(aula.id).subscribe({
+      next: () => {
+        this.aulasPorModulo.update(m => ({ ...m, [moduloId]: (m[moduloId] || []).filter(a => a.id !== aula.id) }));
+        this.snack.open('Aula excluída!', 'OK', { duration: 3000 });
+      },
+      error: (e) => this.snack.open(mensagemDeErro(e, 'Erro ao excluir aula'), 'Fechar', { duration: 3000 })
+    });
+  }
 
   salvar() {
     if (this.form.invalid) return;
