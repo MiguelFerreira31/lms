@@ -1,6 +1,7 @@
 package br.com.lms.domain.matricula;
 
 import br.com.lms.domain.curso.Aula;
+import br.com.lms.domain.curso.AulaRepository;
 import br.com.lms.domain.curso.CursoRepository;
 import br.com.lms.domain.usuario.Usuario;
 import br.com.lms.dto.DTOs.*;
@@ -28,6 +29,7 @@ public class MatriculaService {
     private final MatriculaRepository matriculaRepository;
     private final CursoRepository cursoRepository;
     private final ProgressoAulaRepository progressoRepository;
+    private final AulaRepository aulaRepository;
 
     @Transactional(readOnly = true)
     public List<MatriculaResponse> minhas(Long usuarioId) {
@@ -59,13 +61,11 @@ public class MatriculaService {
     @Transactional
     public void marcarAula(MarcarAulaRequest request) {
         Matricula matricula = buscar(request.matriculaId());
+        Aula aula = aulaRepository.findById(request.aulaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Aula", request.aulaId()));
         ProgressoAula progresso = progressoRepository
                 .findByMatriculaIdAndAulaId(request.matriculaId(), request.aulaId())
-                .orElseGet(() -> {
-                    Aula aula = new Aula();
-                    aula.setId(request.aulaId());
-                    return ProgressoAula.builder().matricula(matricula).aula(aula).build();
-                });
+                .orElseGet(() -> ProgressoAula.builder().matricula(matricula).aula(aula).build());
         progresso.setConcluida(true);
         progresso.setConcluidoEm(LocalDateTime.now());
         progressoRepository.save(progresso);

@@ -104,11 +104,29 @@ public class DTOs {
         }
     }
 
-    public record AulaResponse(Long id, String titulo, String urlVideo, int duracaoMin, int ordem) {
+    public record AulaResponse(Long id, Long moduloId, String titulo, String urlVideo, int duracaoMin, int ordem) {
         public static AulaResponse from(Aula a) {
-            return new AulaResponse(a.getId(), a.getTitulo(), a.getUrlVideo(), a.getDuracaoMin(), a.getOrdem());
+            return new AulaResponse(a.getId(), a.getModulo() != null ? a.getModulo().getId() : null,
+                    a.getTitulo(), a.getUrlVideo(), a.getDuracaoMin(), a.getOrdem());
         }
     }
+
+    @Schema(description = "Criação de aula vinculada a um módulo (POST /api/aulas)")
+    public record CriarAulaRequest(
+        @NotNull Long moduloId,
+        @NotBlank @Size(max = 200) String titulo,
+        @Size(max = 500) String urlVideo,
+        Integer duracaoMin,
+        Integer ordem
+    ) {}
+
+    @Schema(description = "Edição de aula (PUT /api/aulas/{id})")
+    public record AtualizarAulaRequest(
+        @NotBlank @Size(max = 200) String titulo,
+        @Size(max = 500) String urlVideo,
+        Integer duracaoMin,
+        Integer ordem
+    ) {}
 
     public record ModuloResponse(Long id, String titulo, int ordem, List<AulaResponse> aulas) {
         public static ModuloResponse from(Modulo m) {
