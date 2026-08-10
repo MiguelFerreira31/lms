@@ -34,7 +34,7 @@
               placeholder="O que você quer aprender?"
               class="flex-1 px-4 py-4 text-texto text-base outline-hidden bg-transparent placeholder:text-gray-400" />
               <button (click)="irParaCursos()"
-                class="bg-destaque hover:bg-orange-500 transition-colors px-7 py-4 text-white font-semibold text-sm cursor-pointer border-0 shrink-0">
+                class="bg-destaque hover:bg-destaque-escuro transition-colors px-7 py-4 text-white font-semibold text-sm cursor-pointer border-0 shrink-0">
                 Buscar
               </button>
             </div>
@@ -107,15 +107,15 @@
           <!-- Fallback chips se API ainda não carregou -->
           @if (areas().length === 0) {
             <button (click)="irParaCursos('BASICO')"
-              class="px-4 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors cursor-pointer border-0">
+              class="px-4 py-1.5 rounded-full text-sm font-medium bg-green-100 text-sucesso hover:bg-sucesso/20 transition-colors cursor-pointer border-0">
               Básico
             </button>
             <button (click)="irParaCursos('INTERMEDIARIO')"
-              class="px-4 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors cursor-pointer border-0">
+              class="px-4 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-aviso hover:bg-aviso/25 transition-colors cursor-pointer border-0">
               Intermediário
             </button>
             <button (click)="irParaCursos('AVANCADO')"
-              class="px-4 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors cursor-pointer border-0">
+              class="px-4 py-1.5 rounded-full text-sm font-medium bg-red-100 text-erro hover:bg-erro/20 transition-colors cursor-pointer border-0">
               Avançado
             </button>
           }
@@ -143,7 +143,7 @@
 
           <a routerLink="/cursos"
             class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-3 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-            <div class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 transition-colors">
+            <div class="w-14 h-14 bg-sucesso rounded-2xl flex items-center justify-center group-hover:bg-sucesso transition-colors">
               <mat-icon class="text-white">explore</mat-icon>
             </div>
             <span class="text-xs font-medium text-texto text-center leading-tight">Explorar Cursos</span>
@@ -159,7 +159,7 @@
 
           <a (click)="irParaCursos()"
             class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-3 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-            <div class="w-14 h-14 bg-violet-500 rounded-2xl flex items-center justify-center group-hover:bg-violet-600 transition-colors">
+            <div class="w-14 h-14 bg-marca rounded-2xl flex items-center justify-center group-hover:bg-marca transition-colors">
               <mat-icon class="text-white">calculate</mat-icon>
             </div>
             <span class="text-xs font-medium text-texto text-center leading-tight">Simulador de Preço</span>
@@ -167,7 +167,7 @@
 
           <a routerLink="/login"
             class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-3 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-            <div class="w-14 h-14 bg-destaque rounded-2xl flex items-center justify-center group-hover:bg-orange-500 transition-colors">
+            <div class="w-14 h-14 bg-destaque rounded-2xl flex items-center justify-center group-hover:bg-destaque transition-colors">
               <mat-icon class="text-white">contact_mail</mat-icon>
             </div>
             <span class="text-xs font-medium text-texto text-center leading-tight">Quero um Orçamento</span>
@@ -180,7 +180,7 @@
     <!-- ===== BANNER "SENAC NA MINHA HISTÓRIA" ===== -->
     <section class="py-10 bg-superficie">
       <div class="max-w-6xl mx-auto px-6">
-        <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#1a1035] via-marca-escura to-marca">
+        <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-marca-profunda via-marca-escura to-marca">
           <!-- Decorative organic shapes -->
           <div class="absolute top-0 right-40 w-48 h-48 bg-destaque/20 rounded-full -mt-16 pointer-events-none"></div>
           <div class="absolute bottom-0 right-20 w-32 h-32 bg-destaque/30 rounded-full mb-4 pointer-events-none"></div>
@@ -206,7 +206,7 @@
                 Venha fazer parte dessa história e construa seu futuro conosco.
               </p>
               <a routerLink="/cursos"
-                class="inline-flex items-center gap-2 bg-superficie text-marca font-bold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors no-underline text-sm">
+                class="inline-flex items-center gap-2 bg-superficie text-marca font-bold px-6 py-3 rounded-xl hover:bg-marca-suave transition-colors no-underline text-sm">
                 Conhecer os cursos
                 <mat-icon style="font-size:18px;height:18px;width:18px;line-height:18px">arrow_forward</mat-icon>
               </a>
@@ -525,7 +525,7 @@
             © {{ year }} Senac LMS · Desenvolvido como portfólio para vaga Programador Java Jr
           </p>
           <div class="flex items-center gap-2 text-blue-200 text-xs">
-            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span class="w-2 h-2 bg-sucesso rounded-full animate-pulse"></span>
             Sistema em funcionamento
           </div>
         </div>

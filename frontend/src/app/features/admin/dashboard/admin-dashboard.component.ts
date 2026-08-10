@@ -28,6 +28,7 @@ import {
   UsuarioResponse,
 } from '../../../core/services/curso.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { TemaService, COR_FALLBACK, type Paleta, type TokenCor } from '../../../core/services/tema.service';
 
 Chart.register(...registerables);
 
@@ -45,6 +46,7 @@ interface MatriculaComCurso extends MatriculaDetalhe {
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   private cursoService = inject(CursoService);
   auth = inject(AuthService);
+  private tema = inject(TemaService);
   private platformId = inject(PLATFORM_ID);
 
   @ViewChild('barChartCanvas') barChartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -115,6 +117,52 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         }, { injector: this.injector });
       }
     });
+
+    // Os gráficos são canvas: o Chart.js resolve as cores na criação, então não
+    // acompanham a troca de tema sozinhos e ficariam ilegíveis no escuro.
+    //
+    // A recriação é direta, sem afterNextRender: os canvases já existem neste
+    // ponto, e a troca de tema não agenda um novo render do componente — o
+    // callback simplesmente não dispararia.
+    effect(() => {
+      const tema = this.tema.temaAtual(); // dependência: cor ou modo
+      if (!this.chartsInitialized || !this.barChart) return;
+      this.paleta = tema.cores;
+      this.destroyCharts();
+      this.initCharts();
+    });
+  }
+
+  /** Paleta em uso pelos gráficos; atualizada pelo efeito de re-tematização. */
+  private paleta: Paleta | null = null;
+
+  /**
+   * Cor de um token, lida do signal do tema — e não de `getComputedStyle`.
+   *
+   * Ler do DOM criaria dependência da ordem em que os efeitos rodam: se este
+   * efeito corresse antes do TemaService escrever as variáveis, os gráficos
+   * seriam pintados com as cores do modo anterior.
+   */
+  private corTema(token: TokenCor): string {
+    return (this.paleta ?? this.tema.temaAtual().cores)[token] || COR_FALLBACK;
+  }
+
+  /** Converte um token para rgba com a opacidade dada. */
+  private corTemaAlpha(token: TokenCor, alpha: number): string {
+    const hex = this.corTema(token).replace('#', '');
+    const n = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex;
+    const r = parseInt(n.slice(0, 2), 16), g = parseInt(n.slice(2, 4), 16), b = parseInt(n.slice(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  /** Opções compartilhadas de tooltip: fundo "inverso" legível nos dois modos. */
+  private tooltipTema() {
+    return {
+      backgroundColor: this.corTema('texto'),
+      titleColor: this.corTema('superficie'),
+      bodyColor: this.corTemaAlpha('superficie', 0.85),
+      padding: 12,
+    };
   }
 
   ngOnInit(): void {
@@ -239,8 +287,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         datasets: [{
           label: 'Matrículas',
           data: months.map(m => m.count),
-          backgroundColor: 'rgba(99,102,241,0.85)',
-          borderColor: '#6366f1',
+          backgroundColor: this.corTemaAlpha('marca', 0.85),
+          borderColor: this.corTema('marca'),
+          hoverBackgroundColor: this.corTema('marca'),
           borderWidth: 0,
           borderRadius: 6,
           borderSkipped: false,
@@ -252,10 +301,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#1e293b',
-            padding: 12,
-            titleColor: '#f1f5f9',
-            bodyColor: '#94a3b8',
+            ...this.tooltipTema(),
             displayColors: false,
             callbacks: { label: (c) => `${c.parsed.y} matrículas` },
           },
@@ -263,11 +309,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { stepSize: 1, color: '#94a3b8', font: { size: 12 } },
-            grid: { color: 'rgba(148,163,184,0.1)' },
+            ticks: { stepSize: 1, color: this.corTema('textoSuave'), font: { size: 12 } },
+            grid: { color: this.corTemaAlpha('textoSuave', 0.12) },
           },
           x: {
-            ticks: { color: '#94a3b8', font: { size: 12 } },
+            ticks: { color: this.corTema('textoSuave'), font: { size: 12 } },
             grid: { display: false },
           },
         },
@@ -286,9 +332,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         labels: niveis.map(n => n.label),
         datasets: [{
           data: niveis.map(n => n.count),
-          backgroundColor: ['#10b981', '#f59e0b', '#f43f5e'],
+          backgroundColor: [this.corTema('sucesso'), this.corTema('aviso'), this.corTema('erro')],
           borderWidth: 3,
-          borderColor: '#ffffff',
+          borderColor: this.corTema('superficie'),
           hoverOffset: 8,
         }],
       },
@@ -299,9 +345,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { color: '#64748b', padding: 16, usePointStyle: true, font: { size: 12 } },
+            labels: { color: this.corTema('textoSuave'), padding: 16, usePointStyle: true, font: { size: 12 } },
           },
-          tooltip: { backgroundColor: '#1e293b', padding: 12 },
+          tooltip: this.tooltipTema(),
         },
       },
     });
@@ -320,7 +366,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           label: 'Unidades',
           data: regioes.map(r => r.totalUnidades),
           backgroundColor: regioes.map((_, i) =>
-            i % 2 === 0 ? 'rgba(99,102,241,0.85)' : 'rgba(100,116,139,0.65)'
+            i % 2 === 0 ? this.corTemaAlpha('marca', 0.85) : this.corTemaAlpha('textoSuave', 0.65)
           ),
           borderWidth: 0,
           borderRadius: 4,
@@ -332,16 +378,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: { backgroundColor: '#1e293b', padding: 12 },
+          tooltip: this.tooltipTema(),
         },
         scales: {
           x: {
             beginAtZero: true,
-            ticks: { stepSize: 5, color: '#94a3b8', font: { size: 11 } },
-            grid: { color: 'rgba(148,163,184,0.1)' },
+            ticks: { stepSize: 5, color: this.corTema('textoSuave'), font: { size: 11 } },
+            grid: { color: this.corTemaAlpha('textoSuave', 0.12) },
           },
           y: {
-            ticks: { color: '#64748b', font: { size: 11 } },
+            ticks: { color: this.corTema('textoSuave'), font: { size: 11 } },
             grid: { display: false },
           },
         },
@@ -422,8 +468,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   getStatusBadgeClass(status: string): string {
-    if (status === 'EM_ANDAMENTO') return 'bg-indigo-100 text-indigo-700';
-    if (status === 'CONCLUIDO') return 'bg-emerald-100 text-emerald-700';
+    if (status === 'EM_ANDAMENTO') return 'bg-marca-suave text-marca-escura';
+    if (status === 'CONCLUIDO') return 'bg-emerald-100 text-sucesso';
     if (status === 'CANCELADO') return 'bg-rose-100 text-rose-700';
     return 'bg-superficie-2 text-texto-suave';
   }
@@ -436,7 +482,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   getAvatarBg(nome: string): string {
-    const colors = ['bg-indigo-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-violet-500', 'bg-sky-500'];
+    const colors = ['bg-marca', 'bg-sucesso', 'bg-amber-500', 'bg-rose-500', 'bg-marca', 'bg-sky-500'];
     return colors[(nome?.charCodeAt(0) || 0) % colors.length];
   }
 

@@ -157,19 +157,19 @@ export class AdminUsuariosComponent implements OnInit {
   getRoleBadgeClass(role: string): string {
     const map: Record<string, string> = {
       ADMIN:     'bg-purple-100 text-purple-700 border border-purple-200',
-      PROFESSOR: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-      ALUNO:     'bg-indigo-100 text-indigo-700 border border-indigo-200',
+      PROFESSOR: 'bg-emerald-100 text-sucesso border border-emerald-200',
+      ALUNO:     'bg-marca-suave text-marca-escura border border-marca-suave',
     };
     return map[role] ?? 'bg-superficie-2 text-texto-suave border border-borda';
   }
 
   getAvatarBg(role: string): string {
     const map: Record<string, string> = {
-      ADMIN:     'bg-purple-600',
-      PROFESSOR: 'bg-emerald-600',
-      ALUNO:     'bg-indigo-600',
+      ADMIN:     'bg-marca',
+      PROFESSOR: 'bg-sucesso',
+      ALUNO:     'bg-marca',
     };
-    return map[role] ?? 'bg-slate-500';
+    return map[role] ?? 'bg-texto-suave';
   }
 
   trackById(_: number, item: { id: number }): number { return item.id; }

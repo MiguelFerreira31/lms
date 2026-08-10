@@ -161,6 +161,6 @@ export class ListaCursosCategoriaComponent implements OnInit {
       'INTERMEDIARIO': 'from-yellow-400 to-orange-400',
       'AVANCADO': 'from-red-400 to-rose-500'
     };
-    return map[nivel] ?? 'from-blue-400 to-marca';
+    return map[nivel] ?? 'from-marca to-marca';
   }
 }

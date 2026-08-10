@@ -29,7 +29,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
           <a routerLink="/home" routerLinkActive="!text-marca !font-semibold"
             [routerLinkActiveOptions]="{exact: true}"
              class="shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-texto
-                    hover:text-marca hover:bg-blue-50 transition-colors no-underline">
+                    hover:text-marca hover:bg-marca-suave transition-colors no-underline">
             Home
           </a>
     
@@ -39,7 +39,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
                    font-medium transition-colors cursor-pointer border-0 bg-transparent"
             [class]="activeDropdown() === 'cursos'
               ? 'text-marca bg-blue-50 font-semibold'
-              : 'text-texto hover:text-marca hover:bg-blue-50'">
+              : 'text-texto hover:text-marca hover:bg-marca-suave'">
             Cursos
             <mat-icon class="transition-transform duration-200 text-base"
               [style.transform]="activeDropdown() === 'cursos' ? 'rotate(180deg)' : 'rotate(0deg)'"
@@ -52,7 +52,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
                    font-medium transition-colors cursor-pointer border-0 bg-transparent"
             [class]="activeDropdown() === 'unidades'
               ? 'text-marca bg-blue-50 font-semibold'
-              : 'text-texto hover:text-marca hover:bg-blue-50'">
+              : 'text-texto hover:text-marca hover:bg-marca-suave'">
             Unidades
             <mat-icon class="transition-transform duration-200 text-base"
               [style.transform]="activeDropdown() === 'unidades' ? 'rotate(180deg)' : 'rotate(0deg)'"
@@ -61,12 +61,12 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
     
           <a routerLink="/sobre"
              class="shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-texto
-                    hover:text-marca hover:bg-blue-50 transition-colors no-underline">
+                    hover:text-marca hover:bg-marca-suave transition-colors no-underline">
             Bolsas de Estudo
           </a>
           <a routerLink="/sobre"
              class="shrink-0 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-medium text-texto
-                    hover:text-marca hover:bg-blue-50 transition-colors no-underline">
+                    hover:text-marca hover:bg-marca-suave transition-colors no-underline">
             Eventos
           </a>
         </nav>
@@ -80,7 +80,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
               Entrar
             </a>
             <a routerLink="/login"
-               class="shrink-0 bg-destaque hover:bg-orange-500 text-white font-semibold text-sm
+               class="shrink-0 bg-destaque hover:bg-destaque-escuro text-white font-semibold text-sm
                       px-5 py-2 rounded-xl transition-colors no-underline whitespace-nowrap">
               Matricule-se
             </a>
@@ -96,7 +96,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
     
           <!-- Hamburguer — abaixo de lg -->
           <button (click)="menuOpen.set(!menuOpen())"
-            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors border-0
+            class="lg:hidden p-2 rounded-lg hover:bg-superficie-2 transition-colors border-0
                    bg-transparent cursor-pointer text-texto shrink-0">
             <mat-icon>{{ menuOpen() ? 'close' : 'menu' }}</mat-icon>
           </button>
@@ -265,14 +265,14 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
         style="max-height: calc(100vh - 4rem)">
         <nav class="flex flex-col py-2">
           <a routerLink="/home" (click)="closeAll()"
-           class="text-texto hover:text-marca hover:bg-blue-50 px-6 py-3 text-sm
+           class="text-texto hover:text-marca hover:bg-marca-suave px-6 py-3 text-sm
                   font-medium transition-colors no-underline">
             Home
           </a>
           <!-- Accordion: Cursos -->
           <button (click)="toggleMobileAccordion('cursos')"
           class="flex items-center justify-between px-6 py-3 text-sm font-medium w-full
-                 border-0 bg-transparent cursor-pointer text-texto hover:text-marca hover:bg-blue-50">
+                 border-0 bg-transparent cursor-pointer text-texto hover:text-marca hover:bg-marca-suave">
             Cursos
             <mat-icon class="transition-transform duration-200"
               [style.transform]="mobileAccordion() === 'cursos' ? 'rotate(180deg)' : 'rotate(0)'"
@@ -309,7 +309,7 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
           <!-- Accordion: Unidades -->
           <button (click)="toggleMobileAccordion('unidades')"
           class="flex items-center justify-between px-6 py-3 text-sm font-medium w-full
-                 border-0 bg-transparent cursor-pointer text-texto hover:text-marca hover:bg-blue-50">
+                 border-0 bg-transparent cursor-pointer text-texto hover:text-marca hover:bg-marca-suave">
             Unidades
             <mat-icon class="transition-transform duration-200"
               [style.transform]="mobileAccordion() === 'unidades' ? 'rotate(180deg)' : 'rotate(0)'"
@@ -351,12 +351,12 @@ import { CursoService, Area, TipoCurso, Regiao, Unidade } from '../../core/servi
             </div>
           }
           <a routerLink="/sobre" (click)="closeAll()"
-           class="text-texto hover:text-marca hover:bg-blue-50 px-6 py-3 text-sm
+           class="text-texto hover:text-marca hover:bg-marca-suave px-6 py-3 text-sm
                   font-medium transition-colors no-underline">
             Bolsas de Estudo
           </a>
           <a routerLink="/sobre" (click)="closeAll()"
-           class="text-texto hover:text-marca hover:bg-blue-50 px-6 py-3 text-sm
+           class="text-texto hover:text-marca hover:bg-marca-suave px-6 py-3 text-sm
                   font-medium transition-colors no-underline">
             Eventos
           </a>

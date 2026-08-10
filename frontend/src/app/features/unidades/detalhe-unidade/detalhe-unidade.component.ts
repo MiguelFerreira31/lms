@@ -93,7 +93,7 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
                   <div
                     class="bg-superficie rounded-xl border border-borda overflow-hidden shadow-xs">
                     <button (click)="toggleTipo(grupo.nome)"
-                class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50
+                class="w-full flex items-center justify-between px-6 py-4 hover:bg-superficie-2
                        transition-colors cursor-pointer bg-transparent border-0 text-left">
                       <div class="flex items-center gap-3">
                         <span class="font-semibold text-texto text-base">{{ grupo.nome }}</span>
@@ -137,7 +137,7 @@ interface TipoGrupo { nome: string; slug: string; cursos: Curso[]; }
                 </h3>
               </div>
               <a routerLink="/cursos/areas"
-               class="shrink-0 bg-destaque hover:bg-orange-500 text-white font-bold px-8 py-3.5
+               class="shrink-0 bg-destaque hover:bg-destaque-escuro text-white font-bold px-8 py-3.5
                       rounded-xl transition-colors no-underline whitespace-nowrap">
                 Ver todos os cursos
               </a>

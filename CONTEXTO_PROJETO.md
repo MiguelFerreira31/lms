@@ -135,7 +135,7 @@ Migrations relevantes: V11 faz seed de áreas/categorias/tipos; V12 faz seed de 
 | Acessibilidade | Widget próprio WCAG 2.1 AA/AAA + `VlibrasWidgetComponent` local (script oficial do gov.br) |
 | HTTP | `HttpClient` + interceptors funcionais |
 | Build | Angular CLI 22 · TypeScript 6.0 |
-| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, jsdom) — 45 specs em 9 arquivos · **Playwright** — 25 cenários end-to-end |
+| Testes | **Vitest 4.1** (builder `@angular/build:unit-test`, jsdom) — 48 specs em 10 arquivos, incluindo auditoria estática de tokens · **Playwright** — 29 cenários end-to-end |
 
 ### 3.2 Estrutura (`src/app/`)
 
@@ -390,7 +390,59 @@ O estilo estava cravado no código: **289 cores hex** (só `#0054A6` aparecia 14
 
 Restaram **127 fundos em paletas fixas** (`bg-purple-50`, `bg-blue-50`…), usados como "chips" no padrão fundo claro + texto escuro do mesmo matiz — legível no claro, uma mancha branca no escuro. Em vez de decidir 127 casos um a um, uma regra genérica em `tema.css` converte qualquer matiz: no escuro o fundo vira `color-mix()` do mesmo matiz com a superfície, e o texto sobe para o tom 300. Só é possível porque o Tailwind 4 expõe a paleta inteira como custom properties.
 
-### 8.3 Detalhes que exigiram cuidado
+### 8.3 Cobertura completa: hovers, gráficos e auditoria
+
+A primeira versão tokenizou cores em repouso, mas deixou de fora os **estados
+interativos** — o hover é o mais fácil de esquecer numa migração de tema e o
+mais visível quando erra, porque só aparece na interação. Uma segunda passagem
+converteu **312 ocorrências** em 30 arquivos:
+
+| Antes | Depois |
+|---|---|
+| `hover:bg-indigo-700` (12) | `hover:bg-marca-escura` |
+| `hover:bg-gray-50` / `-100` (20) | `hover:bg-superficie-2` |
+| `hover:bg-blue-50` / `indigo-50` (14) | `hover:bg-marca-suave` |
+| `hover:bg-orange-500` (9) | `hover:bg-destaque-escuro` |
+| `bg-indigo-600` / `text-indigo-600` (30) | `bg-marca` / `text-marca` |
+| `hover:bg-red-50` (5) | `hover:bg-erro/10` |
+| `bg-purple-50` da sidebar admin (30) | tokens de marca |
+
+**Tokens derivados de hover** (`--tema-destaque-escuro`, `--tema-sucesso-escuro`,
+`--tema-erro-escuro`, `--tema-aviso-escuro`) não são editáveis na página de
+propósito: derivam da cor base via `color-mix`, então acompanham qualquer cor
+escolhida. No claro escurecem; no escuro clareiam, que é o padrão de superfícies
+escuras. A exceção é a marca, cujo hover (`--tema-marca-escura`) já é um token
+editável próprio.
+
+**Chart.js** foi o caso mais sutil: canvas não herda CSS, então o gráfico
+resolve a cor na criação e ficava com a paleta do modo anterior. Um efeito
+observa `temaAtual()` e recria os três gráficos. Dois detalhes de implementação
+importaram:
+
+- **Sem `afterNextRender`** — os canvases já existem quando o tema muda, e a
+  troca de tema não agenda um novo render do componente, então o callback
+  simplesmente não disparava. A recriação é direta.
+- **A cor vem do signal, não de `getComputedStyle`** — ler do DOM criaria
+  dependência da ordem em que os efeitos rodam: se este corresse antes de o
+  `TemaService` escrever as variáveis, os gráficos seriam pintados com as cores
+  do modo anterior.
+
+**Prévia interativa** — a prévia virou uma mini-aplicação (barra, menu lateral,
+cartão, botões, campo) com `:hover` e `:focus` reais. Ela usa variáveis próprias
+`--pv-*` em vez dos tokens globais, de propósito: mostra o modo **em edição**,
+que pode não ser o aplicado. É o que permite ajustar o tema escuro navegando no
+claro e ainda ver o hover de um botão.
+
+**Auditoria estática** (`tokens-tema.spec.ts`) varre todos os templates e falha
+se alguém reintroduzir cor hex literal, classe arbitrária `bg-[#...]`, paleta
+fixa em papel de superfície/texto, hover de marca fora do tema, ou cor literal
+no Chart.js. Uma regressão dessas não quebra nada visível no modo claro — ela só
+deixa de responder à página de Aparência e vira mancha errada no escuro. É
+silenciosa, e por isso vale um teste em vez de inspeção manual.
+
+**Exportar/importar tema foi removido** a pedido: não seria usado.
+
+### 8.4 Detalhes que exigiram cuidado
 
 - **Angular Material** — o tema prebuilt `azure-blue` é só claro. Os tokens `--mat-sys-*` foram amarrados aos tokens do tema, então ícones, spinner, snackbar, tooltip, tabs, expansion e paginator acompanham o modo.
 - **`text-white` ficou de fora** da migração de propósito: quase sempre está sobre fundo de marca e deve continuar branco nos dois modos.

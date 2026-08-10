@@ -27,10 +27,10 @@
           <div
             class="bg-superficie rounded-2xl shadow-xs border border-borda overflow-hidden">
             <!-- Cabeçalho do professor -->
-            <div class="flex items-center justify-between p-5 cursor-pointer hover:bg-gray-50 transition-colors"
+            <div class="flex items-center justify-between p-5 cursor-pointer hover:bg-superficie-2 transition-colors"
               (click)="expandirProfessor(prof)">
               <div class="flex items-center gap-4">
-                <div class="w-11 h-11 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                <div class="w-11 h-11 rounded-full bg-sucesso flex items-center justify-center text-white font-bold text-sm shrink-0">
                   {{ getIniciais(prof.nome) }}
                 </div>
                 <div>
@@ -68,7 +68,7 @@
                   </div>
                   <button (click)="vincular(prof.id)"
                     [disabled]="!getCursoSelecionado(prof.id) || vinculandoProfessor() === prof.id"
-                    class="flex items-center gap-1 bg-emerald-600 text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 border-0 cursor-pointer mb-5">
+                    class="flex items-center gap-1 bg-sucesso text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-sucesso-escuro transition-colors disabled:opacity-50 border-0 cursor-pointer mb-5">
                     <mat-icon class="text-sm">{{ vinculandoProfessor() === prof.id ? 'hourglass_empty' : 'link' }}</mat-icon>
                     Vincular
                   </button>
@@ -83,8 +83,8 @@
                   <div
                     class="bg-superficie rounded-xl border border-borda p-3 mb-2 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <div class="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <mat-icon class="text-indigo-600 text-sm">menu_book</mat-icon>
+                      <div class="w-7 h-7 bg-marca-suave rounded-lg flex items-center justify-center">
+                        <mat-icon class="text-marca text-sm">menu_book</mat-icon>
                       </div>
                       <div>
                         <p class="font-medium text-texto text-sm">{{ curso.titulo }}</p>
@@ -93,7 +93,7 @@
                     </div>
                     <button (click)="desvincular(prof.id, curso.id)"
                       matTooltip="Desvincular curso"
-                      class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer">
+                      class="p-1.5 rounded-lg text-erro hover:bg-erro/10 border-0 bg-transparent cursor-pointer">
                       <mat-icon class="text-sm">link_off</mat-icon>
                     </button>
                   </div>

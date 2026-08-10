@@ -107,6 +107,13 @@ const VAR_DE: Record<TokenCor, string> = {
   sucesso: '--tema-sucesso', erro: '--tema-erro', aviso: '--tema-aviso',
 };
 
+/**
+ * Cor de segurança para quem lê tokens fora do CSS (o Chart.js pinta em canvas
+ * e precisa de um valor resolvido). Só entra em cena se a custom property não
+ * existir — o que indicaria um token removido do tema.
+ */
+export const COR_FALLBACK = '#888888';
+
 const CHAVE = 'lms_tema';
 
 /**
@@ -178,30 +185,6 @@ export class TemaService {
 
   restaurarTudo(): void {
     this.config.set(estruturaClonada(TEMA_PADRAO));
-  }
-
-  exportar(): string {
-    return JSON.stringify(this.config(), null, 2);
-  }
-
-  /** @returns mensagem de erro, ou null se importou. */
-  importar(json: string): string | null {
-    try {
-      const bruto = JSON.parse(json) as Partial<ConfiguracaoTema>;
-      if (!bruto?.claro?.cores || !bruto?.escuro?.cores) {
-        return 'Arquivo sem os modos claro e escuro.';
-      }
-      // Mescla sobre o padrão: um arquivo de versão antiga, sem algum token,
-      // continua válido em vez de deixar a interface com cor indefinida.
-      this.config.set({
-        modo: bruto.modo ?? TEMA_PADRAO.modo,
-        claro: mesclarModo(TEMA_PADRAO.claro, bruto.claro),
-        escuro: mesclarModo(TEMA_PADRAO.escuro, bruto.escuro),
-      });
-      return null;
-    } catch {
-      return 'JSON inválido.';
-    }
   }
 
   private aplicar(tema: TemaDoModo, modo: 'claro' | 'escuro'): void {

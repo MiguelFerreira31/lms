@@ -20,7 +20,7 @@
         <p class="text-texto-suave font-semibold text-lg">Você ainda não está matriculado em nenhum curso</p>
         <p class="text-texto-suave text-sm mt-2 mb-6">Explore o catálogo e comece sua jornada de aprendizado</p>
         <a routerLink="/cursos"
-          class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors no-underline">
+          class="inline-flex items-center gap-2 bg-marca text-white px-6 py-3 rounded-xl font-medium hover:bg-marca-escura transition-colors no-underline">
           <mat-icon>explore</mat-icon> Explorar Cursos
         </a>
       </div>
@@ -31,12 +31,12 @@
         @for (m of matriculas(); track m.id) {
           <div class="bg-superficie rounded-2xl border border-borda shadow-card overflow-hidden">
             <div class="h-1.5 w-full bg-superficie-2">
-              <div class="h-1.5 bg-indigo-500 transition-all duration-700 rounded-full"
+              <div class="h-1.5 bg-marca transition-all duration-700 rounded-full"
               [style.width.%]="m.progresso?.percentual || 0"></div>
             </div>
             <div class="p-6">
               <div class="flex items-start gap-3 mb-4">
-                <div class="w-11 h-11 bg-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                <div class="w-11 h-11 bg-marca rounded-xl flex items-center justify-center shrink-0">
                   <mat-icon class="text-white">menu_book</mat-icon>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -47,7 +47,7 @@
               <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
                   <span class="text-sm text-texto-suave">Progresso</span>
-                  <span class="text-sm font-bold text-indigo-600">{{ $safeNavigationMigration(m.progresso?.percentual) | number:'1.0-0' }}%</span>
+                  <span class="text-sm font-bold text-marca">{{ $safeNavigationMigration(m.progresso?.percentual) | number:'1.0-0' }}%</span>
                 </div>
                 <mat-progress-bar mode="determinate" [value]="m.progresso?.percentual || 0" class="rounded-full"></mat-progress-bar>
                 <p class="text-xs text-texto-suave mt-1.5">
@@ -55,10 +55,10 @@
                 </p>
               </div>
               <div class="flex items-center justify-between">
-                <span [class]="m.status === 'CONCLUIDO' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'"
+                <span [class]="m.status === 'CONCLUIDO' ? 'bg-green-100 text-sucesso' : 'bg-blue-100 text-marca'"
                 class="px-2.5 py-1 rounded-full text-xs font-semibold">{{ m.status }}</span>
                 <a [routerLink]="['/cursos', m.cursoId]"
-                  class="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-medium no-underline">
+                  class="flex items-center gap-1 text-sm text-marca hover:text-marca-escura font-medium no-underline">
                   Continuar <mat-icon class="text-sm">arrow_forward</mat-icon>
                 </a>
               </div>

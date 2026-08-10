@@ -40,7 +40,7 @@ import { Curso } from '../../core/services/curso.service';
           </h3>
           <!-- Links de ação -->
           <div class="mt-auto space-y-1.5 pt-3 border-t border-borda">
-            <div class="flex items-center gap-1.5 text-[#007B40] text-xs font-semibold">
+            <div class="flex items-center gap-1.5 text-sucesso text-xs font-semibold">
               <mat-icon style="font-size:14px;height:14px;width:14px">check_circle</mat-icon>
               Comprar agora
             </div>

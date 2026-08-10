@@ -8,7 +8,7 @@
         <p class="text-texto-suave text-sm mt-1">{{ regioes().length }} região(ões) cadastrada(s)</p>
       </div>
       <button (click)="abrirFormRegiao()"
-        class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-xs border-0 cursor-pointer">
+        class="flex items-center gap-2 bg-marca text-white px-5 py-2.5 rounded-xl font-medium hover:bg-marca-escura transition-colors shadow-xs border-0 cursor-pointer">
         <mat-icon>add_location_alt</mat-icon>
         Nova Região
       </button>
@@ -19,7 +19,7 @@
       <div class="bg-superficie rounded-2xl shadow-xs border border-borda p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-texto">{{ editandoRegiao() ? 'Editar Região' : 'Nova Região' }}</h2>
-          <button (click)="fecharFormRegiao()" class="text-texto-suave hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100">
+          <button (click)="fecharFormRegiao()" class="text-texto-suave hover:text-texto bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-superficie-2">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -29,7 +29,7 @@
             <input type="text" class="lms-input" formControlName="nome" placeholder="Ex: Região Centro" />
           </div>
           <button type="submit" [disabled]="salvando() || formRegiao.invalid"
-            class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 border-0 cursor-pointer mt-1">
+            class="flex items-center gap-2 bg-marca text-white px-5 py-3 rounded-xl font-medium hover:bg-marca-escura transition-colors disabled:opacity-50 border-0 cursor-pointer mt-1">
             <mat-icon class="text-sm">save</mat-icon>
             {{ salvando() ? 'Salvando...' : 'Salvar' }}
           </button>
@@ -58,10 +58,10 @@
             <mat-expansion-panel
               class="rounded-2xl shadow-xs border border-borda overflow-hidden"
               (opened)="carregarUnidades(regiao.id)">
-              <mat-expansion-panel-header class="bg-superficie hover:bg-gray-50">
+              <mat-expansion-panel-header class="bg-superficie hover:bg-superficie-2">
                 <mat-panel-title class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <mat-icon class="text-indigo-600 text-sm">location_on</mat-icon>
+                  <div class="w-8 h-8 bg-marca-suave rounded-lg flex items-center justify-center">
+                    <mat-icon class="text-marca text-sm">location_on</mat-icon>
                   </div>
                   <div>
                     <span class="font-semibold text-texto">{{ regiao.nome }}</span>
@@ -71,12 +71,12 @@
                 <mat-panel-description class="justify-end items-center gap-2">
                   <button (click)="$event.stopPropagation(); abrirFormRegiao(regiao)"
                     matTooltip="Editar região"
-                    class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 border-0 bg-transparent cursor-pointer">
+                    class="p-1.5 rounded-lg text-marca hover:bg-marca-suave border-0 bg-transparent cursor-pointer">
                     <mat-icon class="text-base">edit</mat-icon>
                   </button>
                   <button (click)="$event.stopPropagation(); deletarRegiao(regiao)"
                     matTooltip="Excluir região"
-                    class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer">
+                    class="p-1.5 rounded-lg text-erro hover:bg-erro/10 border-0 bg-transparent cursor-pointer">
                     <mat-icon class="text-base">delete</mat-icon>
                   </button>
                 </mat-panel-description>
@@ -86,7 +86,7 @@
                 <div class="flex items-center justify-between mb-3">
                   <p class="text-sm font-semibold text-texto-suave">Unidades</p>
                   <button (click)="abrirFormUnidade(regiao.id)"
-                    class="flex items-center gap-1 text-sm bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-emerald-700 transition-colors border-0 cursor-pointer">
+                    class="flex items-center gap-1 text-sm bg-sucesso text-white px-3 py-1.5 rounded-lg font-medium hover:bg-sucesso-escuro transition-colors border-0 cursor-pointer">
                     <mat-icon class="text-sm">add</mat-icon>
                     Nova Unidade
                   </button>
@@ -96,7 +96,7 @@
                   <div class="bg-superficie rounded-xl border border-borda p-4 mb-3">
                     <div class="flex items-center justify-between mb-3">
                       <h3 class="text-sm font-semibold text-texto">{{ editandoUnidade() ? 'Editar Unidade' : 'Nova Unidade' }}</h3>
-                      <button (click)="fecharFormUnidade()" class="text-texto-suave hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-sm">
+                      <button (click)="fecharFormUnidade()" class="text-texto-suave hover:text-texto bg-transparent border-0 cursor-pointer p-1 rounded-sm">
                         <mat-icon class="text-sm">close</mat-icon>
                       </button>
                     </div>
@@ -123,11 +123,11 @@
                       </div>
                       <div class="flex justify-end gap-2">
                         <button type="button" (click)="fecharFormUnidade()"
-                          class="px-4 py-2 rounded-lg text-texto text-sm font-medium hover:bg-gray-100 transition-colors border border-borda bg-superficie cursor-pointer">
+                          class="px-4 py-2 rounded-lg text-texto text-sm font-medium hover:bg-superficie-2 transition-colors border border-borda bg-superficie cursor-pointer">
                           Cancelar
                         </button>
                         <button type="submit" [disabled]="salvando() || formUnidade.invalid"
-                          class="flex items-center gap-1 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 border-0 cursor-pointer">
+                          class="flex items-center gap-1 bg-sucesso text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sucesso-escuro transition-colors disabled:opacity-50 border-0 cursor-pointer">
                           <mat-icon class="text-sm">save</mat-icon>
                           {{ salvando() ? 'Salvando...' : 'Salvar' }}
                         </button>
@@ -166,11 +166,11 @@
                     </div>
                     <div class="flex gap-1">
                       <button (click)="abrirFormUnidade(regiao.id, unidade)" matTooltip="Editar"
-                        class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 border-0 bg-transparent cursor-pointer">
+                        class="p-1.5 rounded-lg text-marca hover:bg-marca-suave border-0 bg-transparent cursor-pointer">
                         <mat-icon class="text-sm">edit</mat-icon>
                       </button>
                       <button (click)="deletarUnidade(regiao.id, unidade)" matTooltip="Excluir"
-                        class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer">
+                        class="p-1.5 rounded-lg text-erro hover:bg-erro/10 border-0 bg-transparent cursor-pointer">
                         <mat-icon class="text-sm">delete</mat-icon>
                       </button>
                     </div>

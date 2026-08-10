@@ -277,15 +277,15 @@ export class AdminCursosComponent implements OnInit {
 
   getNivelClass(nivel: string): string {
     const map: Record<string, string> = {
-      BASICO: 'bg-green-100 text-green-800',
-      INTERMEDIARIO: 'bg-yellow-100 text-yellow-800',
-      AVANCADO: 'bg-red-100 text-red-800'
+      BASICO: 'bg-green-100 text-sucesso',
+      INTERMEDIARIO: 'bg-yellow-100 text-aviso',
+      AVANCADO: 'bg-red-100 text-erro'
     };
     return map[nivel] || 'bg-superficie-2 text-texto';
   }
 
   getStatusClass(status: string): string {
-    return status === 'CONCLUIDO' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700';
+    return status === 'CONCLUIDO' ? 'bg-green-100 text-sucesso' : 'bg-blue-100 text-marca';
   }
 
   trackById = (_: number, item: { id: number }) => item.id;

@@ -37,6 +37,12 @@
   --color-erro: var(--tema-erro);
   --color-aviso: var(--tema-aviso);
 
+  /* Derivados de hover: seguem a cor base via color-mix (ver tema.css). */
+  --color-destaque-escuro: var(--tema-destaque-escuro);
+  --color-sucesso-escuro: var(--tema-sucesso-escuro);
+  --color-erro-escuro: var(--tema-erro-escuro);
+  --color-aviso-escuro: var(--tema-aviso-escuro);
+
   --font-titulo: var(--tema-fonte-titulo);
   --font-corpo: var(--tema-fonte-corpo);
 }

@@ -57,9 +57,9 @@ export class HomeComponent implements OnInit {
 
   getNivelClass(nivel: string): string {
     const map: Record<string, string> = {
-      'BASICO': 'bg-green-100 text-green-700',
-      'INTERMEDIARIO': 'bg-yellow-100 text-yellow-700',
-      'AVANCADO': 'bg-red-100 text-red-700'
+      'BASICO': 'bg-green-100 text-sucesso',
+      'INTERMEDIARIO': 'bg-yellow-100 text-aviso',
+      'AVANCADO': 'bg-red-100 text-erro'
     };
     return map[nivel] || 'bg-superficie-2 text-texto';
   }
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit {
       'INTERMEDIARIO': 'from-yellow-400 to-orange-400',
       'AVANCADO': 'from-red-400 to-rose-500'
     };
-    return map[nivel] || 'from-blue-400 to-blue-600';
+    return map[nivel] || 'from-marca to-marca-escura';
   }
 
   year = new Date().getFullYear();

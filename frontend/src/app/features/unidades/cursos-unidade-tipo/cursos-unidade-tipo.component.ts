@@ -107,7 +107,7 @@ const PER_PAGE = 4;
                   [disabled]="getPage(grupo.areaSlug) === 0"
                   [class.opacity-30]="getPage(grupo.areaSlug) === 0"
               class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
-                     justify-center hover:bg-gray-50 transition-colors cursor-pointer">
+                     justify-center hover:bg-superficie-2 transition-colors cursor-pointer">
                   <mat-icon style="font-size:20px;height:20px;width:20px">chevron_left</mat-icon>
                 </button>
                 <div class="flex-1 grid grid-cols-4 gap-4">
@@ -119,7 +119,7 @@ const PER_PAGE = 4;
                   [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
                   [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
               class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
-                     justify-center hover:bg-gray-50 transition-colors cursor-pointer">
+                     justify-center hover:bg-superficie-2 transition-colors cursor-pointer">
                   <mat-icon style="font-size:20px;height:20px;width:20px">chevron_right</mat-icon>
                 </button>
               </div>

@@ -49,7 +49,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       </div>
     
       @if (erro()) {
-        <p class="text-red-500 text-xs mt-1.5">{{ erro() }}</p>
+        <p class="text-erro text-xs mt-1.5">{{ erro() }}</p>
       }
     
       <input #fileInput type="file" accept="image/jpeg,image/png,image/webp"

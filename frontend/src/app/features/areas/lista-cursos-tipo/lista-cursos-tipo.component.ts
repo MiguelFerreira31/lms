@@ -48,7 +48,7 @@ const PER_PAGE = 4;
                 (input)="setBusca($any($event.target).value)"
                 placeholder="Pesquisar curso..."
                 class="flex-1 px-5 py-3.5 text-texto text-sm outline-hidden border-0">
-                <button class="bg-destaque hover:bg-orange-500 transition-colors px-5 flex items-center justify-center border-0 cursor-pointer">
+                <button class="bg-destaque hover:bg-destaque-escuro transition-colors px-5 flex items-center justify-center border-0 cursor-pointer">
                   <mat-icon class="text-white">search</mat-icon>
                 </button>
               </div>
@@ -128,7 +128,7 @@ const PER_PAGE = 4;
                     <button (click)="prev(grupo.areaSlug)"
                       [disabled]="getPage(grupo.areaSlug) === 0"
               class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
-                     justify-center hover:bg-gray-50 transition-colors cursor-pointer"
+                     justify-center hover:bg-superficie-2 transition-colors cursor-pointer"
                       [class.opacity-30]="getPage(grupo.areaSlug) === 0"
                       [class.cursor-not-allowed]="getPage(grupo.areaSlug) === 0">
                       <mat-icon style="font-size:20px;height:20px;width:20px">chevron_left</mat-icon>
@@ -145,7 +145,7 @@ const PER_PAGE = 4;
                     <button (click)="next(grupo.areaSlug, grupo.cursos.length)"
                       [disabled]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
               class="shrink-0 w-9 h-9 rounded-full border border-gray-300 bg-superficie flex items-center
-                     justify-center hover:bg-gray-50 transition-colors cursor-pointer"
+                     justify-center hover:bg-superficie-2 transition-colors cursor-pointer"
                       [class.opacity-30]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length"
                       [class.cursor-not-allowed]="(getPage(grupo.areaSlug) + 1) * 4 >= grupo.cursos.length">
                       <mat-icon style="font-size:20px;height:20px;width:20px">chevron_right</mat-icon>

@@ -90,7 +90,7 @@ import { MatIconModule } from '@angular/material/icon';
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a routerLink="/login"
-              class="inline-flex items-center justify-center gap-2 bg-destaque hover:bg-orange-500 text-white font-bold px-8 py-3.5 rounded-xl transition-colors no-underline shadow-lg text-sm">
+              class="inline-flex items-center justify-center gap-2 bg-destaque hover:bg-destaque-escuro text-white font-bold px-8 py-3.5 rounded-xl transition-colors no-underline shadow-lg text-sm">
               <mat-icon style="font-size:20px;height:20px;width:20px">login</mat-icon>
               Acessar a plataforma
             </a>
@@ -114,13 +114,13 @@ export class SobreComponent {
   ];
 
   techs = [
-    { nome: 'Angular 18', icon: 'web', classes: 'border-red-300 text-red-700 bg-red-50 hover:bg-red-100' },
-    { nome: 'Spring Boot 3.2', icon: 'eco', classes: 'border-green-300 text-green-700 bg-green-50 hover:bg-green-100' },
+    { nome: 'Angular 18', icon: 'web', classes: 'border-red-300 text-erro bg-red-50 hover:bg-erro/15' },
+    { nome: 'Spring Boot 3.2', icon: 'eco', classes: 'border-green-300 text-sucesso bg-green-50 hover:bg-green-100' },
     { nome: 'Java 17', icon: 'coffee', classes: 'border-orange-300 text-orange-700 bg-orange-50 hover:bg-orange-100' },
-    { nome: 'PostgreSQL', icon: 'storage', classes: 'border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100' },
+    { nome: 'PostgreSQL', icon: 'storage', classes: 'border-blue-300 text-marca bg-blue-50 hover:bg-marca-suave' },
     { nome: 'Docker', icon: 'inventory_2', classes: 'border-cyan-300 text-cyan-700 bg-cyan-50 hover:bg-cyan-100' },
     { nome: 'JWT', icon: 'lock', classes: 'border-purple-300 text-purple-700 bg-purple-50 hover:bg-purple-100' },
     { nome: 'Tailwind CSS', icon: 'style', classes: 'border-teal-300 text-teal-700 bg-teal-50 hover:bg-teal-100' },
-    { nome: 'Flyway', icon: 'flight_takeoff', classes: 'border-gray-300 text-texto bg-fundo hover:bg-gray-100' }
+    { nome: 'Flyway', icon: 'flight_takeoff', classes: 'border-gray-300 text-texto bg-fundo hover:bg-superficie-2' }
   ];
 }

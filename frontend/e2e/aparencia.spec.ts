@@ -109,6 +109,72 @@ test.describe('aparência e temas', () => {
     expect(marca.toLowerCase()).toBe('#0054a6');
   });
 
+  test('a prévia mostra o hover com a cor configurada', async ({ page }) => {
+    await page.goto('/aparencia');
+    await page.getByRole('button', { name: 'Claro', exact: true }).first().click();
+
+    const botao = page.locator('.pv-btn-marca');
+    const repouso = await botao.evaluate(el => getComputedStyle(el).backgroundColor);
+
+    await botao.hover();
+    const comHover = await botao.evaluate(el => getComputedStyle(el).backgroundColor);
+    expect(comHover).not.toBe(repouso);
+
+    // e o hover segue a cor que o usuário definir para "marca escura"
+    await page.locator('input[type="color"]').nth(1).evaluate((el: HTMLInputElement) => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
+      setter.call(el, '#e91e63');
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
+    await botao.hover();
+    await expect
+      .poll(() => botao.evaluate(el => getComputedStyle(el).backgroundColor))
+      .toBe('rgb(233, 30, 99)');
+  });
+
+  test('a prévia mostra o estado de foco do campo', async ({ page }) => {
+    await page.goto('/aparencia');
+
+    const campo = page.locator('.pv-input');
+    const semFoco = await campo.evaluate(el => getComputedStyle(el).borderColor);
+
+    await campo.click();
+    await expect
+      .poll(() => campo.evaluate(el => getComputedStyle(el).borderColor))
+      .not.toBe(semFoco);
+  });
+
+  test('não há mais exportar/importar tema', async ({ page }) => {
+    await page.goto('/aparencia');
+
+    await expect(page.getByRole('button', { name: /Exportar/ })).toHaveCount(0);
+    await expect(page.getByText(/Importar tema/)).toHaveCount(0);
+    // as ações que continuam
+    await expect(page.getByRole('button', { name: /Restaurar tudo/ })).toBeVisible();
+  });
+
+  test('os gráficos do dashboard acompanham a troca de tema', async ({ page }) => {
+    await page.goto('/aparencia');
+    await page.getByRole('button', { name: 'Claro', exact: true }).first().click();
+
+    await page.goto('/admin/dashboard');
+    await expect(page.locator('canvas')).toHaveCount(3, { timeout: 20_000 });
+
+    // O Chart.js pinta em canvas e resolve cor na criação: se não fosse
+    // recriado na troca de tema, o gráfico ficaria com as cores do modo claro.
+    const claroPx = await page.locator('canvas').first()
+      .evaluate((c: HTMLCanvasElement) => c.toDataURL().length);
+
+    await page.getByRole('button', { name: /Mudar para o modo/ }).click();
+    await page.waitForTimeout(2500);
+
+    const escuroPx = await page.locator('canvas').first()
+      .evaluate((c: HTMLCanvasElement) => c.toDataURL().length);
+
+    expect(escuroPx).not.toBe(claroPx);
+  });
+
   test('o botão da barra superior alterna o modo de qualquer tela', async ({ page }) => {
     await page.goto('/dashboard');
 

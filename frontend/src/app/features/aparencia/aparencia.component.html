@@ -166,53 +166,72 @@
   </section>
 
   <!-- Prévia -->
-  <section class="bg-superficie border border-borda rounded-xl p-5 shadow-card mb-6">
-    <h2 class="text-sm font-semibold text-texto mb-1">Prévia</h2>
+  <section class="bg-superficie border border-borda rounded-xl p-5 shadow-card mb-6"
+           [style.--pv-marca]="paletaEmEdicao().marca"
+           [style.--pv-marca-escura]="paletaEmEdicao().marcaEscura"
+           [style.--pv-marca-suave]="paletaEmEdicao().marcaSuave"
+           [style.--pv-destaque]="paletaEmEdicao().destaque"
+           [style.--pv-fundo]="paletaEmEdicao().fundo"
+           [style.--pv-superficie]="paletaEmEdicao().superficie"
+           [style.--pv-superficie-2]="paletaEmEdicao().superficie2"
+           [style.--pv-texto]="paletaEmEdicao().texto"
+           [style.--pv-texto-suave]="paletaEmEdicao().textoSuave"
+           [style.--pv-borda]="paletaEmEdicao().borda"
+           [style.--pv-sucesso]="paletaEmEdicao().sucesso"
+           [style.--pv-erro]="paletaEmEdicao().erro"
+           [style.--pv-aviso]="paletaEmEdicao().aviso"
+           [style.--pv-mistura]="editando() === 'escuro' ? '#fff' : '#000'"
+           [style.--pv-fonte-titulo]="tipografiaEmEdicao().fonteTitulo"
+           [style.--pv-fonte-corpo]="tipografiaEmEdicao().fonteCorpo"
+           [style.--pv-peso-titulo]="tipografiaEmEdicao().pesoTitulo">
+    <h2 class="text-sm font-semibold text-texto mb-1">Prévia — modo {{ editando() }}</h2>
     <p class="text-xs text-texto-suave mb-4">
-      @if (editandoOModoAtivo()) {
-        Reflete o modo aplicado agora.
-      } @else {
-        Mostra as cores do modo <strong>{{ editando() }}</strong>, que não é o aplicado agora.
-      }
+      Os elementos abaixo são interativos: <strong>passe o mouse</strong> nos botões e
+      no item de menu, e <strong>clique no campo</strong> para ver o foco — tudo já com
+      as cores deste modo.
     </p>
 
-    <div class="rounded-xl p-5 border"
-         [style.background-color]="paletaEmEdicao().fundo"
-         [style.border-color]="paletaEmEdicao().borda"
-         [style.font-family]="tipografiaEmEdicao().fonteCorpo">
-      <div class="rounded-lg p-4 mb-3"
-           [style.background-color]="paletaEmEdicao().superficie"
-           [style.border]="'1px solid ' + paletaEmEdicao().borda">
-        <h3 class="text-lg mb-1"
-            [style.color]="paletaEmEdicao().texto"
-            [style.font-family]="tipografiaEmEdicao().fonteTitulo"
-            [style.font-weight]="tipografiaEmEdicao().pesoTitulo">
-          Técnico em Desenvolvimento de Sistemas
-        </h3>
-        <p class="text-sm mb-3" [style.color]="paletaEmEdicao().textoSuave">
-          Forma profissionais para desenvolver sistemas computacionais.
-        </p>
-        <div class="flex flex-wrap gap-2">
-          <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
-                [style.background-color]="paletaEmEdicao().marca" [style.color]="'#fff'">
-            Matricular-se
-          </span>
-          <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
-                [style.background-color]="paletaEmEdicao().destaque" [style.color]="'#fff'">
-            Bolsas
-          </span>
-          <span class="px-3 py-1.5 rounded-lg text-sm font-medium"
-                [style.background-color]="paletaEmEdicao().marcaSuave"
-                [style.color]="paletaEmEdicao().marca">
-            Intermediário
-          </span>
-        </div>
+    <div class="pv-quadro rounded-xl overflow-hidden border" [style.border-color]="paletaEmEdicao().borda">
+
+      <!-- barra superior -->
+      <div class="pv-topo flex items-center justify-between px-4 py-2.5">
+        <span class="text-white font-bold text-sm">Senac LMS</span>
+        <span class="pv-btn-destaque px-3 py-1 rounded-lg text-white text-xs font-semibold cursor-pointer">
+          Matricule-se
+        </span>
       </div>
 
-      <div class="flex flex-wrap gap-2 text-sm font-medium">
-        <span class="px-2 py-1 rounded" [style.color]="paletaEmEdicao().sucesso">Aprovado</span>
-        <span class="px-2 py-1 rounded" [style.color]="paletaEmEdicao().aviso">Pendente</span>
-        <span class="px-2 py-1 rounded" [style.color]="paletaEmEdicao().erro">Reprovado</span>
+      <div class="pv-corpo grid grid-cols-1 md:grid-cols-[170px_1fr] gap-0">
+        <!-- menu lateral -->
+        <div class="pv-menu p-2.5 space-y-1 border-r" [style.border-color]="paletaEmEdicao().borda">
+          <span class="pv-nav-item pv-nav-ativo block px-3 py-2 rounded-lg text-xs font-medium cursor-pointer">Início</span>
+          <span class="pv-nav-item block px-3 py-2 rounded-lg text-xs font-medium cursor-pointer">Cursos</span>
+          <span class="pv-nav-item block px-3 py-2 rounded-lg text-xs font-medium cursor-pointer">Minhas Matrículas</span>
+        </div>
+
+        <!-- conteúdo -->
+        <div class="p-4">
+          <div class="pv-cartao rounded-lg p-4 mb-3 cursor-pointer">
+            <h3 class="pv-titulo text-base mb-1">Técnico em Desenvolvimento de Sistemas</h3>
+            <p class="pv-suave text-xs mb-3">Forma profissionais para desenvolver sistemas computacionais.</p>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="pv-btn-marca px-3 py-1.5 rounded-lg text-white text-xs font-semibold cursor-pointer">Matricular-se</span>
+              <span class="pv-btn-destaque px-3 py-1.5 rounded-lg text-white text-xs font-semibold cursor-pointer">Bolsas</span>
+              <span class="pv-btn-erro-suave px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">Excluir</span>
+              <span class="pv-chip px-2.5 py-1 rounded-full text-xs font-medium">Intermediário</span>
+              <span class="pv-link text-xs font-semibold cursor-pointer">Saiba mais →</span>
+            </div>
+          </div>
+
+          <input type="text" class="pv-input w-full px-3 py-2 rounded-lg text-xs mb-3"
+                 placeholder="Clique aqui para ver o estado de foco">
+
+          <div class="flex flex-wrap gap-3 text-xs font-medium">
+            <span [style.color]="paletaEmEdicao().sucesso">● Aprovado</span>
+            <span [style.color]="paletaEmEdicao().aviso">● Pendente</span>
+            <span [style.color]="paletaEmEdicao().erro">● Reprovado</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -231,16 +250,5 @@
       Restaurar tudo
     </button>
 
-    <button type="button" (click)="exportar()"
-            class="flex items-center gap-2 px-4 py-2 rounded-xl border border-borda bg-superficie text-texto text-sm font-medium cursor-pointer">
-      <mat-icon class="text-base! w-4! h-4!">download</mat-icon>
-      Exportar tema
-    </button>
-
-    <label class="flex items-center gap-2 px-4 py-2 rounded-xl border border-borda bg-superficie text-texto text-sm font-medium cursor-pointer">
-      <mat-icon class="text-base! w-4! h-4!">upload</mat-icon>
-      Importar tema
-      <input type="file" accept="application/json" class="hidden" (change)="importar($event)">
-    </label>
   </section>
 </div>

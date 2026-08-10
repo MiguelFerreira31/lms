@@ -126,25 +126,4 @@ describe('TemaService', () => {
     expect(servico.config().escuro.cores.marca).toBe('#eeeeee');
   });
 
-  it('exporta e importa preservando as duas paletas', () => {
-    servico.definirCor('claro', 'marca', '#010203');
-    servico.definirCor('escuro', 'destaque', '#040506');
-    const json = servico.exportar();
-
-    servico.restaurarTudo();
-    expect(servico.config().claro.cores.marca).toBe(TEMA_PADRAO.claro.cores.marca);
-
-    expect(servico.importar(json)).toBeNull();
-    expect(servico.config().claro.cores.marca).toBe('#010203');
-    expect(servico.config().escuro.cores.destaque).toBe('#040506');
-  });
-
-  it('recusa importação inválida sem quebrar o tema vigente', () => {
-    servico.definirCor('claro', 'marca', '#010203');
-
-    expect(servico.importar('não é json')).toBeTruthy();
-    expect(servico.importar('{"modo":"claro"}')).toBeTruthy();
-    // o tema em uso continua intacto
-    expect(servico.config().claro.cores.marca).toBe('#010203');
-  });
 });

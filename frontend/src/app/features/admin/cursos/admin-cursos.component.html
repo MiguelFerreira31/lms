@@ -8,7 +8,7 @@
         <p class="text-texto-suave text-sm mt-1">{{ cursos().length }} curso(s) ativo(s)</p>
       </div>
       <button (click)="abrirForm()"
-        class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-xs border-0 cursor-pointer">
+        class="flex items-center gap-2 bg-marca text-white px-5 py-2.5 rounded-xl font-medium hover:bg-marca-escura transition-colors shadow-xs border-0 cursor-pointer">
         <mat-icon>add</mat-icon>
         Novo Curso
       </button>
@@ -20,7 +20,7 @@
         <div class="flex items-center justify-between mb-5">
           <h2 class="text-lg font-semibold text-texto">{{ editando() ? 'Editar Curso' : 'Novo Curso' }}</h2>
           <button (click)="fecharForm()" type="button"
-            class="text-texto-suave hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-gray-100 flex items-center justify-center">
+            class="text-texto-suave hover:text-texto bg-transparent border-0 cursor-pointer p-1 rounded-lg hover:bg-superficie-2 flex items-center justify-center">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -90,7 +90,7 @@
                             class="flex items-center gap-2 text-sm text-texto py-1 cursor-pointer">
                             <input type="checkbox" [checked]="categoriasSelecionadas().has(cat.id)"
                               (change)="toggleCategoria(cat.id)"
-                              class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                              class="rounded-sm border-gray-300 text-marca focus:ring-indigo-500" />
                               {{ cat.nome }}
                             </label>
                           }
@@ -110,7 +110,7 @@
                           class="flex items-center gap-2 text-sm text-texto py-1 cursor-pointer">
                           <input type="checkbox" [checked]="tiposSelecionados().has(tipo.id)"
                             (change)="toggleTipo(tipo.id)"
-                            class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                            class="rounded-sm border-gray-300 text-marca focus:ring-indigo-500" />
                             {{ tipo.nome }}
                           </label>
                         }
@@ -130,7 +130,7 @@
                     </div>
                     <!-- Botão com classes de tamanho fixo para impedir esmagamento -->
                     <button type="button" (click)="adicionarModulo()"
-                      class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors shadow-xs h-9 min-w-[150px]">
+                      class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-marca-suave hover:bg-marca-suave text-marca text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors shadow-xs h-9 min-w-[150px]">
                       <mat-icon style="font-size:16px;height:16px;width:16px;line-height:16px;">add</mat-icon>
                       <span>Adicionar Módulo</span>
                     </button>
@@ -158,7 +158,7 @@
                             class="w-full px-4 py-2 bg-superficie rounded-xl border border-borda focus:outline-none focus:border-indigo-500 text-sm text-texto block" />
                           </div>
                           <button type="button" (click)="removerModulo(idx)"
-                            class="p-2 text-texto-suave hover:text-red-500 hover:bg-red-50 rounded-xl border-0 cursor-pointer bg-transparent transition-colors shrink-0 flex items-center justify-center">
+                            class="p-2 text-texto-suave hover:text-erro hover:bg-erro/10 rounded-xl border-0 cursor-pointer bg-transparent transition-colors shrink-0 flex items-center justify-center">
                             <mat-icon style="font-size:20px;height:20px;width:20px;">delete</mat-icon>
                           </button>
                         </div>
@@ -169,11 +169,11 @@
                   <!-- Botões inferiores de envio -->
                   <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
                     <button type="button" (click)="fecharForm()"
-                      class="px-5 py-2.5 rounded-xl text-texto font-medium hover:bg-gray-100 border border-borda bg-superficie cursor-pointer transition-colors text-sm">
+                      class="px-5 py-2.5 rounded-xl text-texto font-medium hover:bg-superficie-2 border border-borda bg-superficie cursor-pointer transition-colors text-sm">
                       Cancelar
                     </button>
                     <button type="submit" [disabled]="salvando() || form.invalid"
-                      class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer transition-colors text-sm shadow-xs">
+                      class="flex items-center gap-2 bg-marca text-white px-5 py-2.5 rounded-xl font-medium hover:bg-marca-escura disabled:opacity-50 border-0 cursor-pointer transition-colors text-sm shadow-xs">
                       <mat-icon class="text-sm" style="font-size:18px;height:18px;width:18px;line-height:18px;">{{ salvando() ?
                       'hourglass_empty' : 'save' }}</mat-icon>
                       <span>{{ salvando() ? 'Salvando...' : 'Salvar Curso' }}</span>
@@ -204,8 +204,8 @@
                     class="bg-superficie rounded-2xl shadow-xs border border-borda overflow-hidden">
                     <!-- Linha principal do curso -->
                     <div class="flex items-center gap-4 p-5">
-                      <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
-                        <mat-icon class="text-indigo-600">menu_book</mat-icon>
+                      <div class="w-12 h-12 bg-marca-suave rounded-xl flex items-center justify-center shrink-0">
+                        <mat-icon class="text-marca">menu_book</mat-icon>
                       </div>
                       <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
@@ -213,12 +213,12 @@
                           <span [class]="getNivelClass(c.nivel)" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ c.nivel
                           }}</span>
                           @if (c.areaNome) {
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">{{ c.areaNome }}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-marca-suave text-marca-escura">{{ c.areaNome }}</span>
                           }
                         </div>
                         <p class="text-sm text-texto-suave truncate mt-0.5">{{ c.descricao || 'Sem descrição' }}</p>
                         @if (c.unidadeNome) {
-                          <p class="text-xs text-indigo-500 mt-0.5 flex items-center gap-1">
+                          <p class="text-xs text-marca mt-0.5 flex items-center gap-1">
                             <mat-icon class="text-xs" style="font-size:13px;height:13px;width:13px;">location_on</mat-icon>
                             {{ c.unidadeNome }}
                           </p>
@@ -231,26 +231,26 @@
                             }
                             @for (cat of c.categorias; track cat.id) {
                               <span
-                              class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">{{ cat.nome }}</span>
+                              class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-marca">{{ cat.nome }}</span>
                             }
                           </div>
                         }
                       </div>
                       <div class="flex items-center gap-2 shrink-0">
             <button (click)="toggleAlunos(c.id)" [class]="cursoExpandido() === c.id
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'"
+                ? 'bg-sucesso text-white border-emerald-600'
+                : 'bg-emerald-50 text-sucesso border-emerald-200 hover:bg-emerald-100'"
                           class="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border transition-colors cursor-pointer">
                           <mat-icon class="text-sm">people</mat-icon>
                           <span class="hidden sm:inline">Alunos & Notas</span>
                         </button>
                         <button (click)="abrirForm(c)"
-                          class="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors cursor-pointer">
+                          class="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-marca-suave bg-marca-suave text-marca-escura hover:bg-marca-suave transition-colors cursor-pointer">
                           <mat-icon class="text-sm">edit</mat-icon>
                           <span class="hidden sm:inline">Editar</span>
                         </button>
                         <button (click)="excluir(c)"
-                          class="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer">
+                          class="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-red-200 bg-red-50 text-red-600 hover:bg-erro/15 transition-colors cursor-pointer">
                           <mat-icon class="text-sm">delete</mat-icon>
                           <span class="hidden sm:inline">Excluir</span>
                         </button>
@@ -262,7 +262,7 @@
                         <div class="flex items-center justify-between mb-4">
                           <h3 class="font-semibold text-texto text-sm uppercase tracking-wider">Alunos Matriculados</h3>
                           <button (click)="carregarAlunos(c.id)"
-                            class="flex items-center gap-1 text-xs text-texto-suave hover:text-gray-700 bg-transparent border-0 cursor-pointer">
+                            class="flex items-center gap-1 text-xs text-texto-suave hover:text-texto bg-transparent border-0 cursor-pointer">
                             <mat-icon class="text-sm">refresh</mat-icon> Atualizar
                           </button>
                         </div>
@@ -287,7 +287,7 @@
                               <!-- Info do aluno -->
                               <div class="flex items-center gap-3 flex-1">
                                 <div
-                                  class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                  class="w-9 h-9 rounded-full bg-marca flex items-center justify-center text-white text-xs font-bold shrink-0">
                                   {{ mat.usuarioNome.charAt(0).toUpperCase() }}
                                 </div>
                                 <div>
@@ -301,9 +301,9 @@
                               <div class="flex items-center gap-2 sm:gap-4">
                                 @if (mat.nota != null) {
                                   <div class="text-center">
-                                    <span [class]="mat.aprovado ? 'text-green-600' : 'text-red-500'" class="text-lg font-bold">{{ mat.nota
+                                    <span [class]="mat.aprovado ? 'text-green-600' : 'text-erro'" class="text-lg font-bold">{{ mat.nota
                                     }}</span>
-                                    <p class="text-xs" [class]="mat.aprovado ? 'text-green-500' : 'text-red-400'">
+                                    <p class="text-xs" [class]="mat.aprovado ? 'text-sucesso' : 'text-red-400'">
                                       {{ mat.aprovado ? 'Aprovado' : 'Reprovado' }}
                                     </p>
                                   </div>
@@ -320,7 +320,7 @@
                                     (input)="setNota(mat.id, $any($event.target).value)" placeholder="0–10"
                                     class="w-20 px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center">
                                     <button (click)="lancarNota(mat, c.id)" [disabled]="salvandoNota() === mat.id || !getNota(mat.id)"
-                                      class="flex items-center gap-1 bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer whitespace-nowrap">
+                                      class="flex items-center gap-1 bg-marca text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-marca-escura disabled:opacity-50 border-0 cursor-pointer whitespace-nowrap">
                                       <mat-icon class="text-sm">{{ salvandoNota() === mat.id ? 'hourglass_empty' : 'grade' }}</mat-icon>
                                       {{ mat.nota != null ? 'Alterar' : 'Lançar' }}
                                     </button>

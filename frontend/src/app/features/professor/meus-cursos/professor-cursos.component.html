@@ -39,10 +39,10 @@
           <div
             class="bg-superficie rounded-2xl shadow-xs border border-borda overflow-hidden">
             <!-- Cabeçalho do curso (clicável) -->
-            <div class="flex items-center gap-4 p-5 cursor-pointer hover:bg-gray-50 transition-colors"
+            <div class="flex items-center gap-4 p-5 cursor-pointer hover:bg-superficie-2 transition-colors"
               (click)="abrirCurso(curso.id)">
-              <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
-                <mat-icon class="text-indigo-600">menu_book</mat-icon>
+              <div class="w-12 h-12 bg-marca-suave rounded-xl flex items-center justify-center shrink-0">
+                <mat-icon class="text-marca">menu_book</mat-icon>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -79,8 +79,8 @@
                       <div class="border-b border-gray-50 last:border-0">
                         <!-- Cabeçalho do módulo -->
                         <div class="flex items-center gap-3 px-5 py-3 bg-fundo">
-                          <div class="w-6 h-6 bg-indigo-200 rounded-lg flex items-center justify-center">
-                            <span class="text-indigo-700 text-xs font-bold">{{ modulo.ordem }}</span>
+                          <div class="w-6 h-6 bg-marca-suave rounded-lg flex items-center justify-center">
+                            <span class="text-marca-escura text-xs font-bold">{{ modulo.ordem }}</span>
                           </div>
                           <p class="font-semibold text-texto text-sm">{{ modulo.titulo }}</p>
                           <span class="text-xs text-texto-suave">({{ modulo.aulas.length }} aula(s))</span>
@@ -90,7 +90,7 @@
                           <div
                             class="border-t border-gray-50">
                             <!-- Linha da aula -->
-                            <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                            <div class="flex items-center gap-3 px-6 py-3 cursor-pointer hover:bg-superficie-2 transition-colors"
                               (click)="abrirAula(aula.id)">
                               <div class="w-7 h-7 rounded-lg bg-superficie border border-borda flex items-center justify-center shrink-0">
                                 <span class="text-texto-suave text-xs">{{ aula.ordem }}</span>
@@ -99,7 +99,7 @@
                                 <p class="text-sm font-medium text-texto">{{ aula.titulo }}</p>
                                 <p class="text-xs text-texto-suave">{{ aula.duracaoMin }} min
                                   @if (getConteudos(aula.id).length > 0) {
-                                    <span class="ml-2 text-indigo-500">
+                                    <span class="ml-2 text-marca">
                                       · {{ getConteudos(aula.id).length }} conteúdo(s)
                                     </span>
                                   }
@@ -110,7 +110,7 @@
                             </div>
                             <!-- Painel de conteúdo da aula -->
                             @if (aulaAberta() === aula.id) {
-                              <div class="bg-indigo-50 px-6 py-4">
+                              <div class="bg-marca-suave px-6 py-4">
                                 <!-- Conteúdos existentes -->
                                 @for (c of getConteudos(aula.id); track c.id) {
                                   <div
@@ -123,7 +123,7 @@
                                         @if (c.conteudo && (c.tipo === 'VIDEO' || c.tipo === 'LINK')) {
                                           <a
                                             [href]="c.conteudo" target="_blank"
-                                            class="text-xs text-indigo-500 hover:text-indigo-700 truncate block max-w-xs">
+                                            class="text-xs text-marca hover:text-marca-escura truncate block max-w-xs">
                                             {{ c.conteudo }}
                                           </a>
                                         }
@@ -134,7 +134,7 @@
                                       </div>
                                     </div>
                                     <button (click)="deletarConteudo(aula.id, c.id)" matTooltip="Excluir conteúdo"
-                                      class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 border-0 bg-transparent cursor-pointer shrink-0">
+                                      class="p-1.5 rounded-lg text-erro hover:bg-erro/10 border-0 bg-transparent cursor-pointer shrink-0">
                                       <mat-icon class="text-sm">delete</mat-icon>
                                     </button>
                                   </div>
@@ -149,11 +149,11 @@
                                 <!-- Form novo conteúdo -->
                                 @if (mostrarFormConteudo() === aula.id) {
                                   <div
-                                    class="bg-superficie rounded-xl border border-indigo-200 p-4 mb-3">
+                                    class="bg-superficie rounded-xl border border-marca-suave p-4 mb-3">
                                     <div class="flex items-center justify-between mb-3">
                                       <h4 class="text-sm font-semibold text-texto">Novo Conteúdo</h4>
                                       <button (click)="fecharFormConteudo()"
-                                        class="text-texto-suave hover:text-gray-600 bg-transparent border-0 cursor-pointer p-1 rounded-sm">
+                                        class="text-texto-suave hover:text-texto bg-transparent border-0 cursor-pointer p-1 rounded-sm">
                                         <mat-icon class="text-sm">close</mat-icon>
                                       </button>
                                     </div>
@@ -183,11 +183,11 @@
                                       </div>
                                       <div class="flex justify-end gap-2">
                                         <button type="button" (click)="fecharFormConteudo()"
-                                          class="px-4 py-2 rounded-lg text-texto text-sm font-medium hover:bg-gray-100 border border-borda bg-superficie cursor-pointer">
+                                          class="px-4 py-2 rounded-lg text-texto text-sm font-medium hover:bg-superficie-2 border border-borda bg-superficie cursor-pointer">
                                           Cancelar
                                         </button>
                                         <button type="submit" [disabled]="salvando() || formConteudo.invalid"
-                                          class="flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 border-0 cursor-pointer">
+                                          class="flex items-center gap-1 bg-marca text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-marca-escura disabled:opacity-50 border-0 cursor-pointer">
                                           <mat-icon class="text-sm">save</mat-icon>
                                           {{ salvando() ? 'Salvando...' : 'Salvar' }}
                                         </button>
@@ -199,7 +199,7 @@
                                 @if (mostrarFormConteudo() !== aula.id) {
                                   <button
                                     (click)="abrirFormConteudo(aula.id)"
-                                    class="flex items-center gap-1 text-sm bg-indigo-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors border-0 cursor-pointer mt-2">
+                                    class="flex items-center gap-1 text-sm bg-marca text-white px-3 py-2 rounded-lg font-medium hover:bg-marca-escura transition-colors border-0 cursor-pointer mt-2">
                                     <mat-icon class="text-sm">add</mat-icon>
                                     Adicionar Conteúdo
                                   </button>

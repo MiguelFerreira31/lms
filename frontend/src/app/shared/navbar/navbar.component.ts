@@ -106,9 +106,9 @@ import { TemaService } from '../../core/services/tema.service';
         @if (auth.isProfessor() && !auth.isAdmin()) {
           <div class="pt-4">
             <p class="text-xs font-semibold text-texto-suave uppercase tracking-wider px-4 mb-2">Professor</p>
-            <a routerLink="/professor/cursos" routerLinkActive="bg-emerald-50 text-emerald-700 border-emerald-200"
+            <a routerLink="/professor/cursos" routerLinkActive="bg-emerald-50 text-sucesso border-emerald-200"
               (click)="sidebarOpen.set(false)"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-emerald-50 hover:text-emerald-700 transition-colors font-medium text-sm border border-transparent no-underline">
+              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-sucesso/10 hover:text-sucesso transition-colors font-medium text-sm border border-transparent no-underline">
               <mat-icon class="shrink-0">cast_for_education</mat-icon>
               Meus Cursos
             </a>
@@ -119,39 +119,39 @@ import { TemaService } from '../../core/services/tema.service';
         @if (auth.isAdmin()) {
           <div class="pt-4">
             <p class="text-xs font-semibold text-texto-suave uppercase tracking-wider px-4 mb-2">Administração</p>
-            <a routerLink="/admin/dashboard" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+            <a routerLink="/admin/dashboard" routerLinkActive="bg-marca-suave text-marca border-marca-suave"
               (click)="sidebarOpen.set(false)"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-marca-suave hover:text-marca transition-colors font-medium text-sm border border-transparent no-underline">
               <mat-icon class="shrink-0">dashboard</mat-icon>
               Dashboard Admin
             </a>
-            <a routerLink="/admin/cursos" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+            <a routerLink="/admin/cursos" routerLinkActive="bg-marca-suave text-marca border-marca-suave"
               (click)="sidebarOpen.set(false)"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-marca-suave hover:text-marca transition-colors font-medium text-sm border border-transparent no-underline">
               <mat-icon class="shrink-0">library_books</mat-icon>
               Gerenciar Cursos
             </a>
-            <a routerLink="/admin/usuarios" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+            <a routerLink="/admin/usuarios" routerLinkActive="bg-marca-suave text-marca border-marca-suave"
               (click)="sidebarOpen.set(false)"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-marca-suave hover:text-marca transition-colors font-medium text-sm border border-transparent no-underline">
               <mat-icon class="shrink-0">group</mat-icon>
               Gerenciar Usuários
             </a>
-            <a routerLink="/admin/regioes" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+            <a routerLink="/admin/regioes" routerLinkActive="bg-marca-suave text-marca border-marca-suave"
               (click)="sidebarOpen.set(false)"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-marca-suave hover:text-marca transition-colors font-medium text-sm border border-transparent no-underline">
               <mat-icon class="shrink-0">location_city</mat-icon>
               Regiões e Unidades
             </a>
-            <a routerLink="/admin/professores" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+            <a routerLink="/admin/professores" routerLinkActive="bg-marca-suave text-marca border-marca-suave"
               (click)="sidebarOpen.set(false)"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-marca-suave hover:text-marca transition-colors font-medium text-sm border border-transparent no-underline">
               <mat-icon class="shrink-0">school</mat-icon>
               Professores
             </a>
-            <a routerLink="/professor/cursos" routerLinkActive="bg-purple-50 text-purple-700 border-purple-200"
+            <a routerLink="/professor/cursos" routerLinkActive="bg-marca-suave text-marca border-marca-suave"
               (click)="sidebarOpen.set(false)"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-purple-50 hover:text-purple-700 transition-colors font-medium text-sm border border-transparent no-underline">
+              class="flex items-center gap-3 px-4 py-3 rounded-xl text-texto-suave hover:bg-marca-suave hover:text-marca transition-colors font-medium text-sm border border-transparent no-underline">
               <mat-icon class="shrink-0">cast_for_education</mat-icon>
               Conteúdo das Aulas
             </a>

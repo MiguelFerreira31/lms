@@ -25,8 +25,8 @@
 - **Upload de imagens** para avatar de usuário, capa de curso e foto de unidade
 - **Dashboard administrativo** com gráficos Chart.js (matrículas/mês, cursos por nível, unidades por região) e animações GSAP
 - **Modo claro e escuro** com página de **Aparência**: cores e tipografia
-  configuráveis separadamente para cada modo, com prévia ao vivo, aviso de
-  contraste WCAG e exportação/importação do tema
+  configuráveis separadamente para cada modo, com prévia interativa (mostra
+  hover e foco) e aviso de contraste WCAG
 - **Documentação da API** em OpenAPI/Swagger e health check via Actuator
 - **Widget de acessibilidade** completo (WCAG 2.1 AA/AAA):
   - Controle de tamanho de fonte (5 níveis)
@@ -58,7 +58,7 @@
 | Migrations | Flyway | 12.4 (V1–V17) |
 | Auth | JWT (jjwt) | 0.13.0 |
 | Testes (back) | JUnit 6 + Testcontainers | 52 testes de integração |
-| Testes (front) | Vitest · Playwright | 45 specs · 25 cenários E2E |
+| Testes (front) | Vitest · Playwright | 48 specs · 29 cenários E2E |
 | Infra | Docker Compose | — |
 
 ---
@@ -158,10 +158,10 @@ lms/
 # Backend — 52 testes de integração contra Postgres real (Testcontainers)
 cd backend && ./mvnw verify
 
-# Frontend — 45 testes unitários (Vitest, jsdom)
+# Frontend — 48 testes unitários (Vitest, jsdom)
 cd frontend && npm test
 
-# Frontend — 25 cenários end-to-end (Playwright)
+# Frontend — 29 cenários end-to-end (Playwright)
 # exige o backend em :8080; o servidor do Angular sobe sozinho
 cd frontend && npm run e2e
 ```

@@ -84,16 +84,16 @@ export class DashboardComponent implements OnInit {
 
   getNivelClass(nivel: string): string {
     const map: Record<string, string> = {
-      'BASICO': 'bg-green-100 text-green-700',
-      'INTERMEDIARIO': 'bg-yellow-100 text-yellow-700',
-      'AVANCADO': 'bg-red-100 text-red-700'
+      'BASICO': 'bg-green-100 text-sucesso',
+      'INTERMEDIARIO': 'bg-yellow-100 text-aviso',
+      'AVANCADO': 'bg-red-100 text-erro'
     };
     return map[nivel] || 'bg-superficie-2 text-texto';
   }
 
   getNivelBg(nivel: string): string {
     const map: Record<string, string> = {
-      'BASICO': 'bg-green-400',
+      'BASICO': 'bg-sucesso',
       'INTERMEDIARIO': 'bg-yellow-400',
       'AVANCADO': 'bg-red-400'
     };

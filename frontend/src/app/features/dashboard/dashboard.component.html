@@ -37,7 +37,7 @@
           placeholder="O que você quer aprender?"
           class="flex-1 px-4 py-4 text-texto text-base outline-hidden bg-transparent placeholder:text-gray-400" />
           <button (click)="irParaCursos()"
-            class="bg-destaque hover:bg-orange-500 transition-colors px-7 py-4 text-white font-semibold text-sm cursor-pointer border-0 flex items-center gap-2 shrink-0">
+            class="bg-destaque hover:bg-destaque-escuro transition-colors px-7 py-4 text-white font-semibold text-sm cursor-pointer border-0 flex items-center gap-2 shrink-0">
             Buscar
           </button>
         </div>
@@ -50,15 +50,15 @@
         <div class="flex items-center gap-3 flex-wrap">
           <span class="text-sm font-semibold text-texto-suave shrink-0">Conheça nossos cursos:</span>
           <button (click)="irParaCursos('BASICO')"
-            class="px-4 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors cursor-pointer border-0 shrink-0">
+            class="px-4 py-1.5 rounded-full text-sm font-medium bg-green-100 text-sucesso hover:bg-sucesso/20 transition-colors cursor-pointer border-0 shrink-0">
             Básico
           </button>
           <button (click)="irParaCursos('INTERMEDIARIO')"
-            class="px-4 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors cursor-pointer border-0 shrink-0">
+            class="px-4 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-aviso hover:bg-aviso/25 transition-colors cursor-pointer border-0 shrink-0">
             Intermediário
           </button>
           <button (click)="irParaCursos('AVANCADO')"
-            class="px-4 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors cursor-pointer border-0 shrink-0">
+            class="px-4 py-1.5 rounded-full text-sm font-medium bg-red-100 text-erro hover:bg-erro/20 transition-colors cursor-pointer border-0 shrink-0">
             Avançado
           </button>
           <a routerLink="/cursos"
@@ -86,7 +86,7 @@
 
           <a routerLink="/matriculas"
             class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-4 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-            <div class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 transition-colors">
+            <div class="w-14 h-14 bg-sucesso rounded-2xl flex items-center justify-center group-hover:bg-sucesso transition-colors">
               <mat-icon class="text-white">assignment</mat-icon>
             </div>
             <span class="text-sm font-medium text-texto text-center leading-tight">Minhas Matrículas</span>
@@ -94,7 +94,7 @@
 
           <a routerLink="/matriculas"
             class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-4 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-            <div class="w-14 h-14 bg-purple-500 rounded-2xl flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+            <div class="w-14 h-14 bg-purple-500 rounded-2xl flex items-center justify-center group-hover:bg-marca transition-colors">
               <mat-icon class="text-white">trending_up</mat-icon>
             </div>
             <span class="text-sm font-medium text-texto text-center leading-tight">Meu Progresso</span>
@@ -103,7 +103,7 @@
           @if (auth.isAdmin()) {
             <a routerLink="/admin/cursos"
               class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-4 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-              <div class="w-14 h-14 bg-violet-600 rounded-2xl flex items-center justify-center group-hover:bg-violet-700 transition-colors">
+              <div class="w-14 h-14 bg-marca rounded-2xl flex items-center justify-center group-hover:bg-marca-escura transition-colors">
                 <mat-icon class="text-white">admin_panel_settings</mat-icon>
               </div>
               <span class="text-sm font-medium text-texto text-center leading-tight">Painel Admin</span>
@@ -113,7 +113,7 @@
           @if (!auth.isAdmin() && auth.isProfessor()) {
             <a routerLink="/professor/cursos"
               class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-4 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-              <div class="w-14 h-14 bg-destaque rounded-2xl flex items-center justify-center group-hover:bg-orange-500 transition-colors">
+              <div class="w-14 h-14 bg-destaque rounded-2xl flex items-center justify-center group-hover:bg-destaque transition-colors">
                 <mat-icon class="text-white">cast_for_education</mat-icon>
               </div>
               <span class="text-sm font-medium text-texto text-center leading-tight">Meus Cursos</span>
@@ -123,7 +123,7 @@
           @if (!auth.isProfessor()) {
             <a routerLink="/cursos"
               class="flex flex-col items-center gap-3 bg-superficie rounded-2xl py-6 px-4 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all cursor-pointer no-underline group">
-              <div class="w-14 h-14 bg-destaque rounded-2xl flex items-center justify-center group-hover:bg-orange-500 transition-colors">
+              <div class="w-14 h-14 bg-destaque rounded-2xl flex items-center justify-center group-hover:bg-destaque transition-colors">
                 <mat-icon class="text-white">star</mat-icon>
               </div>
               <span class="text-sm font-medium text-texto text-center leading-tight">Destaques</span>

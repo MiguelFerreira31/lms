@@ -124,7 +124,7 @@ interface GrupoRegiao {
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a routerLink="/login"
-               class="inline-flex items-center justify-center gap-2 bg-destaque hover:bg-orange-500
+               class="inline-flex items-center justify-center gap-2 bg-destaque hover:bg-destaque-escuro
                       text-white font-bold px-8 py-3.5 rounded-xl transition-colors no-underline
                       shadow-lg text-sm">
               <mat-icon style="font-size:20px;height:20px;width:20px">school</mat-icon>

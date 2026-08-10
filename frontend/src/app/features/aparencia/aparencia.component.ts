@@ -21,6 +21,71 @@ import {
   imports: [MatIconModule, MatSnackBarModule, MatTooltipModule],
   templateUrl: './aparencia.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // A prévia não usa os tokens globais de propósito: ela mostra o modo EM
+  // EDIÇÃO, que pode não ser o aplicado. As variáveis --pv-* são vinculadas na
+  // seção via [style.--pv-*], e os hovers/focus abaixo reagem a elas — é o que
+  // permite ver o estado de hover de um botão sem trocar o tema inteiro.
+  styles: [`
+    .pv-quadro { background: var(--pv-fundo); font-family: var(--pv-fonte-corpo); }
+    .pv-topo { background: var(--pv-marca); }
+    .pv-menu { background: var(--pv-superficie); }
+
+    .pv-titulo {
+      color: var(--pv-texto);
+      font-family: var(--pv-fonte-titulo);
+      font-weight: var(--pv-peso-titulo);
+    }
+    .pv-suave { color: var(--pv-texto-suave); }
+
+    .pv-nav-item { color: var(--pv-texto-suave); transition: background-color .15s, color .15s; }
+    .pv-nav-item:hover { background: var(--pv-marca-suave); color: var(--pv-marca); }
+    .pv-nav-ativo { background: var(--pv-marca-suave); color: var(--pv-marca); }
+
+    .pv-cartao {
+      background: var(--pv-superficie);
+      border: 1px solid var(--pv-borda);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .pv-cartao:hover {
+      border-color: var(--pv-marca);
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1);
+    }
+
+    .pv-btn-marca { background: var(--pv-marca); transition: background-color .15s; }
+    .pv-btn-marca:hover { background: var(--pv-marca-escura); }
+
+    .pv-btn-destaque { background: var(--pv-destaque); transition: background-color .15s; }
+    .pv-btn-destaque:hover {
+      background: color-mix(in srgb, var(--pv-destaque) 85%, var(--pv-mistura));
+    }
+
+    .pv-btn-erro-suave {
+      color: var(--pv-erro);
+      background: color-mix(in srgb, var(--pv-erro) 12%, var(--pv-superficie));
+      transition: background-color .15s;
+    }
+    .pv-btn-erro-suave:hover {
+      background: color-mix(in srgb, var(--pv-erro) 24%, var(--pv-superficie));
+    }
+
+    .pv-chip { background: var(--pv-marca-suave); color: var(--pv-marca); }
+
+    .pv-link { color: var(--pv-marca); transition: color .15s; }
+    .pv-link:hover { color: var(--pv-marca-escura); text-decoration: underline; }
+
+    .pv-input {
+      background: var(--pv-superficie);
+      color: var(--pv-texto);
+      border: 1px solid var(--pv-borda);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .pv-input::placeholder { color: var(--pv-texto-suave); }
+    .pv-input:focus {
+      border-color: var(--pv-marca);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--pv-marca) 25%, transparent);
+    }
+  `],
 })
 export class AparenciaComponent {
   private readonly snack = inject(MatSnackBar);
@@ -97,31 +162,6 @@ export class AparenciaComponent {
   restaurarTudo(): void {
     this.tema.restaurarTudo();
     this.snack.open('Aparência restaurada para o padrão', 'OK', { duration: 2500 });
-  }
-
-  async exportar(): Promise<void> {
-    const json = this.tema.exportar();
-    try {
-      await navigator.clipboard.writeText(json);
-      this.snack.open('Tema copiado para a área de transferência', 'OK', { duration: 3000 });
-    } catch {
-      // Sem permissão de clipboard: cai para download, que não exige permissão.
-      const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'tema-lms.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      this.snack.open('Tema baixado como tema-lms.json', 'OK', { duration: 3000 });
-    }
-  }
-
-  async importar(evento: Event): Promise<void> {
-    const arquivo = (evento.target as HTMLInputElement).files?.[0];
-    if (!arquivo) return;
-    const erro = this.tema.importar(await arquivo.text());
-    this.snack.open(erro ?? 'Tema importado', 'OK', { duration: 3000 });
-    (evento.target as HTMLInputElement).value = '';
   }
 
   /**

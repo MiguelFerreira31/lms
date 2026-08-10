@@ -171,16 +171,16 @@ export class ProfessorCursosComponent implements OnInit {
 
   getTipoColor(tipo: string): string {
     const colors: Record<string, string> = {
-      VIDEO: 'text-red-500', PDF: 'text-orange-500', TEXTO: 'text-blue-500', LINK: 'text-green-500'
+      VIDEO: 'text-erro', PDF: 'text-orange-500', TEXTO: 'text-blue-500', LINK: 'text-sucesso'
     };
     return colors[tipo] || 'text-texto-suave';
   }
 
   getNivelClass(nivel: string): string {
     const map: Record<string, string> = {
-      BASICO: 'bg-green-100 text-green-800',
-      INTERMEDIARIO: 'bg-yellow-100 text-yellow-800',
-      AVANCADO: 'bg-red-100 text-red-800'
+      BASICO: 'bg-green-100 text-sucesso',
+      INTERMEDIARIO: 'bg-yellow-100 text-aviso',
+      AVANCADO: 'bg-red-100 text-erro'
     };
     return map[nivel] || 'bg-superficie-2 text-texto';
   }

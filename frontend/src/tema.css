@@ -121,6 +121,27 @@ body, .lms-input, .lms-select, .lms-textarea {
 }
 
 
+/*
+ * Tokens derivados — hovers dos botões sólidos.
+ *
+ * Não são editáveis na página de Aparência de propósito: derivam da cor base
+ * via color-mix, então acompanham automaticamente qualquer cor que o usuário
+ * escolher. No claro o hover escurece; no escuro, clareia (o padrão visual de
+ * superfícies escuras). A exceção é a marca, cujo hover (--tema-marca-escura)
+ * já é um token editável próprio.
+ */
+:root {
+  --tema-mistura-hover: #000;
+  --tema-destaque-escuro: color-mix(in srgb, var(--tema-destaque) 85%, var(--tema-mistura-hover));
+  --tema-sucesso-escuro:  color-mix(in srgb, var(--tema-sucesso) 85%, var(--tema-mistura-hover));
+  --tema-erro-escuro:     color-mix(in srgb, var(--tema-erro) 85%, var(--tema-mistura-hover));
+  --tema-aviso-escuro:    color-mix(in srgb, var(--tema-aviso) 85%, var(--tema-mistura-hover));
+}
+
+:root[data-tema='escuro'] {
+  --tema-mistura-hover: #fff;
+}
+
 /* ─── Matizes fixos no modo escuro ────────────────────────────────────────────
  *
  * O projeto usa muitos "chips" no padrão bg-<matiz>-50 + text-<matiz>-700: um
