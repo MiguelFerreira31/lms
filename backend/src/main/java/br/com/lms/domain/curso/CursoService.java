@@ -15,6 +15,7 @@ import br.com.lms.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,9 +50,16 @@ public class CursoService {
 
     @Transactional(readOnly = true)
     public Page<CursoResumoResponse> listar(Curso.Nivel nivel, Long unidadeId, String areaSlug,
-                                            String categoriaSlug, String tipoSlug, Pageable pageable) {
+                                            String categoriaSlug, String tipoSlug, String q, Pageable pageable) {
         Page<Curso> page;
-        if (tipoSlug != null) {
+        if (q != null && !q.isBlank()) {
+            // Sem Sort: a ordenação já vem por relevância (ts_rank) na própria query
+            // nativa — repassar o Sort do Pageable a injetaria como identificador
+            // SQL cru (ver CursoRepository.buscarPorTexto).
+            Pageable semOrdenacao = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+            page = cursoRepository.buscarPorTexto(q.trim(), nivel != null ? nivel.name() : null,
+                    unidadeId, areaSlug, categoriaSlug, tipoSlug, semOrdenacao);
+        } else if (tipoSlug != null) {
             page = cursoRepository.findByTipoSlug(tipoSlug, pageable);
         } else if (categoriaSlug != null && areaSlug != null) {
             page = cursoRepository.findByCategoriaSlug(areaSlug, categoriaSlug, pageable);

@@ -23,9 +23,10 @@ public class CursoController {
             @RequestParam(required = false) String areaSlug,
             @RequestParam(required = false) String categoriaSlug,
             @RequestParam(required = false) String tipoSlug,
+            @RequestParam(required = false) String q,
             @PageableDefault(size = 10, sort = "criadoEm") Pageable pageable) {
         return ResponseEntity.ok(
-                cursoService.listar(nivel, unidadeId, areaSlug, categoriaSlug, tipoSlug, pageable));
+                cursoService.listar(nivel, unidadeId, areaSlug, categoriaSlug, tipoSlug, q, pageable));
     }
 
     @GetMapping("/{id}")
