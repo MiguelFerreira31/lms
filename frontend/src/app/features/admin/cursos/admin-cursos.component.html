@@ -5,13 +5,21 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
       <div>
         <h1 class="text-2xl font-bold text-texto">Gerenciar Cursos</h1>
-        <p class="text-texto-suave text-sm mt-1">{{ cursos().length }} curso(s) ativo(s)</p>
+        <p class="text-texto-suave text-sm mt-1">{{ totalCursos() }} curso(s) ativo(s)</p>
       </div>
       <button (click)="abrirForm()"
         class="flex items-center gap-2 bg-marca text-white px-5 py-2.5 rounded-xl font-medium hover:bg-marca-escura transition-colors shadow-xs border-0 cursor-pointer">
         <mat-icon>add</mat-icon>
         Novo Curso
       </button>
+    </div>
+
+    <!-- Busca -->
+    <div class="mb-6 max-w-md relative">
+      <mat-icon class="absolute left-3.5 top-1/2 -translate-y-1/2 text-texto-suave" style="font-size:20px;height:20px;width:20px;line-height:20px;">search</mat-icon>
+      <input type="text" [value]="filtro()" (input)="onFiltroChange($any($event.target).value)"
+        placeholder="Buscar por título ou palavra-chave..."
+        class="lms-input w-full pl-10" />
     </div>
 
     <!-- Formulário criar/editar -->
@@ -419,6 +427,20 @@
                     </div>
                   }
                 </div>
+
+                <!-- Paginação -->
+                @if (totalCursos() > pageSize()) {
+                  <div class="mt-6 flex justify-center">
+                    <mat-paginator
+                      [length]="totalCursos()"
+                      [pageSize]="pageSize()"
+                      [pageIndex]="pageIndex()"
+                      [pageSizeOptions]="[10, 25, 50]"
+                      (page)="onPage($event)"
+                      showFirstLastButtons>
+                    </mat-paginator>
+                  </div>
+                }
               }
             </div>
           </div>

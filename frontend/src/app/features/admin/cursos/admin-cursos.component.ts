@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { ReactiveFormsModule, FormBuilder, Validators, FormsModule, FormArray } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,19 +6,22 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { CursoService, Curso, MatriculaDetalhe, Unidade, Area, TipoCurso, AulaInfo } from '../../../core/services/curso.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 import { mensagemDeErro } from '../../../core/interceptors/error.interceptor';
 
+const FILTRO_DEBOUNCE_MS = 300;
+
 @Component({
     selector: 'app-admin-cursos',
-    imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatTabsModule, ImageUploadComponent],
+    imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatSnackBarModule, MatProgressSpinnerModule, MatTooltipModule, MatTabsModule, MatPaginatorModule, ImageUploadComponent],
     templateUrl: './admin-cursos.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./admin-cursos.component.scss']
 })
-export class AdminCursosComponent implements OnInit {
+export class AdminCursosComponent implements OnInit, OnDestroy {
   private svc = inject(CursoService);
   private uploadSvc = inject(UploadService);
   private fb = inject(FormBuilder);
@@ -43,6 +46,14 @@ export class AdminCursosComponent implements OnInit {
   salvandoNota = signal<number | null>(null);
   niveis = ['BASICO', 'INTERMEDIARIO', 'AVANCADO'];
   colunas = ['titulo', 'nivel', 'criado', 'acoes'];
+
+  // Paginação da listagem — o backend já pagina via Pageable (page/size); antes
+  // o componente carregava as 200 primeiras linhas de uma vez com listarTodosCursos().
+  pageIndex = signal(0);
+  pageSize = signal(10);
+  totalCursos = signal(0);
+  filtro = signal('');
+  private filtroDebounceHandle: ReturnType<typeof setTimeout> | null = null;
 
   // Aulas: geridas por CRUD próprio (POST/PUT/DELETE /api/aulas), à parte do
   // merge incremental de módulos — só existem para módulos já persistidos.
@@ -69,14 +80,8 @@ export class AdminCursosComponent implements OnInit {
     modulos: this.fb.array([])
   });
 
-  ngOnInit() { this.carregar(); }
-
-  carregar() {
-    this.loading.set(true);
-    this.svc.listarTodosCursos().subscribe({
-      next: page => { this.cursos.set(page.content); this.loading.set(false); },
-      error: () => this.loading.set(false)
-    });
+  ngOnInit() {
+    this.carregarCursos(0);
     this.svc.listarTodasUnidades().subscribe({
       next: data => this.unidades.set(data),
       error: err => console.error('Erro ao carregar unidades:', err)
@@ -89,6 +94,35 @@ export class AdminCursosComponent implements OnInit {
       next: data => this.tiposDisponiveis.set(data),
       error: err => console.error('Erro ao carregar tipos:', err)
     });
+  }
+
+  ngOnDestroy() {
+    if (this.filtroDebounceHandle) clearTimeout(this.filtroDebounceHandle);
+  }
+
+  carregarCursos(pageIndex: number) {
+    this.pageIndex.set(pageIndex);
+    this.loading.set(true);
+    const q = this.filtro().trim() || undefined;
+    this.svc.listarCursosAdmin(pageIndex, this.pageSize(), q).subscribe({
+      next: page => {
+        this.cursos.set(page.content);
+        this.totalCursos.set(page.page.totalElements);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  onPage(evento: PageEvent) {
+    this.pageSize.set(evento.pageSize);
+    this.carregarCursos(evento.pageIndex);
+  }
+
+  onFiltroChange(valor: string) {
+    this.filtro.set(valor);
+    if (this.filtroDebounceHandle) clearTimeout(this.filtroDebounceHandle);
+    this.filtroDebounceHandle = setTimeout(() => this.carregarCursos(0), FILTRO_DEBOUNCE_MS);
   }
 
   toggleCategoria(id: number) {
@@ -292,12 +326,12 @@ export class AdminCursosComponent implements OnInit {
         if (imagem) {
           this.uploadandoCapa.set(true);
           this.uploadSvc.uploadCurso(curso.id, imagem).subscribe({
-            next: () => { this.uploadandoCapa.set(false); this.fecharForm(); this.carregar(); },
-            error: () => { this.uploadandoCapa.set(false); this.fecharForm(); this.carregar(); }
+            next: () => { this.uploadandoCapa.set(false); this.fecharForm(); this.carregarCursos(this.pageIndex()); },
+            error: () => { this.uploadandoCapa.set(false); this.fecharForm(); this.carregarCursos(this.pageIndex()); }
           });
         } else {
           this.fecharForm();
-          this.carregar();
+          this.carregarCursos(this.pageIndex());
         }
         this.snack.open(isEdicao ? 'Curso atualizado!' : 'Curso criado!', 'OK', { duration: 3000 });
       },
@@ -308,7 +342,7 @@ export class AdminCursosComponent implements OnInit {
   excluir(curso: Curso) {
     if (!confirm(`Desativar o curso "${curso.titulo}"?`)) return;
     this.svc.deletarCurso(curso.id).subscribe({
-      next: () => { this.snack.open('Curso desativado!', 'OK', { duration: 3000 }); this.carregar(); },
+      next: () => { this.snack.open('Curso desativado!', 'OK', { duration: 3000 }); this.carregarCursos(this.pageIndex()); },
       error: () => this.snack.open('Erro ao desativar curso', 'Fechar', { duration: 3000 })
     });
   }

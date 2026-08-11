@@ -86,6 +86,13 @@ export class CursoService {
     return this.http.get<Page<Curso>>(`${environment.apiUrl}/cursos`, { params });
   }
 
+  /** Listagem paginada usada pelo painel admin — não carrega tudo de uma vez. */
+  listarCursosAdmin(page = 0, size = 10, q?: string) {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (q) params = params.set('q', q);
+    return this.http.get<Page<Curso>>(`${environment.apiUrl}/cursos`, { params });
+  }
+
   listarCursos(page = 0, nivel?: string, unidadeId?: number, q?: string) {
     let params = new HttpParams().set('page', page).set('size', 10);
     if (nivel) params = params.set('nivel', nivel);
