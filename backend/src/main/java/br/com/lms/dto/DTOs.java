@@ -8,6 +8,7 @@ import br.com.lms.domain.curso.Aula;
 import br.com.lms.domain.curso.Curso;
 import br.com.lms.domain.curso.Modulo;
 import br.com.lms.domain.matricula.Matricula;
+import br.com.lms.domain.notificacao.Notificacao;
 import br.com.lms.domain.presenca.PresencaAula;
 import br.com.lms.domain.regiao.Regiao;
 import br.com.lms.domain.regiao.Unidade;
@@ -306,4 +307,19 @@ public class DTOs {
             );
         }
     }
+
+    @Schema(description = "Notificação in-app do usuário (GET /api/notificacoes)")
+    public record NotificacaoResponse(
+        Long id,
+        @Schema(example = "NOTA_LANCADA") Notificacao.Tipo tipo,
+        String mensagem, Long referenciaId, boolean lida, LocalDateTime criadoEm
+    ) {
+        public static NotificacaoResponse from(Notificacao n) {
+            return new NotificacaoResponse(n.getId(), n.getTipo(), n.getMensagem(),
+                    n.getReferenciaId(), n.getLida(), n.getCriadoEm());
+        }
+    }
+
+    @Schema(description = "Contagem de notificações não lidas, para alimentar o badge sem paginar tudo")
+    public record ContagemNaoLidasResponse(long total) {}
 }

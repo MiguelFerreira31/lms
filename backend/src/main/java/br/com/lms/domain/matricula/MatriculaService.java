@@ -3,6 +3,8 @@ package br.com.lms.domain.matricula;
 import br.com.lms.domain.curso.Aula;
 import br.com.lms.domain.curso.AulaRepository;
 import br.com.lms.domain.curso.CursoRepository;
+import br.com.lms.domain.notificacao.Notificacao;
+import br.com.lms.domain.notificacao.NotificacaoService;
 import br.com.lms.domain.usuario.Usuario;
 import br.com.lms.dto.DTOs.*;
 import br.com.lms.exception.ResourceNotFoundException;
@@ -30,6 +32,7 @@ public class MatriculaService {
     private final CursoRepository cursoRepository;
     private final ProgressoAulaRepository progressoRepository;
     private final AulaRepository aulaRepository;
+    private final NotificacaoService notificacaoService;
 
     @Transactional(readOnly = true)
     public List<MatriculaResponse> minhas(Long usuarioId) {
@@ -45,6 +48,8 @@ public class MatriculaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Curso", request.cursoId()));
         Matricula matricula = matriculaRepository.save(
                 Matricula.builder().usuario(usuario).curso(curso).build());
+        notificacaoService.criar(usuario.getId(), Notificacao.Tipo.MATRICULA_CONFIRMADA,
+                "Sua matrícula em '" + curso.getTitulo() + "' foi confirmada.", matricula.getId());
         log.info("Matrícula criada: usuario={} curso={}", usuario.getId(), request.cursoId());
         return MatriculaResponse.from(matricula);
     }
@@ -87,6 +92,10 @@ public class MatriculaService {
         matricula.setNotaLancadaEm(LocalDateTime.now());
         matricula.setNotaLancadaPor(professor);
         matriculaRepository.save(matricula);
+        String mensagem = "Sua nota em '" + matricula.getCurso().getTitulo() + "' foi lançada: " + nota
+                + (matricula.getAprovado() ? " (aprovado)" : " (reprovado)");
+        notificacaoService.criar(matricula.getUsuario().getId(), Notificacao.Tipo.NOTA_LANCADA,
+                mensagem, matricula.getId());
         log.info("Nota lançada: matricula={} nota={} aprovado={} por={}",
                 matriculaId, nota, matricula.getAprovado(), professor.getId());
         return new NotaResponse(matricula.getId(), matricula.getNota(),

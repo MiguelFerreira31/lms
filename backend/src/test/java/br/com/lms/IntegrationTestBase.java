@@ -105,6 +105,7 @@ public abstract class IntegrationTestBase {
     @Autowired protected br.com.lms.domain.conteudo.ConteudoAulaRepository conteudoAulaRepository;
     @Autowired protected AulaRepository aulaRepository;
     @Autowired protected ModuloRepository moduloRepository;
+    @Autowired protected br.com.lms.domain.notificacao.NotificacaoRepository notificacaoRepository;
     @Autowired protected PasswordEncoder passwordEncoder;
     @Autowired protected JwtTokenProvider tokenProvider;
 
@@ -184,5 +185,13 @@ public abstract class IntegrationTestBase {
                 .presente(true).dataAula(java.time.LocalDate.now())
                 .build();
         return presencaAulaRepository.save(presenca);
+    }
+
+    protected br.com.lms.domain.notificacao.Notificacao criarNotificacao(Usuario usuario,
+            br.com.lms.domain.notificacao.Notificacao.Tipo tipo, String mensagem, boolean lida) {
+        var notificacao = br.com.lms.domain.notificacao.Notificacao.builder()
+                .usuario(usuario).tipo(tipo).mensagem(mensagem).lida(lida)
+                .build();
+        return notificacaoRepository.save(notificacao);
     }
 }
