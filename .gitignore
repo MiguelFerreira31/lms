@@ -21,6 +21,7 @@ frontend/dist/
 frontend/.angular/
 frontend/*.log
 frontend/.env
+frontend/e2e/.env.e2e
 
 # Sistema
 .DS_Store
